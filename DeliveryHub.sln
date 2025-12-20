@@ -34,20 +34,44 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{0944D3
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dtos", "Dtos", "{224C9573-9E95-4345-8009-4B3EDBA0FCF8}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\Dtos\Readme.md = Shared\Dtos\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Middleware", "Middleware", "{051468CA-509C-4E52-9FDA-B050225C56D3}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\Middleware\Readme.md = Shared\Middleware\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{1447119B-AEF5-42EE-8740-72D94AA03F45}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\Abstractions\Readme.md = Shared\Abstractions\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CatalogService", "CatalogService", "{FB6C1644-2981-42BB-BB23-65F89C38B52A}"
+	ProjectSection(SolutionItems) = preProject
+		Services\CatalogService\Readme.md = Services\CatalogService\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{EA5D66BA-DEEC-4068-B862-7BE07F4BBE7C}"
+	ProjectSection(SolutionItems) = preProject
+		Infrastructure\Docker\Readme.md = Infrastructure\Docker\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mongo", "Mongo", "{C49AA850-AA8F-49C9-AE4B-C2B4EB7BCA3B}"
+	ProjectSection(SolutionItems) = preProject
+		Infrastructure\Mongo\Readme.md = Infrastructure\Mongo\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rabbit", "Rabbit", "{9B882386-E212-4EE1-B2CB-FCDA9BF617D9}"
+	ProjectSection(SolutionItems) = preProject
+		Infrastructure\Rabbit\Readme.md = Infrastructure\Rabbit\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s", "k8s", "{F58ED3BB-5559-453A-A29C-D676E2B5EB92}"
+	ProjectSection(SolutionItems) = preProject
+		Deploy\k8s\Readme.md = Deploy\k8s\Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{444044A8-BFBB-4974-A4E5-FEF4AE971174}"
 	ProjectSection(SolutionItems) = preProject
