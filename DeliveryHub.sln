@@ -5,32 +5,32 @@ VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		Deploy\Readme.md = Deploy\Readme.md
+		Deploy\Readme.md.txt = Deploy\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{158B2669-70CB-4043-8EE6-C65EEFE86003}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\Readme.md = Docs\Readme.md
+		Docs\Readme.md.txt = Docs\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{4B443F89-4E07-4EE1-8E0B-B31BD30F9B75}"
 	ProjectSection(SolutionItems) = preProject
-		Gateway\Readme.md = Gateway\Readme.md
+		Gateway\Readme.md.txt = Gateway\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{D18C1A71-4582-4791-BC9D-50A09336677C}"
 	ProjectSection(SolutionItems) = preProject
-		Infrastructure\Readme.md = Infrastructure\Readme.md
+		Infrastructure\Readme.md.txt = Infrastructure\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{13DBD499-D13B-454A-A353-185DF345F3B0}"
 	ProjectSection(SolutionItems) = preProject
-		Services\Readme.md = Services\Readme.md
+		Services\Readme.md.txt = Services\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}"
 	ProjectSection(SolutionItems) = preProject
-		Shared\Readme.md = Shared\Readme.md
+		Shared\Readme.md.txt = Shared\Readme.md.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dtos", "Dtos", "{224C9573-9E95-4345-8009-4B3EDBA0FCF8}"
@@ -51,10 +51,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s", "k8s", "{F58ED3BB-555
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{444044A8-BFBB-4974-A4E5-FEF4AE971174}"
 	ProjectSection(SolutionItems) = preProject
-		Scripts\Readme.md = Scripts\Readme.md
+		Scripts\Readme.md.txt = Scripts\Readme.md.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrderService", "OrderService", "{261A764B-2670-4352-BE72-844E7302C98F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.OrderService.WebAPI", "DeliveryHub.OrderService.WebAPI\DeliveryHub.OrderService.WebAPI.csproj", "{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.OrderService.Domain", "DeliveryHub.OrderService.Domain\DeliveryHub.OrderService.Domain.csproj", "{D3A866EC-20A3-4A69-9805-839C40FF3142}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3A866EC-20A3-4A69-9805-839C40FF3142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3A866EC-20A3-4A69-9805-839C40FF3142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3A866EC-20A3-4A69-9805-839C40FF3142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3A866EC-20A3-4A69-9805-839C40FF3142}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
@@ -67,6 +87,9 @@ Global
 		{C49AA850-AA8F-49C9-AE4B-C2B4EB7BCA3B} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{9B882386-E212-4EE1-B2CB-FCDA9BF617D9} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{F58ED3BB-5559-453A-A29C-D676E2B5EB92} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{261A764B-2670-4352-BE72-844E7302C98F} = {13DBD499-D13B-454A-A353-185DF345F3B0}
+		{7B2CB656-7321-4DFF-9483-4E67E2FBF4A4} = {261A764B-2670-4352-BE72-844E7302C98F}
+		{D3A866EC-20A3-4A69-9805-839C40FF3142} = {261A764B-2670-4352-BE72-844E7302C98F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}
