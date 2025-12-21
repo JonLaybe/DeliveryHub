@@ -1,0 +1,6 @@
+@DeliveryHub.ChatService.WebAPI_HostAddress = http://localhost:5070
+
+GET {{DeliveryHub.ChatService.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
