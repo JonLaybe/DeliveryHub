@@ -49,9 +49,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstraction
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CatalogService", "CatalogService", "{FB6C1644-2981-42BB-BB23-65F89C38B52A}"
-	ProjectSection(SolutionItems) = preProject
-		Services\CatalogService\Readme.md = Services\CatalogService\Readme.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{EA5D66BA-DEEC-4068-B862-7BE07F4BBE7C}"
 	ProjectSection(SolutionItems) = preProject
@@ -78,7 +75,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4440
 		Scripts\Readme.md = Scripts\Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Application", "Services\CatalogService\DeliveryHub.Catalog.Application\DeliveryHub.Catalog.Application.csproj", "{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Infrastructure", "Services\CatalogService\DeliveryHub.Catalog.Infrastructure\DeliveryHub.Catalog.Infrastructure.csproj", "{4B7F8463-2AF7-F0C9-2139-B933B008D146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Domain", "Services\CatalogService\DeliveryHub.CatalogService.Domain\DeliveryHub.Catalog.Domain.csproj", "{7EF284CF-5DBF-63E5-E76C-A17955467944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.API", "Services\CatalogService\DeliveryHub.Catalog.API\DeliveryHub.Catalog.API.csproj", "{15FF0B90-C148-28B1-289E-3CDF6B7883E9}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B7F8463-2AF7-F0C9-2139-B933B008D146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B7F8463-2AF7-F0C9-2139-B933B008D146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B7F8463-2AF7-F0C9-2139-B933B008D146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B7F8463-2AF7-F0C9-2139-B933B008D146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF284CF-5DBF-63E5-E76C-A17955467944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF284CF-5DBF-63E5-E76C-A17955467944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF284CF-5DBF-63E5-E76C-A17955467944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF284CF-5DBF-63E5-E76C-A17955467944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15FF0B90-C148-28B1-289E-3CDF6B7883E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15FF0B90-C148-28B1-289E-3CDF6B7883E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15FF0B90-C148-28B1-289E-3CDF6B7883E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15FF0B90-C148-28B1-289E-3CDF6B7883E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
@@ -91,6 +118,10 @@ Global
 		{C49AA850-AA8F-49C9-AE4B-C2B4EB7BCA3B} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{9B882386-E212-4EE1-B2CB-FCDA9BF617D9} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{F58ED3BB-5559-453A-A29C-D676E2B5EB92} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
+		{4B7F8463-2AF7-F0C9-2139-B933B008D146} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
+		{7EF284CF-5DBF-63E5-E76C-A17955467944} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
+		{15FF0B90-C148-28B1-289E-3CDF6B7883E9} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}
