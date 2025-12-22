@@ -75,13 +75,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4440
 		Scripts\Readme.md = Scripts\Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Application", "Services\CatalogService\DeliveryHub.Catalog.Application\DeliveryHub.Catalog.Application.csproj", "{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "Services\CatalogService\DeliveryHub.Catalog.Application\Catalog.Application.csproj", "{724AF16F-BFE4-9E4E-5C06-6F9D90A3D15C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Infrastructure", "Services\CatalogService\DeliveryHub.Catalog.Infrastructure\DeliveryHub.Catalog.Infrastructure.csproj", "{4B7F8463-2AF7-F0C9-2139-B933B008D146}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "Services\CatalogService\DeliveryHub.Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{4B7F8463-2AF7-F0C9-2139-B933B008D146}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.Domain", "Services\CatalogService\DeliveryHub.CatalogService.Domain\DeliveryHub.Catalog.Domain.csproj", "{7EF284CF-5DBF-63E5-E76C-A17955467944}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Services\CatalogService\DeliveryHub.CatalogService.Domain\Catalog.Domain.csproj", "{7EF284CF-5DBF-63E5-E76C-A17955467944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Catalog.API", "Services\CatalogService\DeliveryHub.Catalog.API\DeliveryHub.Catalog.API.csproj", "{15FF0B90-C148-28B1-289E-3CDF6B7883E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Services\CatalogService\DeliveryHub.Catalog.API\Catalog.API.csproj", "{15FF0B90-C148-28B1-289E-3CDF6B7883E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
