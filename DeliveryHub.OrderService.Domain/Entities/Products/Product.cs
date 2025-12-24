@@ -1,4 +1,6 @@
-﻿namespace DeliveryHub.OrderService.Domain.Entities.Products
+﻿using DeliveryHub.OrderService.Domain.Entities.Oriders;
+
+namespace DeliveryHub.OrderService.Domain.Entities.Products
 {
     public class Product : BaseEntity
     {
@@ -21,5 +23,12 @@
         ///  Photo preview Url.
         /// </summary>
         public string PhotoPreviewUrl { get; set; }
+
+        /// <summary>
+        ///  Link Order.
+        /// </summary>
+        public int OrderId { get; set; }
+        
+        public Order Order { get; set; }
     }
 }

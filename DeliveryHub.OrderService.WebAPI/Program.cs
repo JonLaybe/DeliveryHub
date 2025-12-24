@@ -18,7 +18,6 @@ namespace DeliveryHub.OrderService.WebAPI
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();

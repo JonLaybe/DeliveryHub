@@ -13,7 +13,7 @@ namespace DeliveryHub.OrderService.Domain.Entities.Oriders
         /// <summary>
         ///  Product quantity.
         /// </summary>
-        public int Quantity = 0;
+        public int Quantity { get; set; } = 0;
 
         /// <summary>
         ///  Order status.
@@ -38,6 +38,6 @@ namespace DeliveryHub.OrderService.Domain.Entities.Oriders
         /// <summary>
         /// List products in order.
         /// </summary>
-        public IList<Product> Product { get; set; }
+        public IList<Product> Products { get; set; }
     }
 }
