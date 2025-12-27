@@ -1,4 +1,4 @@
-﻿namespace DeliveryHub.OrderService.Core.Repositories.Interfaces
+﻿namespace OrderService.Core.Repositories.Interfaces
 {
     public interface IRepository<T>
     {

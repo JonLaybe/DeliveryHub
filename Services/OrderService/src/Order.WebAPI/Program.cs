@@ -1,3 +1,5 @@
+using OrderService.Infrastructure.Extensions;
+
 namespace OrderService.WebAPI
 {
     public class Program
@@ -9,6 +11,8 @@ namespace OrderService.WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            builder.Services.AddInfrastructure(builder.Configuration);
 
             var app = builder.Build();
 

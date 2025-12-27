@@ -14,4 +14,10 @@
     <None Remove="Controllers\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Order.Core\OrderService.Core.csproj" />
+    <ProjectReference Include="..\Order.Domain\OrderService.Domain.csproj" />
+    <ProjectReference Include="..\Order.Infrastructure\OrderService.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

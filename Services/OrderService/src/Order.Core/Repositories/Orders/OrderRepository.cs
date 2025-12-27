@@ -1,7 +1,7 @@
-﻿using DeliveryHub.OrderService.Core.Repositories.Interfaces.Orders;
-using DeliveryHub.OrderService.Domain.Entities.Oriders;
+﻿using OrderService.Core.Repositories.Interfaces.Orders;
+using OrderService.Domain.Entities.Oriders;
 
-namespace DeliveryHub.OrderService.Core.Repositories.Orders
+namespace OrderService.Core.Repositories.Orders
 {
     public class OrderRepository : IOrderRepository
     {
