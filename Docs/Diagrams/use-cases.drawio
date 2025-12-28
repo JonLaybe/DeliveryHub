@@ -26,30 +26,46 @@
         <mxCell id="vOyBcVbY0-cWkmOSY9DL-7" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" value="Админ" vertex="1">
           <mxGeometry height="70" width="40" x="480" y="215" as="geometry" />
         </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-10" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Поиск товаров" vertex="1">
-          <mxGeometry height="30" width="190" x="224" y="60" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-11" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Просмотр товара" vertex="1">
-          <mxGeometry height="30" width="190" x="220" y="100" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-12" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Просмотр по категории" vertex="1">
-          <mxGeometry height="30" width="190" x="220" y="140" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-13" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Просмотреть корзину" vertex="1">
-          <mxGeometry height="30" width="190" x="220" y="240" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-14" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Удалить из корзины" vertex="1">
-          <mxGeometry height="30" width="190" x="220" y="280" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-15" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Оформить заказ" vertex="1">
-          <mxGeometry height="30" width="190" x="210" y="340" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-16" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Отследить статус" vertex="1">
-          <mxGeometry height="30" width="190" x="210" y="380" as="geometry" />
-        </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-20" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Отменить заказ" vertex="1">
-          <mxGeometry height="30" width="190" x="210" y="420" as="geometry" />
-        </mxCell>
+        <UserObject label="Поиск товаров" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-CL1-search-products.md" id="vOyBcVbY0-cWkmOSY9DL-10">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="224" y="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Просмотр товара" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-CL3-view-product-details.md" id="vOyBcVbY0-cWkmOSY9DL-11">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="220" y="100" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Просмотр по категории" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-CL2-browse-catalog.md" id="vOyBcVbY0-cWkmOSY9DL-12">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="220" y="140" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Просмотреть корзину" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-BS2-view-basket.md" id="vOyBcVbY0-cWkmOSY9DL-13">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="220" y="240" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Очистить корзину" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-BS3-clear-basket.md" id="vOyBcVbY0-cWkmOSY9DL-14">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="220" y="280" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Оформить заказ" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-OR1-create-order.md" id="vOyBcVbY0-cWkmOSY9DL-15">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="210" y="340" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Отследить статус" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-OR2-track-order-status.md" id="vOyBcVbY0-cWkmOSY9DL-16">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="210" y="380" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Отменить заказ" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-OR3-cancel-order.md" id="vOyBcVbY0-cWkmOSY9DL-20">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="210" y="420" as="geometry" />
+          </mxCell>
+        </UserObject>
         <mxCell id="vOyBcVbY0-cWkmOSY9DL-21" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Добавить товар" vertex="1">
           <mxGeometry height="40" width="190" x="600" y="130" as="geometry" />
         </mxCell>
@@ -59,18 +75,48 @@
         <mxCell id="vOyBcVbY0-cWkmOSY9DL-23" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Загрузить изображение" vertex="1">
           <mxGeometry height="40" width="190" x="600" y="220" as="geometry" />
         </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-25" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;div&gt;Поставить оценку/отзыв&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="190" x="210" y="520" as="geometry" />
-        </mxCell>
+        <UserObject label="&lt;div&gt;Поставить оценку/отзыв&lt;/div&gt;" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-RR1-leave-review-and-rating.md" id="vOyBcVbY0-cWkmOSY9DL-25">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="210" y="520" as="geometry" />
+          </mxCell>
+        </UserObject>
         <mxCell id="vOyBcVbY0-cWkmOSY9DL-26" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Изменить статус заказа" vertex="1">
           <mxGeometry height="40" width="190" x="600" y="300" as="geometry" />
         </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-28" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Просмотреть отзывы" vertex="1">
-          <mxGeometry height="30" width="190" x="210" y="480" as="geometry" />
+        <UserObject label="Просмотреть отзывы" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-RR2-view-reviews-and-rating.md" id="vOyBcVbY0-cWkmOSY9DL-28">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="210" y="480" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Добавить в корзину" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-BS1-add-to-basket.md" id="vOyBcVbY0-cWkmOSY9DL-29">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="30" width="190" x="220" y="200" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="4XsebqeCTTYzSIyR3ZSt-3" edge="1" parent="1" source="4XsebqeCTTYzSIyR3ZSt-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="4XsebqeCTTYzSIyR3ZSt-2">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="vOyBcVbY0-cWkmOSY9DL-29" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Добавить в корзину" vertex="1">
-          <mxGeometry height="30" width="190" x="220" y="200" as="geometry" />
+        <mxCell id="4XsebqeCTTYzSIyR3ZSt-1" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" value="Front-end" vertex="1">
+          <mxGeometry height="70" width="40" x="480" y="450" as="geometry" />
         </mxCell>
+        <UserObject label="Подключение к нотификациям" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-NS1-client-subscription.md" id="4XsebqeCTTYzSIyR3ZSt-2">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="70" width="140" x="625" y="420" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="4XsebqeCTTYzSIyR3ZSt-5" edge="1" parent="1" source="4XsebqeCTTYzSIyR3ZSt-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="555" />
+            </Array>
+            <mxPoint x="510" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <UserObject label="Отправка нотификаций" link="https://github.com/JonLaybe/DeliveryHub/blob/feature%2Flpb%2Fdocs-use-cases/Docs/Use-cases/UC-NS2-process-events-and-send-notifications.md" id="4XsebqeCTTYzSIyR3ZSt-4">
+          <mxCell parent="1" style="ellipse;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="70" width="140" x="625" y="520" as="geometry" />
+          </mxCell>
+        </UserObject>
       </root>
     </mxGraphModel>
   </diagram>
