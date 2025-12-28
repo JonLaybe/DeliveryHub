@@ -78,6 +78,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4440
 		Scripts\Readme.md = Scripts\Readme.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{92971293-3E8E-4F51-BA87-59AD6D864F92}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Diagrams\use-cases.drawio = Docs\Diagrams\use-cases.drawio
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Use-cases", "Use-cases", "{FC01395B-DC58-44BF-A5E4-98EFD8DAA2EC}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Use-cases\UC-BS1-add-to-basket.md = Docs\Use-cases\UC-BS1-add-to-basket.md
+		Docs\Use-cases\UC-BS2-view-basket.md = Docs\Use-cases\UC-BS2-view-basket.md
+		Docs\Use-cases\UC-BS3-clear-basket.md = Docs\Use-cases\UC-BS3-clear-basket.md
+		Docs\Use-cases\UC-CL1-search-products.md = Docs\Use-cases\UC-CL1-search-products.md
+		Docs\Use-cases\UC-CL2-browse-catalog.md = Docs\Use-cases\UC-CL2-browse-catalog.md
+		Docs\Use-cases\UC-CL3-view-product-details.md = Docs\Use-cases\UC-CL3-view-product-details.md
+		Docs\Use-cases\UC-NS1-client-subscription.md = Docs\Use-cases\UC-NS1-client-subscription.md
+		Docs\Use-cases\UC-NS2-process-events-and-send-notifications.md = Docs\Use-cases\UC-NS2-process-events-and-send-notifications.md
+		Docs\Use-cases\UC-OR1-create-order.md = Docs\Use-cases\UC-OR1-create-order.md
+		Docs\Use-cases\UC-OR2-track-order-status.md = Docs\Use-cases\UC-OR2-track-order-status.md
+		Docs\Use-cases\UC-OR3-cancel-order.md = Docs\Use-cases\UC-OR3-cancel-order.md
+		Docs\Use-cases\UC-RR1-leave-review-and-rating.md = Docs\Use-cases\UC-RR1-leave-review-and-rating.md
+		Docs\Use-cases\UC-RR2-view-reviews-and-rating.md = Docs\Use-cases\UC-RR2-view-reviews-and-rating.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +113,8 @@ Global
 		{C49AA850-AA8F-49C9-AE4B-C2B4EB7BCA3B} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{9B882386-E212-4EE1-B2CB-FCDA9BF617D9} = {D18C1A71-4582-4791-BC9D-50A09336677C}
 		{F58ED3BB-5559-453A-A29C-D676E2B5EB92} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{92971293-3E8E-4F51-BA87-59AD6D864F92} = {158B2669-70CB-4043-8EE6-C65EEFE86003}
+		{FC01395B-DC58-44BF-A5E4-98EFD8DAA2EC} = {158B2669-70CB-4043-8EE6-C65EEFE86003}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}
