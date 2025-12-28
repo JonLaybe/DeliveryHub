@@ -49,9 +49,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstraction
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CatalogService", "CatalogService", "{FB6C1644-2981-42BB-BB23-65F89C38B52A}"
-	ProjectSection(SolutionItems) = preProject
-		Services\CatalogService\Readme.md = Services\CatalogService\Readme.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{EA5D66BA-DEEC-4068-B862-7BE07F4BBE7C}"
 	ProjectSection(SolutionItems) = preProject
