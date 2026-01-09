@@ -1,4 +1,7 @@
 
+using Chat.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 namespace Chat.Api
 {
     public class Program
@@ -12,6 +15,11 @@ namespace Chat.Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+
+            var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<ChatDbContext>(options => options.UseNpgsql(connection));
 
             var app = builder.Build();
 

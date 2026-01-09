@@ -1,6 +1,6 @@
 ﻿using Chat.Domain.Enums;
 
-namespace Chat.Domain.Models
+namespace Chat.Domain.Entities
 {
     public class Conversation
     {
