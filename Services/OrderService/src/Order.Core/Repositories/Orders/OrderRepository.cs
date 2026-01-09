@@ -1,18 +1,54 @@
-﻿using OrderService.Core.Repositories.Interfaces.Orders;
+﻿using Microsoft.EntityFrameworkCore;
+using OrderService.Core.Common.Interfaces;
+using OrderService.Core.Repositories.Interfaces;
+using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Domain.Entities.Oriders;
+using Shared.Abstraction.Exceptions;
 
 namespace OrderService.Core.Repositories.Orders
 {
     public class OrderRepository : IOrderRepository
     {
-        public Task<int> CreateAsync(Order entity, CancellationToken cancellationToken = default)
+        private IApplicationDbContext applicationDbContext;
+
+        public OrderRepository(IApplicationDbContext applicationDbContext)
         {
-            throw new NotImplementedException();
+            this.applicationDbContext = applicationDbContext;
         }
 
-        public Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Order> CreateAsync(Order entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            //var order = new Order()
+            //{
+            //    Address = entity.Address,
+            //    Status = entity.Status,
+            //    Quantity = entity.Quantity,
+            //    DeliveryDate = entity.DeliveryDate,
+            //    Products = entity.Products,
+            //};
+
+            _ = await this.applicationDbContext.Orders.AddAsync(entity);
+
+            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
+
+            return entity;
+        }
+
+        public async Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (order == default)
+                throw new NotFoundEntityException(nameof(Order));
+
+            this.applicationDbContext.Orders.Remove(order);
+
+            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
+
+            return id;
         }
 
         public Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -20,14 +56,30 @@ namespace OrderService.Core.Repositories.Orders
             throw new NotImplementedException();
         }
 
-        public Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (order == default)
+                throw new NotFoundEntityException(nameof(Order));
+
+            return order;
         }
 
-        public void UpdateAsync(Order entity, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Order entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var orderUpdate = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken);
+
+            if (orderUpdate == default)
+                throw new NotFoundEntityException(nameof(Order));
+
+            orderUpdate.Quantity = entity.Quantity;
+            orderUpdate.Status = entity.Status;
+            orderUpdate.Address = entity.Address;
+            orderUpdate.DeliveryDate = entity.DeliveryDate;
+            orderUpdate.Products = entity.Products;
+
+            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

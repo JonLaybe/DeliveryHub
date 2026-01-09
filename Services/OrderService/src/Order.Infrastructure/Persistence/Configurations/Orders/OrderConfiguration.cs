@@ -19,8 +19,8 @@ namespace OrderService.Infrastructure.Persistence.Configurations.Orders
             _ = builder.Property(x => x.Address).HasMaxLength(150).IsRequired();
 
             _ = builder.Property(x => x.CreatedDate).IsRequired()
-                .HasColumnType("datetime2")
-                .HasDefaultValue(DateTime.UtcNow);
+                .HasColumnType("timestamp with time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             _ = builder.HasMany(x => x.Products)
                 .WithOne(p => p.Order)
