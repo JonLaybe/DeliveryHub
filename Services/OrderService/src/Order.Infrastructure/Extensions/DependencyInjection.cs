@@ -10,6 +10,7 @@ namespace OrderService.Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var str = configuration.GetConnectionString("OrderDatabase");
             _ = services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("OrderDatabase"),

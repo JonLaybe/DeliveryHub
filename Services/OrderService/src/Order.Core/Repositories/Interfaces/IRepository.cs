@@ -6,10 +6,10 @@
 
         Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-        void UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
 
         Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
-        Task<int> CreateAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
     }
 }
