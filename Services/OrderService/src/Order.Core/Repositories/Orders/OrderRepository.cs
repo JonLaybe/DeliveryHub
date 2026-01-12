@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderService.Core.Common.Interfaces;
-using OrderService.Core.Repositories.Interfaces;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Domain.Entities.Oriders;
 using Shared.Abstraction.Exceptions;
@@ -20,15 +19,6 @@ namespace OrderService.Core.Repositories.Orders
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-
-            //var order = new Order()
-            //{
-            //    Address = entity.Address,
-            //    Status = entity.Status,
-            //    Quantity = entity.Quantity,
-            //    DeliveryDate = entity.DeliveryDate,
-            //    Products = entity.Products,
-            //};
 
             _ = await this.applicationDbContext.Orders.AddAsync(entity);
 
@@ -73,7 +63,6 @@ namespace OrderService.Core.Repositories.Orders
             if (orderUpdate == default)
                 throw new NotFoundEntityException(nameof(Order));
 
-            orderUpdate.Quantity = entity.Quantity;
             orderUpdate.Status = entity.Status;
             orderUpdate.Address = entity.Address;
             orderUpdate.DeliveryDate = entity.DeliveryDate;

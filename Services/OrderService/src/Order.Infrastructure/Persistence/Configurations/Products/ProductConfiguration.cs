@@ -14,6 +14,8 @@ namespace OrderService.Infrastructure.Persistence.Configurations.Products
 
             _ = builder.Property(x => x.Price).IsRequired().HasDefaultValue(0);
 
+            _ = builder.Property(x => x.Quantity).IsRequired().HasDefaultValue(0);
+
             _ = builder.Property(x => x.PhotoPreviewUrl).HasMaxLength(250);
 
             _ = builder.HasOne(p => p.Order)

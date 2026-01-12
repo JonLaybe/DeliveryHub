@@ -11,11 +11,6 @@ namespace OrderService.Domain.Entities.Oriders
         public Guid OrderNumber { get; set; } = Guid.NewGuid();
 
         /// <summary>
-        ///  Product quantity.
-        /// </summary>
-        public int Quantity { get; set; } = 0;
-
-        /// <summary>
         ///  Order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.Unknown;

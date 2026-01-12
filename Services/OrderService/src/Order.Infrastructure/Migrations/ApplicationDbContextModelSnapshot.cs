@@ -46,11 +46,6 @@ namespace OrderService.Infrastructure.Migrations
                     b.Property<Guid>("OrderNumber")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Quantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -86,6 +81,11 @@ namespace OrderService.Infrastructure.Migrations
                         .HasColumnType("character varying(250)");
 
                     b.Property<int>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Quantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0);

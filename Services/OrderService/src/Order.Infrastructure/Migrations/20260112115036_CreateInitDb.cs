@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace OrderService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialOrderDb : Migration
+    public partial class CreateInitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,6 @@ namespace OrderService.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderNumber = table.Column<Guid>(type: "uuid", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     Address = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -37,6 +36,7 @@ namespace OrderService.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ArticleNumber = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     Name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     Price = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     PhotoPreviewUrl = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),

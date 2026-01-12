@@ -6,11 +6,6 @@ namespace OrderService.Core.Models.Orders
     public class OrderCreateDto
     {
         /// <summary>
-        ///  Product quantity.
-        /// </summary>
-        public int Quantity { get; set; } = 0;
-
-        /// <summary>
         ///  Order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.Unknown;

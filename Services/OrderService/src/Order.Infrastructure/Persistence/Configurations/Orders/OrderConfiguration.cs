@@ -12,8 +12,6 @@ namespace OrderService.Infrastructure.Persistence.Configurations.Orders
             _ = builder.Property(x => x.OrderNumber)
                 .IsRequired();
 
-            _ = builder.Property(x => x.Quantity).IsRequired().HasDefaultValue(0);
-
             _ = builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.Unknown);
 
             _ = builder.Property(x => x.Address).HasMaxLength(150).IsRequired();

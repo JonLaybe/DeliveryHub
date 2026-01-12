@@ -12,8 +12,8 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260109171609_InitialOrderDb")]
-    partial class InitialOrderDb
+    [Migration("20260112115036_CreateInitDb")]
+    partial class CreateInitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,11 +48,6 @@ namespace OrderService.Infrastructure.Migrations
 
                     b.Property<Guid>("OrderNumber")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
@@ -89,6 +84,11 @@ namespace OrderService.Infrastructure.Migrations
                         .HasColumnType("character varying(250)");
 
                     b.Property<int>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Quantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
