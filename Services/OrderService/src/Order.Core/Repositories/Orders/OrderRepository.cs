@@ -15,14 +15,22 @@ namespace OrderService.Core.Repositories.Orders
             this.applicationDbContext = applicationDbContext;
         }
 
+        public async Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (order == default)
+                throw new NotFoundEntityException(nameof(Order));
+
+            return order;
+        }
+
         public async Task<Order> CreateAsync(Order entity, CancellationToken cancellationToken = default)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
             _ = await this.applicationDbContext.Orders.AddAsync(entity);
-
-            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
@@ -36,24 +44,7 @@ namespace OrderService.Core.Repositories.Orders
 
             this.applicationDbContext.Orders.Remove(order);
 
-            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
-
             return id;
-        }
-
-        public Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-            if (order == default)
-                throw new NotFoundEntityException(nameof(Order));
-
-            return order;
         }
 
         public async Task UpdateAsync(Order entity, CancellationToken cancellationToken = default)
@@ -67,8 +58,9 @@ namespace OrderService.Core.Repositories.Orders
             orderUpdate.Address = entity.Address;
             orderUpdate.DeliveryDate = entity.DeliveryDate;
             orderUpdate.Products = entity.Products;
-
-            _ = await this.applicationDbContext.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
+            await this.applicationDbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -30,6 +30,8 @@ namespace OrderService.Core.Services.Orders
         {
             var order = await this.orderRepository.CreateAsync(this.mapper.Map<Order>(entity), cancellationToken);
 
+            await this.orderRepository.SaveChangesAsync(cancellationToken);
+
             return this.mapper.Map<OrderDto>(order);
         }
 
@@ -37,12 +39,16 @@ namespace OrderService.Core.Services.Orders
         {
             _ = await this.orderRepository.DeleteAsync(id, cancellationToken);
 
+            await this.orderRepository.SaveChangesAsync(cancellationToken);
+
             return id;
         }
 
         public async void UpdateAsync(OrderUpdateDto entity, CancellationToken cancellationToken = default)
         {
             await this.orderRepository.UpdateAsync(this.mapper.Map<Order>(entity), cancellationToken);
+
+            await this.orderRepository.SaveChangesAsync(cancellationToken);
         }
     }
 }
