@@ -1,5 +1,7 @@
 
+using Chat.Application.Interfaces;
 using Chat.Infrastructure.Persistence;
+using Chat.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Api
@@ -15,7 +17,7 @@ namespace Chat.Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-
+            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
             var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
