@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\DeliveryHub.Abstractions\DeliveryHub.Abstractions.csproj" />
+    <ProjectReference Include="..\DeliveryHub.Abstractions\DeliveryHub.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
