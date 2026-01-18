@@ -1,15 +1,10 @@
 ﻿using OrderService.Domain.Entities.Products;
 using OrderService.Domain.Enums.Orders;
 
-namespace OrderService.Domain.Entities.Oriders
+namespace OrderService.Core.Models.Orders
 {
-    public class Order : BaseEntity
+    public class OrderCreateDto
     {
-        /// <summary>
-        ///  External order ID.
-        /// </summary>
-        public Guid OrderNumber { get; set; } = Guid.NewGuid();
-
         /// <summary>
         ///  Order status.
         /// </summary>
@@ -21,11 +16,6 @@ namespace OrderService.Domain.Entities.Oriders
         public string Address { get; set; }
 
         /// <summary>
-        /// The date and time when the order was created.
-        /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
         /// Date of Delivery.
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
@@ -33,6 +23,6 @@ namespace OrderService.Domain.Entities.Oriders
         /// <summary>
         /// List products in order.
         /// </summary>
-        public IList<Product> Products { get; set; }
+        public IList<int> ProductIds { get; set; }
     }
 }

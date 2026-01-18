@@ -1,4 +1,4 @@
-using OrderService.Infrastructure.Extensions;
+using OrderService.WebAPI.Extensions;
 
 namespace OrderService.WebAPI
 {
@@ -12,7 +12,7 @@ namespace OrderService.WebAPI
 
             builder.Services.AddControllers();
 
-            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.RegisterDependencies(builder.Configuration);
 
             var app = builder.Build();
 

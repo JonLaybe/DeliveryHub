@@ -1,10 +1,12 @@
 ﻿using OrderService.Domain.Entities.Products;
 using OrderService.Domain.Enums.Orders;
 
-namespace OrderService.Domain.Entities.Oriders
+namespace OrderService.Core.Models.Orders
 {
-    public class Order : BaseEntity
+    public class OrderDto
     {
+        public int Id { get; set; }
+
         /// <summary>
         ///  External order ID.
         /// </summary>
@@ -23,7 +25,7 @@ namespace OrderService.Domain.Entities.Oriders
         /// <summary>
         /// The date and time when the order was created.
         /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; }
 
         /// <summary>
         /// Date of Delivery.

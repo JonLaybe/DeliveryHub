@@ -12,15 +12,13 @@ namespace OrderService.Infrastructure.Persistence.Configurations.Orders
             _ = builder.Property(x => x.OrderNumber)
                 .IsRequired();
 
-            _ = builder.Property(x => x.Quantity).IsRequired().HasDefaultValue(0);
-
             _ = builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.Unknown);
 
             _ = builder.Property(x => x.Address).HasMaxLength(150).IsRequired();
 
             _ = builder.Property(x => x.CreatedDate).IsRequired()
-                .HasColumnType("datetime2")
-                .HasDefaultValue(DateTime.UtcNow);
+                .HasColumnType("timestamp with time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             _ = builder.HasMany(x => x.Products)
                 .WithOne(p => p.Order)
