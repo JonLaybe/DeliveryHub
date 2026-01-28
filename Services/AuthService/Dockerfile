@@ -7,6 +7,9 @@ COPY src/Auth.Application/Auth.Application.csproj src/Auth.Application/
 COPY src/Auth.Domain/Auth.Domain.csproj src/Auth.Domain/
 COPY src/Auth.Infrastructure/Auth.Infrastructure.csproj src/Auth.Infrastructure/
 
+COPY tests/Auth.UnitTests/Auth.UnitTests.csproj tests/Auth.UnitTests/
+COPY tests/Auth.IntegrationTests/Auth.IntegrationTests.csproj tests/Auth.IntegrationTests/
+
 RUN dotnet restore
 
 COPY . .
