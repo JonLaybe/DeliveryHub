@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure.Persistence
 {
-    public class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbContext(options)
+    public class ChatDbContext : DbContext
     {
         public DbSet<Conversation> Conversations => Set<Conversation>();
         public DbSet<Message> Messages => Set<Message>();
+
+        public ChatDbContext(DbContextOptions<ChatDbContext> options) : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +38,9 @@ namespace Chat.Infrastructure.Persistence
             return modelBuilder.Entity<Conversation>(entity =>
             {
                 entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Status).IsRequired();
+                entity.Property(x => x.CreatedAt).IsRequired();
             });
         }
     }
