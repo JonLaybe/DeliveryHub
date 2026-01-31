@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\DeliveryHub.Domain\DeliveryHub.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
