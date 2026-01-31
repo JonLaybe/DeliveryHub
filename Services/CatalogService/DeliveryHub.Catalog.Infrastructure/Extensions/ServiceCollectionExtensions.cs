@@ -8,14 +8,14 @@ namespace Catalog.Infrastructure.Helpers
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMongo(
-            this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddMongoClient(
+            this IServiceCollection services, string connectionString, string dbName)
         {
             services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
 
             services.AddScoped(sp =>
                 sp.GetRequiredService<IMongoClient>()
-                  .GetDatabase("catalog"));
+                  .GetDatabase(dbName));
 
             return services;
         }

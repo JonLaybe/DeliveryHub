@@ -10,8 +10,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.
-    AddMongo(builder.Configuration.GetConnectionString("MongoDb")!)
+var connectionName = builder.Configuration["Mongo:ConnectionString"];
+var dbName = builder.Configuration["Mongo:Database"];
+
+builder.Services
+    .AddMongoClient(connectionName, dbName)
     .AddMongoRepository<Product>("products");
 
 var app = builder.Build();
