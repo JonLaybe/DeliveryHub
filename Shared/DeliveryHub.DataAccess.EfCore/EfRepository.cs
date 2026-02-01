@@ -31,7 +31,7 @@ namespace DeliveryHub.DataAccess.EfCore
             }
         }
 
-        public IQueryable<T> GetAll() => _context.Set<T>();
+        public IQueryable<T> GetAll(CancellationToken cancellationToken) => _context.Set<T>();
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
         {

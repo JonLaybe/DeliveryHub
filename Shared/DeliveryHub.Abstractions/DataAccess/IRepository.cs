@@ -7,7 +7,7 @@ namespace DeliveryHub.Abstractions.DataAccess
     {
         Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
 
-        IQueryable<T> GetAll();
+        IQueryable<T> GetAll(CancellationToken cancellationToken);
 
         Task<T> GetByIdAsync(K id, CancellationToken cancellationToken);
 
