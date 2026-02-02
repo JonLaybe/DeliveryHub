@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AuthDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
-       .UseSnakeCaseNamingConvention());
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
 var app = builder.Build();
 
