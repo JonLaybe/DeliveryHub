@@ -11,6 +11,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AuthDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
+builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,7 +23,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
+    await initializer.InitializeAsync(app.Environment);
+}
 
 app.Run();
 
