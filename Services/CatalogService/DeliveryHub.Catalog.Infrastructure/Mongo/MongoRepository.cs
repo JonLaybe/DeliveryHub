@@ -24,7 +24,7 @@ namespace Catalog.Infrastructure.Mongo
             await _collection.DeleteOneAsync(e => e.Id == id);
         }
 
-        public IQueryable<T> GetAll()
+        public IQueryable<T> GetAll(CancellationToken cancellationToken)
         {
             return _collection.AsQueryable();
         }
