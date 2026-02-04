@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11408.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
@@ -108,11 +108,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Services\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Services\CatalogService\DeliveryHub.Catalog.API\Catalog.API.csproj", "{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Domain", "Shared\DeliveryHub.Domain\DeliveryHub.Domain.csproj", "{74610A48-53AE-4120-8721-D836DEA97067}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Abstractions", "Shared\DeliveryHub.Abstractions\DeliveryHub.Abstractions.csproj", "{B1842CA1-F0C8-4226-9EE0-09D0D13AD4CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Abstractions", "Shared\DeliveryHub.Abstractions\DeliveryHub.Abstractions.csproj", "{5F57DF89-B966-5011-CCF4-D2E0A957BE49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.DataAccess.EfCore", "Shared\DeliveryHub.DataAccess.EfCore\DeliveryHub.DataAccess.EfCore.csproj", "{684B0217-7D89-22F1-C357-C8FFCF73BF69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryHub.Domain", "Shared\DeliveryHub.Domain\DeliveryHub.Domain.csproj", "{A515FF50-1088-5B07-FDA3-54022952BBB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,18 +176,18 @@ Global
 		{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74610A48-53AE-4120-8721-D836DEA97067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74610A48-53AE-4120-8721-D836DEA97067}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74610A48-53AE-4120-8721-D836DEA97067}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74610A48-53AE-4120-8721-D836DEA97067}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1842CA1-F0C8-4226-9EE0-09D0D13AD4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1842CA1-F0C8-4226-9EE0-09D0D13AD4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1842CA1-F0C8-4226-9EE0-09D0D13AD4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1842CA1-F0C8-4226-9EE0-09D0D13AD4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F57DF89-B966-5011-CCF4-D2E0A957BE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F57DF89-B966-5011-CCF4-D2E0A957BE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F57DF89-B966-5011-CCF4-D2E0A957BE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F57DF89-B966-5011-CCF4-D2E0A957BE49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +218,9 @@ Global
 		{62A52117-2CA2-D922-C1B9-C79CA98615A8} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
 		{9930AC76-3FA1-6195-A136-9F8D50A58E07} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
 		{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8} = {FB6C1644-2981-42BB-BB23-65F89C38B52A}
+		{5F57DF89-B966-5011-CCF4-D2E0A957BE49} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
+		{684B0217-7D89-22F1-C357-C8FFCF73BF69} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
+		{A515FF50-1088-5B07-FDA3-54022952BBB0} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}
