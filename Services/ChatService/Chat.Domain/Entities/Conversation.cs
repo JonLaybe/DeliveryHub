@@ -11,6 +11,6 @@ namespace Chat.Domain.Entities
         public ConversationStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastMessageAt { get; set; }
-        public ICollection<Message>? Messages { get; set; }
+        public ICollection<Message> Messages { get; set; } = [];
     }
 }
