@@ -1,0 +1,35 @@
+using Catalog.Infrastructure.Helpers;
+using DeliveryHub.Catalog.Domain.Entities;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var connectionName = builder.Configuration["Mongo:ConnectionString"];
+var dbName = builder.Configuration["Mongo:Database"];
+
+builder.Services
+    .AddMongoClient(connectionName, dbName)
+    .AddMongoRepository<Product>("products");
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
