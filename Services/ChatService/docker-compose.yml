@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  chat-api:
+    build: .
+    container_name: chat-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: chat-postgres
+    environment:
+      POSTGRES_DB: chatdb
+      POSTGRES_USER: chat
+      POSTGRES_PASSWORD: chat
+    ports:
+      - "5432:5432"
+    volumes:
+      - chat_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  chat_postgres_data:
