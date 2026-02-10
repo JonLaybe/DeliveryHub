@@ -1,0 +1,45 @@
+@use '/src/styles/Variables' as var;
+
+.container {
+    border-radius: 10px;
+    background-color: var.$background-order;
+
+    .shopping_cart_empy {
+        $self: &;
+
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        align-items: center;
+
+        &__img {
+            width: 70px;
+            height: 70px;
+
+            img {
+                width: 100%;
+            }
+        }
+
+        &__main_message_text {
+            font-size: 20px;
+        }
+
+        &__advice_message_text {
+            color: var.$order_color_advice_message_text;
+        }
+
+        &__route_root {
+            margin: 20px 0 0 0;
+        }
+
+        &__main_message_text, &__advice_message_text {
+            font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+    }
+}

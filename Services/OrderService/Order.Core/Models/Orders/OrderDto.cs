@@ -1,5 +1,6 @@
 ﻿using OrderService.Domain.Entities.Products;
 using OrderService.Domain.Enums.Orders;
+using System.Text.Json.Serialization;
 
 namespace OrderService.Core.Models.Orders
 {
@@ -15,6 +16,7 @@ namespace OrderService.Core.Models.Orders
         /// <summary>
         ///  Order status.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public OrderStatus Status { get; set; } = OrderStatus.Unknown;
 
         /// <summary>

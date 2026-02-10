@@ -3,7 +3,6 @@ import './SearchBoxComponent.scss';
 
 interface SearchProp {
     placeholder: string;
-
 }
 
 const SearchBoxComponent: FC<SearchProp> = (prop: SearchProp) => {

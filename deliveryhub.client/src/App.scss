@@ -1,6 +1,19 @@
-.main-container {
+@use '/src/styles/Variables.scss' as var;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.wrapper {
   $self: &;
   height: 100vh;
   max-width: 70%;
   margin: 25px auto;
+}
+
+.default-button {
+  background-color: var.$background_default_button;
+  color: var.$color_text_default_button;
+  font-size: 17px;
+  font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 500;
+  padding: 8px 18px 10px 18px;
+  border-radius: 10px;
 }

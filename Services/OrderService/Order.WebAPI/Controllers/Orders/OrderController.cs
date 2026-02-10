@@ -19,6 +19,10 @@ namespace OrderService.WebAPI.Controllers.Orders
         public Task<OrderDto> GetOrderAsync(int id, CancellationToken cancellationToken) =>
             this.orderService.GetEntityAsync(id, cancellationToken);
 
+        [HttpGet("GetOrders")]
+        public Task<IList<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken) =>
+            this.orderService.GetOrdersAsync(cancellationToken);
+
         [HttpPost("Create")]
         public Task<OrderDto> CreateOrderDto([FromBody] OrderCreateDto orderCreateDto, CancellationToken cancellationToken) =>
             this.orderService.AddAsync(orderCreateDto, cancellationToken);

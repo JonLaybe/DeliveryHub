@@ -1,4 +1,4 @@
-using OrderService.WebAPI.Extensions;
+    using OrderService.WebAPI.Extensions;
 
 namespace OrderService.WebAPI
 {
@@ -14,7 +14,19 @@ namespace OrderService.WebAPI
 
             builder.Services.RegisterDependencies(builder.Configuration);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyOrigin();
+                });
+            });
+
             var app = builder.Build();
+
+            app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
 
