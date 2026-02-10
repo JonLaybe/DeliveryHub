@@ -1,6 +1,6 @@
 ﻿using Catalog.Infrastructure.Mongo;
-using DeliveryHub.Abstractions.DataAccess;
-using DeliveryHub.Domain.Entities;
+using Shared.Abstractions.DataAccess;
+using Shared.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 

@@ -1,8 +1,8 @@
-﻿using DeliveryHub.Abstractions.DataAccess;
-using DeliveryHub.Domain.Entities;
+﻿using Shared.Abstractions.DataAccess;
+using Shared.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DeliveryHub.DataAccess.EfCore
+namespace Shared.DataAccess.EfCore
 {
     public class EfRepository<T, K>
         : IRepository<T, K> where T : BaseEntity<K> where K : struct, IEquatable<K>
@@ -31,7 +31,7 @@ namespace DeliveryHub.DataAccess.EfCore
             }
         }
 
-        public IQueryable<T> GetAll(CancellationToken cancellationToken) => _context.Set<T>();
+        public IQueryable<T> GetAll() => _context.Set<T>();
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
         {

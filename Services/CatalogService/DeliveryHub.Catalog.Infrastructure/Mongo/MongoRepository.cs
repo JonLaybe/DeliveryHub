@@ -1,5 +1,5 @@
-﻿using DeliveryHub.Abstractions.DataAccess;
-using DeliveryHub.Domain.Entities;
+﻿using Shared.Abstractions.DataAccess;
+using Shared.Domain.Entities;
 using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Mongo
@@ -24,7 +24,7 @@ namespace Catalog.Infrastructure.Mongo
             await _collection.DeleteOneAsync(e => e.Id == id);
         }
 
-        public IQueryable<T> GetAll(CancellationToken cancellationToken)
+        public IQueryable<T> GetAll()
         {
             return _collection.AsQueryable();
         }

@@ -1,7 +1,23 @@
-﻿using Shared.Abstraction.Exceptions;
+﻿using Shared.Domain.Entities;
 
-namespace Shared.Abstraction.Intarfaces
+namespace Shared.Abstractions.DataAccess
 {
+    public interface IRepository<T, K>
+        where T : BaseEntity<K> where K : struct, IEquatable<K>
+    {
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
+
+        IQueryable<T> GetAll();
+
+        Task<T> GetByIdAsync(K id, CancellationToken cancellationToken);
+
+        Task DeleteAsync(K id, CancellationToken cancellationToken);
+
+        Task<K> CreateAsync(T entity, CancellationToken cancellationToken);
+
+        Task UpdateAsync(T entity, CancellationToken cancellationToken);
+    }
+
     /// <summary>
     ///     A DbContext instance represents a session with the database and can be used to query and save
     ///     instances of your entities. DbContext is a combination of the Unit Of Work and Repository patterns.

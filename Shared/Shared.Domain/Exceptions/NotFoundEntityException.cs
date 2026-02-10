@@ -1,4 +1,4 @@
-﻿namespace Shared.Abstraction.Exceptions
+﻿namespace Shared.Domain.Exceptions
 {
     public class NotFoundEntityException : Exception
     {
