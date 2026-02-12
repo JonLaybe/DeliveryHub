@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Shared.Abstractions\Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\DeliveryHub.CatalogService.Domain\Catalog.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿using DeliveryHub.Domain.Entities;
+﻿using Shared.Domain.Entities;
 
 namespace DeliveryHub.Catalog.Domain.Entities
 {
@@ -9,6 +9,7 @@ namespace DeliveryHub.Catalog.Domain.Entities
         public required string Url { get; set; }
 
         public ProductImageType Type { get; set; }
+
         public int Order { get; set; }
     }
 
