@@ -1,0 +1,71 @@
+@use '/src/styles/Variables' as var;
+
+.order_list_container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .card_order {
+        $self: &;
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-radius: 10px;
+        background-color: var.$background_order_card;
+        padding: 10px;
+
+        &__info {
+            background-color: var.$background_header_order_card;
+
+            span {
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            }
+
+            .identity_order {
+                color: var.$color_text_in_order_id;
+                text-decoration: underline;
+            }
+        }
+
+        .card_product {
+            $self: &;
+
+            display: flex;
+            flex-direction: row;
+            gap: 3px;
+
+            &__preview {
+                width: 150px;
+                height: 150px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+
+                }
+            }
+
+            &__main_info {
+                display: flex;
+                flex-direction: column;
+                margin: 0 0 0 10px;
+
+                span {
+                    font-size: 17px;
+                    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+                }
+
+                .price {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                .article_number {
+                    font-size: 15px;
+                }
+            }
+        }
+    }
+}

@@ -9,7 +9,7 @@ namespace OrderService.Core.Extensions
         {
             services.AddAutoMapper((config) =>
             {
-                config.AddProfiles([new OrderProfile()]);
+                config.AddProfiles([new OrderProfile(), new ProductProfile()]);
             });
 
             _ = services.AddRepositories();

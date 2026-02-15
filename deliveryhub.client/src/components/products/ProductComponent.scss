@@ -1,0 +1,9 @@
+.container {
+    .list_products {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: center;
+    }
+}

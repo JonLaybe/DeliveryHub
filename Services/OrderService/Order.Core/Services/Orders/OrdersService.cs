@@ -26,6 +26,13 @@ namespace OrderService.Core.Services.Orders
             return this.mapper.Map<OrderDto>(order);
         }
 
+        public async Task<IList<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken = default)
+        {
+            var orders = (await this.orderRepository.GetOrdersAsync(cancellationToken)).Select(ord => this.mapper.Map<OrderDto>(ord)).ToList();
+
+            return orders;
+        }
+
         public async Task<OrderDto> AddAsync(OrderCreateDto entity, CancellationToken cancellationToken = default)
         {
             var order = await this.orderRepository.CreateAsync(this.mapper.Map<Order>(entity), cancellationToken);
