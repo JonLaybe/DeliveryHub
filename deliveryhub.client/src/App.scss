@@ -17,3 +17,14 @@
   padding: 8px 18px 10px 18px;
   border-radius: 10px;
 }
+
+.clue_message {
+  color: var.$color_clue_message;
+  font-weight: 100;
+}
+
+.text_hover:hover {
+  cursor: pointer;
+  color: var.$color_text_hover;
+  text-decoration: underline;
+}

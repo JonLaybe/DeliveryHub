@@ -27,7 +27,7 @@ namespace OrderService.Core.Repositories.Orders
 
         public async Task<IList<Order>> GetOrdersAsync(CancellationToken cancellationToken)
         {
-            var orders = await this.applicationDbContext.Orders.ToListAsync(cancellationToken);
+            var orders = await this.applicationDbContext.Orders.Include(x => x.Products).ToListAsync(cancellationToken);
 
             return orders;
         }

@@ -1,4 +1,5 @@
-﻿using OrderService.Domain.Entities.Products;
+﻿using OrderService.Core.Models.Products;
+using OrderService.Domain.Entities.Products;
 using OrderService.Domain.Enums.Orders;
 using System.Text.Json.Serialization;
 
@@ -37,6 +38,6 @@ namespace OrderService.Core.Models.Orders
         /// <summary>
         /// List products in order.
         /// </summary>
-        public IList<Product> Products { get; set; }
+        public IList<ProductDto> Products { get; set; }
     }
 }

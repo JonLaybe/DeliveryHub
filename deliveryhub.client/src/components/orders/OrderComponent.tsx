@@ -1,16 +1,23 @@
-import type { FC } from "react";
-import { useGetOrdersQuery } from "../../services/OrderService";
+import { useEffect, useState, type FC } from "react";
 import './OrderComponent.scss';
+import { getListOrdersAsync } from "../../services/OrderService";
+import type { OrderDto } from "../../models/Orders/OrderDto";
+import OrderListComponent from "../../common/order-list/OrderListComponent";
 
 const OrderComponent: FC = () => {
-    // const { data } = useGetOrderQuery(1);
-    const { data, isLoading } = useGetOrdersQuery();
+    const [orders, setOrders] = useState<{ orders: OrderDto[] }>();
 
-    console.log(data);
+    useEffect(() => {
+        getListOrdersAsync().then((data) => {
+            setOrders(() => ({
+                orders: data,
+            }));
+        });
+    }, []);
 
     return (
-        <div className="container">
-            {isLoading && !data ? (
+        <div className="order_container">
+            {!orders ? (
                 <div className="shopping_cart_empy">
                     <div className="shopping_cart_empy__img">
                         <img src="https://nsk-static-cdn-03.geobasket.ru/vol2/site/i/v3/empty/cart.webp" alt="" />
@@ -22,17 +29,13 @@ const OrderComponent: FC = () => {
                     <button className="shopping_cart_empy__route_root default-button">Перейти на главную</button>
                 </div>
             ) : (
-                <>
-                    <h1>Заказы:</h1>
-                    {data?.map((el, i) => (
-                        <div className="card" key={i}>
-                            <span>№ {el.orderNumber}</span>
-                            <span>Status: {el.status}</span>
-                        </div>
-                    ))}
-                </>
-            )}
-        </div>
+                <div className="my_orders">
+                    <h1 className="my_orders__name_chapter">Мои заказы</h1>
+                    <OrderListComponent listOrders={orders.orders}></OrderListComponent>
+                </div>
+            )
+            }
+        </div >
     );
 }
 

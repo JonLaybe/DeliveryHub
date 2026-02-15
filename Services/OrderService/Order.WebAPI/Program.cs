@@ -1,4 +1,5 @@
-    using OrderService.WebAPI.Extensions;
+using OrderService.WebAPI.Extensions;
+using System.Text.Json.Serialization;
 
 namespace OrderService.WebAPI
 {
