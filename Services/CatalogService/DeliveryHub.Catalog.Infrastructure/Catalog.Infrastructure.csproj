@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\DeliveryHub.Abstractions\DeliveryHub.Abstractions.csproj" />
     <ProjectReference Include="..\DeliveryHub.Catalog.Application\Catalog.Application.csproj" />
     <ProjectReference Include="..\DeliveryHub.CatalogService.Domain\Catalog.Domain.csproj" />
   </ItemGroup>

@@ -2,7 +2,7 @@
 using OrderService.Core.Common.Interfaces;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Domain.Entities.Oriders;
-using Shared.Abstraction.Exceptions;
+using Shared.Domain.Exceptions;
 
 namespace OrderService.Core.Repositories.Orders
 {
@@ -23,6 +23,13 @@ namespace OrderService.Core.Repositories.Orders
                 throw new NotFoundEntityException(nameof(Order));
 
             return order;
+        }
+
+        public async Task<IList<Order>> GetOrdersAsync(CancellationToken cancellationToken)
+        {
+            var orders = await this.applicationDbContext.Orders.Include(x => x.Products).ToListAsync(cancellationToken);
+
+            return orders;
         }
 
         public async Task<Order> CreateAsync(Order entity, CancellationToken cancellationToken = default)

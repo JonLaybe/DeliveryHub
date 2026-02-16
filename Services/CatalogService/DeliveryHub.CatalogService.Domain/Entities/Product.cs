@@ -1,4 +1,4 @@
-﻿using DeliveryHub.Domain.Entities;
+﻿using Shared.Domain.Entities;
 
 namespace DeliveryHub.Catalog.Domain.Entities
 {
