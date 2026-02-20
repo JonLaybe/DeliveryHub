@@ -52,8 +52,8 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             return;
 
         _db.Roles.AddRange(
-            new Role { Name = "Admin", Description = "System administrator" },
-            new Role { Name = "Customer", Description = "Customer role" }
+            new Role { Id = Guid.NewGuid(), Name = "Admin", Description = "System administrator" },
+            new Role { Id = Guid.NewGuid(), Name = "Customer", Description = "Customer role" }
         );
 
         await _db.SaveChangesAsync(ct);
