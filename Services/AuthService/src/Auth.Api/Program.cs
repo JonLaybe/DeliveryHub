@@ -1,4 +1,5 @@
 using Auth.Infrastructure.Persistence;
+using Auth.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -15,6 +16,8 @@ builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
+
+builder.Services.AddAuthInfrastructure();
 
 var app = builder.Build();
 
