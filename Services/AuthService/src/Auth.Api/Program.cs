@@ -1,4 +1,5 @@
 using Auth.Infrastructure.Persistence;
+using Auth.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -13,7 +14,17 @@ builder.Services.AddDbContext<AuthDbContext>(opt =>
 
 builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
+builder.Services.AddHealthChecks();
+builder.Services.AddControllers();
+
+builder.Services.AddAuthInfrastructure();
+
 var app = builder.Build();
+
+app.MapGet("/", () => Results.Ok("AuthService is running"));
+app.MapHealthChecks("/health");
+
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

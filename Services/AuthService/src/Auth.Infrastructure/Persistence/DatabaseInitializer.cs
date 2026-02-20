@@ -1,6 +1,7 @@
 ﻿using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,10 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
     public async Task InitializeAsync(IHostEnvironment env, CancellationToken ct = default)
     {
-        var applyMigrations = _cfg.GetValue<bool>("APPLY_MIGRATIONS");
+        var applyMigrationsRaw = _cfg["APPLY_MIGRATIONS"];
+        var applyMigrations = string.IsNullOrWhiteSpace(applyMigrationsRaw)
+            ? false
+            : bool.TryParse(applyMigrationsRaw, out var v) && v;
 
         if (!applyMigrations && !env.IsDevelopment())
         {
@@ -48,8 +52,8 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             return;
 
         _db.Roles.AddRange(
-            new Role { Name = "Admin", Description = "System administrator" },
-            new Role { Name = "Customer", Description = "Customer role" }
+            new Role { Id = Guid.NewGuid(), Name = "Admin", Description = "System administrator" },
+            new Role { Id = Guid.NewGuid(), Name = "Customer", Description = "Customer role" }
         );
 
         await _db.SaveChangesAsync(ct);
