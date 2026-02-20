@@ -13,7 +13,15 @@ builder.Services.AddDbContext<AuthDbContext>(opt =>
 
 builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
+builder.Services.AddHealthChecks();
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+app.MapGet("/", () => Results.Ok("AuthService is running"));
+app.MapHealthChecks("/health");
+
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
