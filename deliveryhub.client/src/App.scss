@@ -3,8 +3,8 @@
 
 .wrapper {
   $self: &;
-  height: 100vh;
-  max-width: 70%;
+  width: 70%;
+  max-width: 1700px;
   margin: 25px auto;
 }
 
@@ -27,4 +27,8 @@
   cursor: pointer;
   color: var.$color_text_hover;
   text-decoration: underline;
+}
+
+.rest_default_link {
+  text-decoration: none;
 }
