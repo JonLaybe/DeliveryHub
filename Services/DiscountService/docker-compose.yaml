@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: discount_service_db
+    environment:
+      POSTGRES_DB: DiscountDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - discount_network
+
+  discount-service:
+    build:
+      args:
+       MOD: 'Debug'
+      context: .
+      dockerfile: DiscountService.API/Dockerfile
+    container_name: discount_service_api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DiscountDb: "Host=postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=123456"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - postgres
+    networks:
+      - discount_network
+
+volumes:
+  postgres_data:
+
+networks:
+  discount_network:
+    driver: bridge
