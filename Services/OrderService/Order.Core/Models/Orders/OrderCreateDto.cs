@@ -1,5 +1,4 @@
-﻿using OrderService.Domain.Entities.Products;
-using OrderService.Domain.Enums.Orders;
+﻿using OrderService.Domain.Enums.Orders;
 
 namespace OrderService.Core.Models.Orders
 {
