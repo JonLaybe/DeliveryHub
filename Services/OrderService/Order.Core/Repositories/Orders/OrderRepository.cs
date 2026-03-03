@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderService.Core.Common.Exceptions;
 using OrderService.Core.Common.Interfaces;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Domain.Entities.Oriders;
-using Shared.Domain.Exceptions;
 
 namespace OrderService.Core.Repositories.Orders
 {

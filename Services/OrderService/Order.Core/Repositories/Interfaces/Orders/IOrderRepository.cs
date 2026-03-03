@@ -1,5 +1,4 @@
 ﻿using OrderService.Domain.Entities.Oriders;
-using Shared.Abstractions.DataAccess;
 
 namespace OrderService.Core.Repositories.Interfaces.Orders
 {
