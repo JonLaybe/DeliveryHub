@@ -38,6 +38,18 @@ namespace Catalog.API.Controllers
         }
 
         /// <summary>
+        /// Получить список всех продуктов
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var data = await _productService.GetAllAsync(default);
+
+            return Ok(data);
+        }
+
+        /// <summary>
         /// Поиск товара по названию, описанию, категории и динамическим характеристикам
         /// </summary>
         /// <param name="searchQueryReq">Dto запроса с параметрами поиска</param>
