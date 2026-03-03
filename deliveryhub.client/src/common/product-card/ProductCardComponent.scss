@@ -1,0 +1,24 @@
+@use '/src/styles/Variables' as var;
+
+.product_card {
+    $self: &;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    &__preview img {
+        border-radius: 15px;
+    }
+
+    &__price {
+        font-size: 20px;
+        font-weight: bold;
+        color: var.$color-text-price-product-card;
+    }
+
+    &__price,
+    &__name {
+        font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+}

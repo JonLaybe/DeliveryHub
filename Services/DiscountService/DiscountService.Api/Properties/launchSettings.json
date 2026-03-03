@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DiscountService.Api": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

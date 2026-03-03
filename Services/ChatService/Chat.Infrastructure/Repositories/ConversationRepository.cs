@@ -5,23 +5,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure.Repositories
 {
-    public class ConversationRepository(ChatDbContext chatDbContext) : IConversationRepository
+    public class ConversationRepository : IConversationRepository
     {
+        private readonly ChatDbContext _chatDbContext;
+
+        public ConversationRepository(ChatDbContext chatDbContext)
+        {
+            _chatDbContext = chatDbContext;
+        }
+
         public async Task AddAsync(Conversation conversation)
         {
-            await chatDbContext.Conversations.AddAsync(conversation);
+            await _chatDbContext.Conversations.AddAsync(conversation);
         }
 
         public async Task<Conversation?> GetByIdAsync(Guid id)
         {
-            return await chatDbContext.Conversations
+            return await _chatDbContext.Conversations
                 .Include(c => c.Messages)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IReadOnlyList<Conversation>> GetForUserAsync(Guid userId)
         {
-            return await chatDbContext.Conversations
+            return await _chatDbContext.Conversations
                 .Where(c => c.BuyerId == userId || c.SellerId == userId)
                 .OrderByDescending(c => c.LastMessageAt)
                 .ToListAsync();
@@ -29,7 +36,7 @@ namespace Chat.Infrastructure.Repositories
 
         public async Task SaveChangesAsync()
         {
-            await chatDbContext.SaveChangesAsync();
+            await _chatDbContext.SaveChangesAsync();
         }
     }
 }

@@ -25,6 +25,13 @@ namespace OrderService.Core.Repositories.Orders
             return order;
         }
 
+        public async Task<IList<Order>> GetOrdersAsync(CancellationToken cancellationToken)
+        {
+            var orders = await this.applicationDbContext.Orders.Include(x => x.Products).ToListAsync(cancellationToken);
+
+            return orders;
+        }
+
         public async Task<Order> CreateAsync(Order entity, CancellationToken cancellationToken = default)
         {
             if (entity == null)
