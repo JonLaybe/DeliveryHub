@@ -22,12 +22,15 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       APPLY_MIGRATIONS: "true"
-      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd"
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd;GSS Encryption Mode=Disable"
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "8080:8080"
+    volumes:
+      - dp_keys:/var/dpkeys
 
 volumes:
   postgres_data:
+  dp_keys:
