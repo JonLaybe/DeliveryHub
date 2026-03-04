@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 
 namespace Auth.Infrastructure.Security;
 
@@ -15,10 +16,23 @@ public sealed class RsaKeyProvider : IRsaKeyProvider
 
     public RsaKeyProvider(JwtOptions opt)
     {
+        var privatePem =
+            !string.IsNullOrWhiteSpace(opt.PrivateKeyPem) ? opt.PrivateKeyPem :
+            !string.IsNullOrWhiteSpace(opt.PrivateKeyPath) ? File.ReadAllText(opt.PrivateKeyPath) :
+            null;
+
+        var publicPem =
+            !string.IsNullOrWhiteSpace(opt.PublicKeyPem) ? opt.PublicKeyPem :
+            !string.IsNullOrWhiteSpace(opt.PublicKeyPath) ? File.ReadAllText(opt.PublicKeyPath) :
+            null;
+
+        if (string.IsNullOrWhiteSpace(privatePem) || string.IsNullOrWhiteSpace(publicPem))
+            throw new InvalidOperationException("JWT RSA keys are not configured (provide PEM or Path).");
+
         Private = RSA.Create();
-        Private.ImportFromPem(opt.PrivateKeyPem);
+        Private.ImportFromPem(privatePem);
 
         Public = RSA.Create();
-        Public.ImportFromPem(opt.PublicKeyPem);
+        Public.ImportFromPem(publicPem);
     }
 }

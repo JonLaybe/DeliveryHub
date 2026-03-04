@@ -27,14 +27,8 @@ services:
       Jwt__AccessTokenMinutes: "15"
       Jwt__RefreshTokenDays: "30"
       Jwt__KeyId: "auth-key-001"
-      Jwt__PrivateKeyPem: |
-        -----BEGIN PRIVATE KEY-----
-        FOR_PASTE_PRIVATE_KEY_HERE
-        -----END PRIVATE KEY-----
-      Jwt__PublicKeyPem: |
-        -----BEGIN PUBLIC KEY-----
-        FOR_PASTE_PUBLIC_KEY_HERE
-        -----END PUBLIC KEY-----
+      Jwt__PrivateKeyPath: "/run/secrets/jwt_private.pem"
+      Jwt__PublicKeyPath: "/run/secrets/jwt_public.pem"
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,6 +36,8 @@ services:
       - "8080:8080"
     volumes:
       - dp_keys:/var/dpkeys
+      - ./jwt_private.pem:/run/secrets/jwt_private.pem:ro
+      - ./jwt_public.pem:/run/secrets/jwt_public.pem:ro
 
 volumes:
   postgres_data:

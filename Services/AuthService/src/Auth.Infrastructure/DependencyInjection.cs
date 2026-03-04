@@ -38,8 +38,10 @@ public static class DependencyInjection
             AccessTokenMinutes = int.Parse(configuration["Jwt:AccessTokenMinutes"] ?? "15"),
             RefreshTokenDays = int.Parse(configuration["Jwt:RefreshTokenDays"] ?? "30"),
             KeyId = configuration["Jwt:KeyId"] ?? "auth-key-001",
-            PrivateKeyPem = configuration["Jwt:PrivateKeyPem"]!,
-            PublicKeyPem = configuration["Jwt:PublicKeyPem"]!
+            PrivateKeyPem = configuration["Jwt:PrivateKeyPem"],
+            PublicKeyPem = configuration["Jwt:PublicKeyPem"],
+            PrivateKeyPath = configuration["Jwt:PrivateKeyPath"],
+            PublicKeyPath = configuration["Jwt:PublicKeyPath"]
         };
 
         services.AddSingleton(jwt);
