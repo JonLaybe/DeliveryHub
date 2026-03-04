@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Auth.Infrastructure.Persistence.Entities;
 
 namespace Auth.Infrastructure.Persistence;
 
@@ -11,6 +12,8 @@ public sealed class AuthDbContext : IdentityDbContext<
     IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
     public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) { }
+    public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
+    public DbSet<ServiceClientEntity> ServiceClients => Set<ServiceClientEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
