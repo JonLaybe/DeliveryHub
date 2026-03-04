@@ -51,7 +51,8 @@ builder.Services
 
     //Services
     .AddScoped<IProductSearchService, MongoProductSearchService>()
-    .AddScoped<IProductService, ProductService>();
+    .AddScoped<IProductService, ProductService>()
+    .AddScoped<IImageService, ImageService>();
 
 MongoMappings.Register();
 

@@ -1,5 +1,4 @@
 ﻿using OrderService.Core.Models.Products;
-using OrderService.Domain.Entities.Products;
 using OrderService.Domain.Enums.Orders;
 using System.Text.Json.Serialization;
 

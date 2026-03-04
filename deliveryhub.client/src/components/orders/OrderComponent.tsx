@@ -1,7 +1,7 @@
 import { useEffect, useState, type FC } from "react";
 import './OrderComponent.scss';
-import { getListOrdersAsync } from "../../services/OrderService";
-import type { OrderDto } from "../../models/Orders/OrderDto";
+import { getListOrdersAsync } from "../../services/order-service/OrderService";
+import type { OrderDto } from "../../models/order-service/OrderDto";
 import OrderListComponent from "../../common/order-list/OrderListComponent";
 
 const OrderComponent: FC = () => {
@@ -9,6 +9,9 @@ const OrderComponent: FC = () => {
 
     useEffect(() => {
         getListOrdersAsync().then((data) => {
+            if (!data)
+                return;
+            
             setOrders(() => ({
                 orders: data,
             }));

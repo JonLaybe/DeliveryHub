@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import './OrderListComponent.scss';
-import type { OrderDto } from "../../models/Orders/OrderDto";
+import type { OrderDto } from "../../models/order-service/OrderDto";
 
 interface OrderListProps {
     listOrders: OrderDto[];
@@ -8,9 +8,6 @@ interface OrderListProps {
 
 const OrderListComponent: FC<OrderListProps> = (props) => {
     const { listOrders } = props;
-
-    console.log(listOrders);
-
 
     return (
         <div className="order_list_container">

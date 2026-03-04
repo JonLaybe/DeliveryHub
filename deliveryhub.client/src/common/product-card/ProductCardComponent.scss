@@ -5,10 +5,21 @@
 
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 10px;
+    background-color: var.$background_product_card_preview;
+    border-radius: 15px;
+    padding: 10px 10px;
 
-    &__preview img {
-        border-radius: 15px;
+    &__preview {
+        width: 250px;
+        height: 343px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
     }
 
     &__price {
