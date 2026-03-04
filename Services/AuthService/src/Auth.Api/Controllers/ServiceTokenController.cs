@@ -34,8 +34,11 @@ public sealed class ServiceTokenController : ControllerBase
         var client = await _db.ServiceClients.FirstOrDefaultAsync(x => x.ClientId == req.ClientId);
         if (client is null || !client.IsActive) return Unauthorized();
 
-        var incoming = Sha256Hex(req.ClientSecret);
-        if (!FixedTimeEquals(client.SecretHash, incoming)) return Unauthorized();
+        var incomingBytes = SHA256.HashData(Encoding.UTF8.GetBytes(req.ClientSecret));
+        var storedBytes = Convert.FromHexString(client.SecretHash); // теперь не важно upper, или lower
+
+        if (!CryptographicOperations.FixedTimeEquals(incomingBytes, storedBytes))
+            return Unauthorized();
 
         var now = DateTimeOffset.UtcNow;
         var scope = string.IsNullOrWhiteSpace(req.Scope) ? "service" : req.Scope.Trim();
@@ -57,10 +60,10 @@ public sealed class ServiceTokenController : ControllerBase
         });
     }
 
-    private static string Sha256Hex(string value)
+    private static string Sha256Hex(string value) //to del
         => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
 
-    private static bool FixedTimeEquals(string a, string b)
+    private static bool FixedTimeEquals(string a, string b) //to del
     {
         var ba = Encoding.UTF8.GetBytes(a);
         var bb = Encoding.UTF8.GetBytes(b);
