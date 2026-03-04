@@ -15,7 +15,7 @@ services:
       - mongo
 
     volumes:
-      # - ../../Assets/product-images:/app/wwwroot/images
+      # - ../../../Assets/product-images:/app/wwwroot/images
       - ./Assets/product-images:/app/wwwroot/images
 
   mongo:

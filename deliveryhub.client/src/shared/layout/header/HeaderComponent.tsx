@@ -1,20 +1,21 @@
 import type { FC } from "react";
 import './HeaderComponent.scss';
 import SearchBoxComponent from "../../../common/search-box/SearchBoxComponent";
+import { Link } from "react-router";
 
 const HeaderComponent: FC = () => {
     return (
         <>
             <header className="header">
                 <h1 className="header__name_product">
-                    <a href="/" className="rest_default_link">DeliveryHub</a>
+                    <Link to="/">DeliveryHub</Link>
                 </h1>
                 <div className="header__search_bar">
                     <SearchBoxComponent placeholder={'Найти на DeliveryHub'}></SearchBoxComponent>
                 </div>
                 <div className="header__action_icons">
                     <div className="header__icon">
-                        <a href="/orders">
+                        <Link to="/orders" className="rest_default_link">
                             <svg viewBox="0 0 49 56" version="1.1">
                                 <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                                     <g id="Basket" fill="white">
@@ -23,7 +24,7 @@ const HeaderComponent: FC = () => {
                                     </g>
                                 </g>
                             </svg>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </header>
