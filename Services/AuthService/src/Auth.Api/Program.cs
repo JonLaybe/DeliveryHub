@@ -22,7 +22,7 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/var/dpkeys"))
     .SetApplicationName("AuthService"); ;
 
-builder.Services.AddAuthInfrastructure();
+builder.Services.AddAuthInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

@@ -6,12 +6,13 @@ using Auth.Infrastructure.Persistence.Repositories;
 using Auth.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Auth.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAuthInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddAuthInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, EfUserRepository>();
@@ -30,6 +31,20 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>, BcryptIdentityPasswordHasher>();
+        
+        var jwt = new JwtOptions
+        {
+            Issuer = configuration["Jwt:Issuer"] ?? "AuthService",
+            AccessTokenMinutes = int.Parse(configuration["Jwt:AccessTokenMinutes"] ?? "15"),
+            RefreshTokenDays = int.Parse(configuration["Jwt:RefreshTokenDays"] ?? "30"),
+            KeyId = configuration["Jwt:KeyId"] ?? "auth-key-001",
+            PrivateKeyPem = configuration["Jwt:PrivateKeyPem"]!,
+            PublicKeyPem = configuration["Jwt:PublicKeyPem"]!
+        };
+
+        services.AddSingleton(jwt);
+        services.AddSingleton<IRsaKeyProvider, RsaKeyProvider>();
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
         return services;
     }

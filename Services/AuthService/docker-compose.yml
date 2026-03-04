@@ -23,6 +23,18 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       APPLY_MIGRATIONS: "true"
       ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd;GSS Encryption Mode=Disable"
+      Jwt__Issuer: "AuthService"
+      Jwt__AccessTokenMinutes: "15"
+      Jwt__RefreshTokenDays: "30"
+      Jwt__KeyId: "auth-key-001"
+      Jwt__PrivateKeyPem: |
+        -----BEGIN PRIVATE KEY-----
+        FOR_PASTE_PRIVATE_KEY_HERE
+        -----END PRIVATE KEY-----
+      Jwt__PublicKeyPem: |
+        -----BEGIN PUBLIC KEY-----
+        FOR_PASTE_PUBLIC_KEY_HERE
+        -----END PUBLIC KEY-----
     depends_on:
       postgres:
         condition: service_healthy
