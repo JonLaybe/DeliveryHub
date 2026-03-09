@@ -1,5 +1,6 @@
 ﻿using Catalog.Application.Models;
 using Catalog.Application.Services;
+using Catalog.Infrastructure.Mongo;
 using DeliveryHub.Catalog.Domain.Entities;
 using MongoDB.Driver;
 
@@ -7,13 +8,11 @@ namespace Catalog.Infrastructure.Services
 {
     public class MongoProductSearchService : IProductSearchService
     {
-        private IMongoCollection<Product> _productsCollection;
-        private IMongoCollection<ProductImage> _productImagesCollection;
+        private MongoDatabase _database;
 
-        public MongoProductSearchService(IMongoDatabase database)
+        public MongoProductSearchService(MongoDatabase database)
         {
-            _productsCollection = database.GetCollection<Product>("product");
-            _productImagesCollection = database.GetCollection<ProductImage>("product_image");
+            _database = database;
         }
 
         public async Task<IEnumerable<ProductDto>> SearchAsync(ProductSearchQuery searchQuery, CancellationToken cancellationToken)
@@ -52,12 +51,16 @@ namespace Catalog.Infrastructure.Services
                 }
             }
 
-            var match = await _productsCollection.FindAsync(filter, cancellationToken: cancellationToken);
+            var match = await _database.Products.FindAsync(filter, cancellationToken: cancellationToken);
 
             var result = match.ToList();
             var productIds = result.Select(x => x.Id).ToList();
 
-            var images = await _productImagesCollection.FindAsync(x => productIds.Contains(x.Id));
+            var images = await _database.ProductImages.FindAsync(x => productIds.Contains(x.ProductId));
+
+            var stocks = await _database.Stock.FindAsync(x => productIds.Contains(x.ProductId));
+
+            var stocksDict = stocks.ToList().ToDictionary(k => k.ProductId, v => v);
 
             var imagesDict = images.ToList()
                 .GroupBy(x => x.ProductId)
@@ -79,7 +82,8 @@ namespace Catalog.Infrastructure.Services
                 Price = p.Price,
                 CategoryId = p.CategoryId,
                 Attributes = p.Attributes,
-                Images = imagesDict.GetValueOrDefault(p.Id) ?? []
+                AvailableQty = stocksDict.GetValueOrDefault(p.Id)?.AvailableQty ?? 0,
+                Images = imagesDict.GetValueOrDefault(p.Id) ?? [],
             });
         }
     }

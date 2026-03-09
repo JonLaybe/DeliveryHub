@@ -27,7 +27,7 @@ namespace DeliveryHub.Catalog.API.Controllers
             var data = await _categoryRepository.GetAllAsync(default);
 
             // TODO: Маппинг в AutoMapper/Mapperly
-            var result = data.Select(c => new CategoryResponseDto(c.Id, c.Name));
+            var result = data.Select(c => new CategoryResponseDto(c.Id, c.Name, c.ParentId));
 
             return Ok(result);
         }

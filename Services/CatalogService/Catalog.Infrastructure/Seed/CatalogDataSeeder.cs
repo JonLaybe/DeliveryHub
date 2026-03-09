@@ -2,9 +2,10 @@
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Domain.Entities;
 using DeliveryHub.CatalogService.Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver.Linq;
 
-namespace Catalog.API.Seed
+namespace Catalog.Infrastructure.Seed
 {
     public static class CatalogDataSeeder
     {
@@ -162,43 +163,43 @@ namespace Catalog.API.Seed
 
             // Mobile devices (3)
             createdIds.Add(EnsureOrCreateProduct("iPhone 15", "Apple iPhone 15, 128GB, Pink", 62600.00m, categories["Мобильные устройства"],
-                new() { ["Color"] = "Pink", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000001")) );
+                new() { ["Color"] = "Pink", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000001")));
 
             createdIds.Add(EnsureOrCreateProduct("Samsung Galaxy S21", "Samsung Galaxy S21, 128GB, Phantom Gray", 32000.00m, categories["Мобильные устройства"],
-                new() { ["Color"] = "Phantom Gray", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000002")) );
+                new() { ["Color"] = "Phantom Gray", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000002")));
 
             createdIds.Add(EnsureOrCreateProduct("Xiaomi Redmi Note 14", "Xiaomi Redmi Note 14, 64GB", 30000.00m, categories["Мобильные устройства"],
-                new() { ["Color"] = "Blue", ["Storage"] = "64GB" }, new Guid("10000000-0000-0000-0000-000000000003")) );
+                new() { ["Color"] = "Blue", ["Storage"] = "64GB" }, new Guid("10000000-0000-0000-0000-000000000003")));
 
             // TVs (3)
             createdIds.Add(EnsureOrCreateProduct("LG OLED55", "LG OLED 55\" 4K", 55000.00m, categories["Телевизоры"],
-                new() { ["Size"] = "55\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000101")) );
+                new() { ["Size"] = "55\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000101")));
 
             createdIds.Add(EnsureOrCreateProduct("Samsung QLED 50", "Samsung QLED 50\" 4K", 50999.00m, categories["Телевизоры"],
-                new() { ["Size"] = "50\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000102")) );
+                new() { ["Size"] = "50\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000102")));
 
             createdIds.Add(EnsureOrCreateProduct("Sony Bravia 43", "Sony Bravia 43\" Full HD", 40199.00m, categories["Телевизоры"],
-                new() { ["Size"] = "43\"", ["Resolution"] = "Full HD" }, new Guid("10000000-0000-0000-0000-000000000103")) );
+                new() { ["Size"] = "43\"", ["Resolution"] = "Full HD" }, new Guid("10000000-0000-0000-0000-000000000103")));
 
             // Women's shoes (3)
             createdIds.Add(EnsureOrCreateProduct("Женские туфли-лодочки", "Женские туфли-лодочки, кожа", 2100.00m, categories["Женская обувь"],
-                new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000001")) );
+                new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000001")));
 
             createdIds.Add(EnsureOrCreateProduct("Кроссовки женские", "Кроссовки женские, текстиль", 3500.00m, categories["Женская обувь"],
-                new() { ["Color"] = "White", ["SizeRange"] = "36-41" }, new Guid("20000000-0000-0000-0000-000000000002")) );
+                new() { ["Color"] = "White", ["SizeRange"] = "36-41" }, new Guid("20000000-0000-0000-0000-000000000002")));
 
             createdIds.Add(EnsureOrCreateProduct("Ботинки женские", "Ботинки женские, замша", 3119.00m, categories["Женская обувь"],
-                new() { ["Color"] = "Brown", ["Material"] = "Suede" }, new Guid("20000000-0000-0000-0000-000000000003")) );
+                new() { ["Color"] = "Brown", ["Material"] = "Suede" }, new Guid("20000000-0000-0000-0000-000000000003")));
 
             // Men's shoes (3)
             createdIds.Add(EnsureOrCreateProduct("Мужские ботинки", "Мужские кожаные ботинки", 3120.00m, categories["Мужская обувь"],
-                new() { ["Color"] = "Brown", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000101")) );
+                new() { ["Color"] = "Brown", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000101")));
 
             createdIds.Add(EnsureOrCreateProduct("Кроссовки мужские", "Кроссовки мужские, сетка", 5900.00m, categories["Мужская обувь"],
-                new() { ["Color"] = "Gray", ["SizeRange"] = "40-46" }, new Guid("20000000-0000-0000-0000-000000000102")) );
+                new() { ["Color"] = "Gray", ["SizeRange"] = "40-46" }, new Guid("20000000-0000-0000-0000-000000000102")));
 
             createdIds.Add(EnsureOrCreateProduct("Лоферы мужские", "Лоферы мужские, кожа", 890.00m, categories["Мужская обувь"],
-                new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000103")) );
+                new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000103")));
 
             return createdIds;
         }
