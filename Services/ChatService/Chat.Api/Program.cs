@@ -42,7 +42,7 @@ namespace Chat.Api
                 {
                     options
                         .WithTitle("ChatService API")
-                        .WithTheme(ScalarTheme.Moon);
+                        .WithTheme(ScalarTheme.BluePlanet);
                 });
             }
 
