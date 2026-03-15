@@ -1,21 +1,21 @@
-import { useContext, useEffect, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import './OrderComponent.scss';
 import { getListOrdersAsync } from "../../services/order-service/OrderService";
+import type { OrderDto } from "../../models/order-service/OrderDto";
 import OrderListComponent from "../../common/order-list/OrderListComponent";
 import { Link } from "react-router-dom";
-import { SearchContext } from "../../context/SearchContext";
 
 const OrderComponent: FC = () => {
-    const { orders, setOrders } = useContext(SearchContext);
+    const [orders, setOrders] = useState<{ orders: OrderDto[] }>();
 
     useEffect(() => {
         getListOrdersAsync().then((data) => {
             if (!data)
                 return;
-            
-            setOrders({
+
+            setOrders(() => ({
                 orders: data,
-            });
+            }));
         });
     }, []);
 
@@ -30,7 +30,7 @@ const OrderComponent: FC = () => {
                     <span className="shopping_cart_empy__advice_message_text">
                         Загляните на главную — собрали там товары, которые могут вам понравиться
                     </span>
-                    <Link to="/" className="shopping_cart_empy__link default-button">
+                    <Link to="/" className="shopping_cart_empy__link default-link-button">
                         Перейти на главную
                     </Link>
                 </div>
