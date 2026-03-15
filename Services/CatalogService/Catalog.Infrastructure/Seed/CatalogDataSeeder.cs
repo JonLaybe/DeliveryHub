@@ -1,4 +1,5 @@
 ﻿using Catalog.Application.Repositories;
+using Catalog.Infrastructure.Extensions;
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Domain.Entities;
 using DeliveryHub.CatalogService.Domain.Entities;
@@ -151,7 +152,8 @@ namespace Catalog.Infrastructure.Seed
                     Description = description,
                     Price = price,
                     CategoryId = categoryId,
-                    Attributes = attributes != null ? new Dictionary<string, string>(attributes) : new Dictionary<string, string>()
+                    Attributes = attributes != null ? new Dictionary<string, string>(attributes) : new Dictionary<string, string>(),
+                    SearchTokens = name.GenerateSearchTokens(),
                 };
 
                 productRepository.CreateAsync(product, default).GetAwaiter().GetResult();

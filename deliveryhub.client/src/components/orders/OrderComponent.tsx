@@ -1,21 +1,21 @@
-import { useEffect, useState, type FC } from "react";
+import { useContext, useEffect, type FC } from "react";
 import './OrderComponent.scss';
 import { getListOrdersAsync } from "../../services/order-service/OrderService";
-import type { OrderDto } from "../../models/order-service/OrderDto";
 import OrderListComponent from "../../common/order-list/OrderListComponent";
 import { Link } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
 
 const OrderComponent: FC = () => {
-    const [orders, setOrders] = useState<{ orders: OrderDto[] }>();
+    const { orders, setOrders } = useContext(SearchContext);
 
     useEffect(() => {
         getListOrdersAsync().then((data) => {
             if (!data)
                 return;
             
-            setOrders(() => ({
+            setOrders({
                 orders: data,
-            }));
+            });
         });
     }, []);
 

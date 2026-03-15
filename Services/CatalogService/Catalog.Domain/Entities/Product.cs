@@ -12,6 +12,8 @@ namespace DeliveryHub.Catalog.Domain.Entities
 
         // Динамические характеристики
         public Dictionary<string, string> Attributes { get; set; } = [];
+
+        public List<string> SearchTokens { get; set; } = [];
     }
 
 }

@@ -2,6 +2,7 @@
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Mongo;
 using DeliveryHub.Catalog.Domain.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Services
@@ -15,12 +16,46 @@ namespace Catalog.Infrastructure.Services
             _database = database;
         }
 
+        public async Task<IEnumerable<string>> SuggestAsync(string query, CancellationToken cancellationToken)
+        {
+            var normalizedQuery = query.ToLower();
+            var filter = Builders<Product>.Filter.AnyEq(p => p.SearchTokens, normalizedQuery);
+
+            var suggestions = await _database.Products
+                .Find(filter)
+                .Limit(10)
+                .Project(p => p.Name)
+                .ToListAsync(cancellationToken);
+
+            if (!suggestions.Any())
+            {
+                var regex = new BsonRegularExpression($"^{normalizedQuery}", "i");
+
+                var regexFilter = Builders<Product>.Filter.Regex(
+                    p => p.Name,
+                    regex
+                );
+
+                suggestions = await _database.Products
+                    .Find(regexFilter)
+                    .Limit(10)
+                    .Project(p => p.Name)
+                    .ToListAsync();
+            }
+
+            return suggestions;
+        }
+
         public async Task<IEnumerable<ProductDto>> SearchAsync(ProductSearchQuery searchQuery, CancellationToken cancellationToken)
         {
             var filter = Builders<Product>.Filter.Empty;
+            List<Product> matchExact = new();
 
             if (!string.IsNullOrWhiteSpace(searchQuery.Text))
             {
+                var exactFilter = Builders<Product>.Filter.Eq(p => p.Name, searchQuery.Text);
+                matchExact = await _database.Products.Find(exactFilter).ToListAsync();
+
                 filter &= Builders<Product>.Filter.Text(searchQuery.Text);
             }
 
@@ -51,9 +86,19 @@ namespace Catalog.Infrastructure.Services
                 }
             }
 
-            var match = await _database.Products.FindAsync(filter, cancellationToken: cancellationToken);
+            List<Product> result = new();
 
-            var result = match.ToList();
+            if (matchExact.Any())
+            {
+                result = matchExact;
+            }
+            else
+            {
+                var match = await _database.Products.FindAsync(filter, cancellationToken: cancellationToken);
+
+                result = match.ToList();
+            }
+
             var productIds = result.Select(x => x.Id).ToList();
 
             var images = await _database.ProductImages.FindAsync(x => productIds.Contains(x.ProductId));

@@ -34,7 +34,12 @@ namespace Catalog.Infrastructure.Mongo
                     Builders<Product>.IndexKeys
                     .Ascending(x => x.CategoryId)
                     .Ascending(x => x.Price),
-                    new CreateIndexOptions { Name = "idx_products_categoryId_price" })
+                    new CreateIndexOptions { Name = "idx_products_categoryId_price" }),
+
+                new CreateIndexModel<Product>(
+                    Builders<Product>.IndexKeys
+                    .Ascending(p => p.SearchTokens),
+                    new CreateIndexOptions { Name = "idx_products_search_tokens" })
             });
 
             await Stock.Indexes.CreateOneAsync(new CreateIndexModel<Stock>(

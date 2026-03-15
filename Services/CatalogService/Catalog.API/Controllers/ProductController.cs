@@ -50,6 +50,17 @@ namespace Catalog.API.Controllers
         }
 
         /// <summary>
+        /// Получить подсказки по названию товара для автодополнения при поиске
+        /// </summary>
+        /// <param name="query">Строка поиска</param>
+        [HttpGet("suggest")]
+        public async Task<IActionResult> Suggest([FromQuery] string query)
+        {
+            var suggestions = await _productSearchService.SuggestAsync(query, default);
+            return Ok(suggestions);
+        }
+
+        /// <summary>
         /// Поиск товара по названию, описанию, категории и динамическим характеристикам
         /// </summary>
         /// <param name="searchQueryReq">Dto запроса с параметрами поиска</param>
