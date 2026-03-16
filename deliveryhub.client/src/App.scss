@@ -3,12 +3,13 @@
 
 .wrapper {
   $self: &;
-  height: 100vh;
-  max-width: 70%;
+  width: 70%;
+  max-width: 1700px;
   margin: 25px auto;
 }
 
 .default-button {
+  cursor: pointer;
   background-color: var.$background_default_button;
   color: var.$color_text_default_button;
   font-size: 17px;
@@ -27,4 +28,12 @@
   cursor: pointer;
   color: var.$color_text_hover;
   text-decoration: underline;
+}
+
+.rest_default_link {
+  text-decoration: none;
+}
+
+.w-100 {
+  width: 100%;
 }

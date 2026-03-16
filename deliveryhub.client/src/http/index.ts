@@ -1,9 +1,10 @@
 import axios from "axios";
+import { CATALOG_BASE_URL, ORDER_BASE_URL } from "../constants/EndpointConstants";
 
-const BASE_URL = 'https://localhost:7225/';
-
-const api = axios.create({
-    baseURL: BASE_URL,
+export const order_api = axios.create({
+    baseURL: ORDER_BASE_URL,
 });
 
-export default api;
+export const catalog_api = axios.create({
+    baseURL: CATALOG_BASE_URL,
+});

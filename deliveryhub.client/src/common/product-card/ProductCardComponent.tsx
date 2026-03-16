@@ -1,14 +1,32 @@
 import type { FC } from "react";
 import './ProductCardComponent.scss';
+import type { ProductDto } from "../../models/catalog-service/ProductDto";
+import { CATALOGSERVICE_PRODUCT_IMAGE_URL } from "../../constants/EndpointConstants";
+import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
 
-const ProductCardComponent: FC = () => {
+interface ProductProps {
+    product: ProductDto;
+}
+
+const ProductCardComponent: FC<ProductProps> = (props) => {
+    const prefix = `http://localhost:5000/${CATALOGSERVICE_PRODUCT_IMAGE_URL}`;
+
+    const { product } = props;
+
+    const imgThumb = product.images?.filter(x => x.type === 1)[0].url ?? '';
+    const imgMain = product.images?.filter(x => x.type === 0)[0].url ?? '';
+
+    // const imageUrl = product.images ? `${prefix}/${product.images[0]?.productId}` : '';
+    const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
+
     return (
         <div className="product_card">
             <div className="product_card__preview">
-                <img src="https://ir-5.ozone.ru/s3/multimedia-1-8/wc300/8070558200.jpg" alt="" />
+                <img src={imageUrl} alt={product.name} />
             </div>
-            <span className="product_card__price">2 329</span>
-            <span className="product_card__name">Name product</span>
+            <span className="product_card__price">{product.price.toString()} ₽</span>
+            <span className="product_card__name">{product.name}</span>
+            <button className="default-button">В корзину</button>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11408.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
@@ -61,6 +61,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4440
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrderService", "OrderService", "{261A764B-2670-4352-BE72-844E7302C98F}"
+	ProjectSection(SolutionItems) = preProject
+		Services\OrderService\Order.WebAPI\docker-compose.yml = Services\OrderService\Order.WebAPI\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChatService", "ChatService", "{3CAEF0CD-075A-4A36-B59F-6B59D099BADA}"
 EndProject
@@ -88,13 +91,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.Api", "Services\ChatSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFeedback", "Services\FeedbackService\WebFeedback\WebFeedback.csproj", "{59D40431-B964-AE6F-35BF-38890346512B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "Services\CatalogService\DeliveryHub.Catalog.Application\Catalog.Application.csproj", "{EC956A60-D920-F0A3-1C15-6F83447E5DBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "Services\CatalogService\Catalog.Application\Catalog.Application.csproj", "{EC956A60-D920-F0A3-1C15-6F83447E5DBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "Services\CatalogService\DeliveryHub.Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{62A52117-2CA2-D922-C1B9-C79CA98615A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "Services\CatalogService\Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{62A52117-2CA2-D922-C1B9-C79CA98615A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Services\CatalogService\DeliveryHub.CatalogService.Domain\Catalog.Domain.csproj", "{9930AC76-3FA1-6195-A136-9F8D50A58E07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Services\CatalogService\Catalog.Domain\Catalog.Domain.csproj", "{9930AC76-3FA1-6195-A136-9F8D50A58E07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Services\CatalogService\DeliveryHub.Catalog.API\Catalog.API.csproj", "{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Services\CatalogService\Catalog.API\Catalog.API.csproj", "{641E38F3-6CC0-DF1C-BE3A-D448E3BA70D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Abstractions", "Shared\Shared.Abstractions\Shared.Abstractions.csproj", "{5F57DF89-B966-5011-CCF4-D2E0A957BE49}"
 EndProject
@@ -105,6 +108,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Web", "Shared\Shared.Web\Shared.Web.csproj", "{641DC6E6-334A-4C05-A96B-1DEC0AA77116}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "deliveryhub.client", "deliveryhub.client\deliveryhub.client.esproj", "{B2E9BD47-94E8-C2C7-4F74-D7D17A969019}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D785B177-1B7B-435B-9761-E002AB6BF8E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "product_images", "product_images", "{2839D075-540C-4BA5-86BC-6C80C59DB3D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +179,14 @@ Global
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A515FF50-1088-5B07-FDA3-54022952BBB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{641DC6E6-334A-4C05-A96B-1DEC0AA77116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{641DC6E6-334A-4C05-A96B-1DEC0AA77116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{641DC6E6-334A-4C05-A96B-1DEC0AA77116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{641DC6E6-334A-4C05-A96B-1DEC0AA77116}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2E9BD47-94E8-C2C7-4F74-D7D17A969019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2E9BD47-94E8-C2C7-4F74-D7D17A969019}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2E9BD47-94E8-C2C7-4F74-D7D17A969019}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -209,6 +224,7 @@ Global
 		{684B0217-7D89-22F1-C357-C8FFCF73BF69} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
 		{A515FF50-1088-5B07-FDA3-54022952BBB0} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
 		{641DC6E6-334A-4C05-A96B-1DEC0AA77116} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
+		{2839D075-540C-4BA5-86BC-6C80C59DB3D0} = {D785B177-1B7B-435B-9761-E002AB6BF8E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}

@@ -1,5 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using OrderService.Infrastructure.Persistence;
 using OrderService.WebAPI.Extensions;
-using System.Text.Json.Serialization;
 
 namespace OrderService.WebAPI
 {
@@ -27,6 +28,8 @@ namespace OrderService.WebAPI
 
             var app = builder.Build();
 
+            DbMigrate(app);
+
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
@@ -38,6 +41,15 @@ namespace OrderService.WebAPI
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void DbMigrate(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                ctx.Database.Migrate();
+            }
         }
     }
 }
