@@ -1,0 +1,10 @@
+@host = http://localhost:8080
+
+### Create user
+POST {{host}}/admin/users
+Content-Type: application/json
+
+{
+  "email": "test@mail.com",
+  "password": "Qwerty123!"
+}
