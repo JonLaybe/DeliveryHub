@@ -1,65 +1,74 @@
 ﻿using Auth.Application.Abstractions.Persistence;
 using Auth.Application.Abstractions.Security;
 using Auth.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Auth.Application.UseCases.Users;
 
 public sealed class CreateUser
 {
-    private readonly IUserRepository _users;
-    private readonly IRoleRepository _roles;
-    private readonly IUserRoleRepository _userRoles;
-    private readonly IPasswordHasher _hasher;
-    private readonly IUnitOfWork _uow;
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<Role> _roleManager;
 
-    public CreateUser(
-        IUserRepository users,
-        IRoleRepository roles,
-        IUserRoleRepository userRoles,
-        IPasswordHasher hasher,
-        IUnitOfWork uow)
+    public CreateUser(UserManager<User> userManager, RoleManager<Role> roleManager)
     {
-        _users = users;
-        _roles = roles;
-        _userRoles = userRoles;
-        _hasher = hasher;
-        _uow = uow;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<User> ExecuteAsync(string email, string password, CancellationToken ct = default)
     {
         email = email.Trim().ToLowerInvariant();
 
-        var existing = await _users.GetByEmailAsync(email, ct);
+        //проверка уникальности email
+        var existing = await _userManager.FindByEmailAsync(email); 
         if (existing is not null)
             throw new InvalidOperationException("EMAIL_ALREADY_EXISTS");
 
+        var now = DateTimeOffset.UtcNow;
+
+        // создание пользователя (UserName обязателен для таблицы users)
         var user = new User
         {
             Id = Guid.NewGuid(),
             Email = email,
-            PasswordHash = _hasher.Hash(password),
+            UserName = email,
             Status = UserStatus.Active,
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
-        _users.Add(user);
+        // создание пользователя с помощью Identity (внутри дополнительно кладёт PasswordHash через IPasswordHasher<User> (bcrypt))
+        var createResult = await _userManager.CreateAsync(user, password);
+        if (!createResult.Succeeded)
+            throw new InvalidOperationException("CREATE_USER_FAILED: " + string.Join("; ", createResult.Errors.Select(e => $"{e.Code}:{e.Description}")));
 
-        // Customer - дефолтная роль
-        var customerRole = await _roles.GetByNameAsync("Customer", ct);
-        if (customerRole is not null)
+        // дефолтная роль Customer
+        const string defaultRole = "Customer";
+        if (!await _roleManager.RoleExistsAsync(defaultRole))
         {
-            _userRoles.Add(new UserRole
+            var role = new Role
             {
-                UserId = user.Id,
-                RoleId = customerRole.Id,
-                AssignedAt = DateTimeOffset.UtcNow
-            });
+                Id = Guid.NewGuid(),
+                Name = defaultRole,
+                NormalizedName = defaultRole.ToUpperInvariant(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                CreatedAt = now,
+                Description = "Customer role"
+            };
+
+            var roleResult = await _roleManager.CreateAsync(role);
+            if (!roleResult.Succeeded)
+                throw new InvalidOperationException("CREATE_ROLE_FAILED: " + string.Join("; ", roleResult.Errors.Select(e => $"{e.Code}:{e.Description}")));
         }
 
-        await _uow.SaveChangesAsync(ct);
+        var addRoleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+        if (!addRoleResult.Succeeded)
+            throw new InvalidOperationException("ADD_ROLE_FAILED: " + string.Join("; ", addRoleResult.Errors.Select(e => $"{e.Code}:{e.Description}")));
+
         return user;
     }
 }

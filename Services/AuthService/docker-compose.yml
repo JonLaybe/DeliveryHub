@@ -22,12 +22,23 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       APPLY_MIGRATIONS: "true"
-      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd"
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd;GSS Encryption Mode=Disable"
+      Jwt__Issuer: "AuthService"
+      Jwt__AccessTokenMinutes: "15"
+      Jwt__RefreshTokenDays: "30"
+      Jwt__KeyId: "auth-key-001"
+      Jwt__PrivateKeyPath: "/run/secrets/jwt_private.pem"
+      Jwt__PublicKeyPath: "/run/secrets/jwt_public.pem"
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "8080:8080"
+    volumes:
+      - dp_keys:/var/dpkeys
+      - ./jwt_private.pem:/run/secrets/jwt_private.pem:ro
+      - ./jwt_public.pem:/run/secrets/jwt_public.pem:ro
 
 volumes:
   postgres_data:
+  dp_keys:

@@ -21,7 +21,10 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
             .IsRequired()
             .HasMaxLength(100);
 
-        b.HasIndex(x => x.Name).IsUnique();
+        b.Property(x => x.NormalizedName)
+            .HasColumnName("normalized_name")
+            .HasMaxLength(100)
+            .IsRequired();
 
         b.Property(x => x.Description)
             .HasColumnName("description")
@@ -31,5 +34,17 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()")
             .IsRequired();
+        
+        b.Property(x => x.ConcurrencyStamp)
+            .HasColumnName("concurrency_stamp")
+            .IsRequired();
+
+        b.HasIndex(x => x.Name)
+            .IsUnique()
+            .HasDatabaseName("IX_roles_name");
+
+        b.HasIndex(x => x.NormalizedName)
+            .IsUnique()
+            .HasDatabaseName("IX_roles_normalized_name");
     }
 }
