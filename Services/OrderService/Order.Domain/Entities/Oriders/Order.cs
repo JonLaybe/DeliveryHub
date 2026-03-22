@@ -6,11 +6,6 @@ namespace OrderService.Domain.Entities.Oriders
     public class Order : BaseEntity
     {
         /// <summary>
-        ///  External order ID.
-        /// </summary>
-        public Guid OrderNumber { get; set; } = Guid.NewGuid();
-
-        /// <summary>
         ///  Order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.Unknown;

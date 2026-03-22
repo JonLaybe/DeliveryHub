@@ -2,20 +2,24 @@
 using OrderService.Core.Models.Orders;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Core.Services.Interfaces.Orders;
+using OrderService.Core.Services.Interfaces.Products;
 using OrderService.Domain.Entities.Oriders;
 
 namespace OrderService.Core.Services.Orders
 {
     public class OrdersService : IOrderService
     {
-        private IOrderRepository orderRepository;
-        private IMapper mapper;
+        private readonly IOrderRepository orderRepository;
+        private readonly IProductService productService;
+        private readonly IMapper mapper;
 
         public OrdersService(
             IOrderRepository repository,
+            IProductService productService,
             IMapper mapper)
         {
             this.orderRepository = repository;
+            this.productService = productService;
             this.mapper = mapper;
         }
 

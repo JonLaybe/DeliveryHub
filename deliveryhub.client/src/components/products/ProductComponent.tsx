@@ -12,8 +12,6 @@ const ProductComponent: FC = () => {
             if (!data)
                 return;
 
-            console.log(data);
-
             setProducts({
                 products: data,
             });

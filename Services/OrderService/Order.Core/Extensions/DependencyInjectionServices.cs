@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrderService.Core.Services.Interfaces.Orders;
+using OrderService.Core.Services.Interfaces.Products;
 using OrderService.Core.Services.Orders;
+using OrderService.Core.Services.Products;
 
 namespace OrderService.Core.Extensions
 {
@@ -8,7 +10,8 @@ namespace OrderService.Core.Extensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            _ = services.AddTransient<IOrderService, OrdersService>();
+            _ = services.AddScoped<IOrderService, OrdersService>()
+                .AddScoped<IProductService, ProductService>();
 
             return services;
         }

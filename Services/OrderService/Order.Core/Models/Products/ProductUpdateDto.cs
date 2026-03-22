@@ -1,8 +1,6 @@
-﻿using OrderService.Domain.Entities.Oriders;
-
-namespace OrderService.Domain.Entities.Products
+﻿namespace OrderService.Core.Models.Products
 {
-    public class Product : BaseEntity
+    public class ProductUpdateDto
     {
         /// <summary>
         /// External product ID.
@@ -18,12 +16,5 @@ namespace OrderService.Domain.Entities.Products
         ///  Price product.
         /// </summary>
         public decimal Price { get; set; } = 0;
-
-        /// <summary>
-        ///  Link Order.
-        /// </summary>
-        public long OrderId { get; set; }
-        
-        public Order Order { get; set; }
     }
 }

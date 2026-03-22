@@ -1,20 +1,37 @@
 @use '/src/styles/Variables' as variables;
 
 * {
-    padding: 0px;
-    margin: 0px;
-    border: none;
+  padding: 0px;
+  margin: 0px;
+  border: none;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background-color: variables.$background-body;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: variables.$background-body;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    outline: none !important;
+  outline: none !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: none;
 }
