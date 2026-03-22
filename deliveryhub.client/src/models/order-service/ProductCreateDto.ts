@@ -1,7 +1,6 @@
 import type { UUIDTypes } from "uuid";
-import type { BaseEntity } from "../BaseEntity";
 
-export interface ProductDto extends BaseEntity {
+export interface ProductCreateDto {
     articleNumber: UUIDTypes;
     quantity: number;
     price: number;

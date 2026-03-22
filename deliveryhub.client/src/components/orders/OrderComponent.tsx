@@ -20,8 +20,13 @@ const OrderComponent: FC = () => {
     }, []);
 
     return (
-        <div className="order_container">
-            {!orders ? (
+        <div className="default_container order_container">
+            {orders && orders.orders.length > 0 ? (
+                <div className="my_orders">
+                    <h1 className="default_name_chapter my_orders__name_chapter">Мои заказы</h1>
+                    <OrderListComponent listOrders={orders.orders}></OrderListComponent>
+                </div>
+            ) : (
                 <div className="shopping_cart_empy">
                     <div className="shopping_cart_empy__img">
                         <img src="https://nsk-static-cdn-03.geobasket.ru/vol2/site/i/v3/empty/cart.webp" alt="" />
@@ -34,13 +39,7 @@ const OrderComponent: FC = () => {
                         Перейти на главную
                     </Link>
                 </div>
-            ) : (
-                <div className="my_orders">
-                    <h1 className="my_orders__name_chapter">Мои заказы</h1>
-                    <OrderListComponent listOrders={orders.orders}></OrderListComponent>
-                </div>
-            )
-            }
+            )}
         </div >
     );
 }

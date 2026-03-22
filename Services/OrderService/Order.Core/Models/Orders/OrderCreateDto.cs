@@ -1,14 +1,10 @@
-﻿using OrderService.Domain.Enums.Orders;
+﻿using OrderService.Core.Models.Products;
+using OrderService.Domain.Enums.Orders;
 
 namespace OrderService.Core.Models.Orders
 {
     public class OrderCreateDto
     {
-        /// <summary>
-        ///  Order status.
-        /// </summary>
-        public OrderStatus Status { get; set; } = OrderStatus.Unknown;
-
         /// <summary>
         /// Delivery address.
         /// </summary>
@@ -22,6 +18,6 @@ namespace OrderService.Core.Models.Orders
         /// <summary>
         /// List products in order.
         /// </summary>
-        public IList<int> ProductIds { get; set; }
+        public IList<ProductCreateDto> Products { get; set; }
     }
 }

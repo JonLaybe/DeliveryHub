@@ -1,10 +1,6 @@
 @use '/src/styles/Variables' as var;
 
 .order_container {
-    padding: 10px;
-    border-radius: 10px;
-    background-color: var.$background-order;
-
     .shopping_cart_empy {
         $self: &;
 
@@ -43,8 +39,6 @@
         $self: &;
 
         &__name_chapter {
-            font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
-            font-weight: 400;
             margin: 0 0 10px 0;
         }
     }

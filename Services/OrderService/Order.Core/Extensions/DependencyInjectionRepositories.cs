@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrderService.Core.Repositories.Interfaces.Orders;
+using OrderService.Core.Repositories.Interfaces.Products;
 using OrderService.Core.Repositories.Orders;
+using OrderService.Core.Repositories.Products;
 
 namespace OrderService.Core.Extensions
 {
@@ -8,7 +10,8 @@ namespace OrderService.Core.Extensions
     {
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            _ = services.AddTransient<IOrderRepository, OrderRepository>();
+            _ = services.AddScoped<IOrderRepository, OrderRepository>()
+                .AddScoped<IProductRepository, ProductRepository>();
 
             return services;
         }
