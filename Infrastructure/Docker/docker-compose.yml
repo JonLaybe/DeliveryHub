@@ -157,4 +157,4 @@ volumes:
   discount_postgres_data:
   chat_postgres_data:
   auth_postgres_data:
-  dp_keys:  
+  dp_keys:
