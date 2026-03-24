@@ -1,0 +1,160 @@
+version: "3.9"
+
+services:
+
+  # ---------------- ORDER SERVICE ----------------
+  order-service-webapi:
+    build:
+      context: .
+      dockerfile: DeliveryHub/Services/OrderService/Dockerfile
+    container_name: order-service-webapi
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__OrderDb: "Host=order-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
+    depends_on:
+      - order-postgres
+    networks:
+      - backend
+
+  order-postgres:
+    image: postgres:16-alpine
+    container_name: order-postgres
+    environment:
+      POSTGRES_DB: OrderDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - order_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+
+  # ---------------- DISCOUNT SERVICE ----------------
+  discount-service:
+    build:
+      context: .
+      dockerfile: DeliveryHub/Services/DiscountService/Dockerfile
+      args:
+        MOD: Debug
+    container_name: discount-service-api
+    ports:
+      - "8082:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DiscountDb: "Host=discount-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=123456"
+    depends_on:
+      - discount-postgres
+    networks:
+      - backend
+
+  discount-postgres:
+    image: postgres:15-alpine
+    container_name: discount-postgres
+    environment:
+      POSTGRES_DB: DiscountDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5434:5432"
+    volumes:
+      - discount_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+
+  # ---------------- CHAT SERVICE ----------------
+  chat-api:
+    build:
+      context: .
+      dockerfile: DeliveryHub/Services/ChatService/Dockerfile
+    container_name: chat-api
+    ports:
+      - "8083:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=chat-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
+    depends_on:
+      - chat-postgres
+    networks:
+      - backend
+    restart: unless-stopped
+
+  chat-postgres:
+    image: postgres:16
+    container_name: chat-postgres
+    environment:
+      POSTGRES_DB: DeliveryHubChatDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - chat_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: unless-stopped
+
+
+  # ---------------- AUTH SERVICE ----------------
+  auth-service:
+    build:
+      context: .
+      dockerfile: DeliveryHub/Services/AuthService/Dockerfile
+    container_name: auth-service
+    ports:
+      - "8084:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      APPLY_MIGRATIONS: "true"
+      ConnectionStrings__Postgres: "Host=auth-postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd"
+      Jwt__Issuer: "AuthService"
+      Jwt__AccessTokenMinutes: "15"
+      Jwt__RefreshTokenDays: "30"
+      Jwt__KeyId: "auth-key-001"
+      Jwt__PrivateKeyPath: "/run/secrets/jwt_private.pem"
+      Jwt__PublicKeyPath: "/run/secrets/jwt_public.pem"
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    volumes:
+      - dp_keys:/var/dpkeys
+      - ./jwt_private.pem:/run/secrets/jwt_private.pem:ro
+      - ./jwt_public.pem:/run/secrets/jwt_public.pem:ro
+
+  auth-postgres:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pwd
+    ports:
+      - "5436:5432"
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - backend
+
+
+networks:
+  backend:
+    driver: bridge
+
+
+volumes:
+  order_postgres_data:
+  discount_postgres_data:
+  chat_postgres_data:
+  auth_postgres_data:
+  dp_keys:
