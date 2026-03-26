@@ -28,7 +28,7 @@ namespace OrderService.WebAPI
 
             var app = builder.Build();
 
-            DbMigrate(app);
+            //DbMigrate(app);
 
             app.UseCors("AllowAll");
 

@@ -9,9 +9,6 @@ namespace OrderService.Infrastructure.Persistence.Configurations.Orders
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            _ = builder.Property(x => x.OrderNumber)
-                .IsRequired();
-
             _ = builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.Unknown);
 
             _ = builder.Property(x => x.Address).HasMaxLength(150).IsRequired();

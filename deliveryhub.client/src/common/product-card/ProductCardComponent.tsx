@@ -4,6 +4,8 @@ import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOGSERVICE_PRODUCT_IMAGE_URL } from "../../constants/EndpointConstants";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
 import { Link } from "react-router-dom";
+import { addGroceryBasket } from "../../services/grocery-basket/GroceryBasketService";
+import { formattedPrice } from "../../pipe/GeneralPipe";
 
 interface ProductProps {
     product: ProductDto;
@@ -27,9 +29,9 @@ const ProductCardComponent: FC<ProductProps> = (props) => {
                     <img src={imageUrl} alt={product.name} />
                 </div>
             </Link>
-            <span className="product_card__price">{product.price.toString()} ₽</span>
+            <span className="product_card__price">{formattedPrice(product.price)}</span>
             <span className="product_card__name">{product.name}</span>
-            <button className="default-button">В корзину</button>
+            <button className="default-button" onClick={() => addGroceryBasket(product)}>В корзину</button>
         </div>
     )
 }

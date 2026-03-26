@@ -9,6 +9,7 @@ namespace OrderService.Core.MappingProfile
         public ProductProfile()
         {
             this.CreateMap<Product, ProductDto>().ReverseMap();
+            this.CreateMap<Product, ProductCreateDto>().ReverseMap();
         }
     }
 }

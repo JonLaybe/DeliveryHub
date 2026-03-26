@@ -6,12 +6,7 @@ namespace OrderService.Core.Models.Orders
 {
     public class OrderDto
     {
-        public int Id { get; set; }
-
-        /// <summary>
-        ///  External order ID.
-        /// </summary>
-        public Guid OrderNumber { get; set; } = Guid.NewGuid();
+        public long Id { get; set; }
 
         /// <summary>
         ///  Order status.
