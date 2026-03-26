@@ -3,6 +3,7 @@ import './ProductCardComponent.scss';
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOGSERVICE_PRODUCT_IMAGE_URL } from "../../constants/EndpointConstants";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
+import { Link } from "react-router-dom";
 
 interface ProductProps {
     product: ProductDto;
@@ -21,9 +22,11 @@ const ProductCardComponent: FC<ProductProps> = (props) => {
 
     return (
         <div className="product_card">
-            <div className="product_card__preview">
-                <img src={imageUrl} alt={product.name} />
-            </div>
+            <Link to={`/product/${product.id}`}>
+                <div className="product_card__preview">
+                    <img src={imageUrl} alt={product.name} />
+                </div>
+            </Link>
             <span className="product_card__price">{product.price.toString()} ₽</span>
             <span className="product_card__name">{product.name}</span>
             <button className="default-button">В корзину</button>

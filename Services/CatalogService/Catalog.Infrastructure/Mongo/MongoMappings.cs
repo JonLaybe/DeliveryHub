@@ -1,4 +1,5 @@
-﻿using DeliveryHub.Catalog.Domain.Entities;
+﻿using Catalog.Domain.Entities;
+using DeliveryHub.Catalog.Domain.Entities;
 using DeliveryHub.CatalogService.Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -54,6 +55,15 @@ namespace Catalog.Infrastructure.Mongo
             if (!BsonClassMap.IsClassMapRegistered(typeof(Stock)))
             {
                 BsonClassMap.RegisterClassMap<Stock>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIgnoreExtraElements(true);
+                });
+            }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(ProductAttribute)))
+            {
+                BsonClassMap.RegisterClassMap<ProductAttribute>(cm =>
                 {
                     cm.AutoMap();
                     cm.SetIgnoreExtraElements(true);

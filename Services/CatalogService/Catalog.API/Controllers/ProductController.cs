@@ -32,9 +32,22 @@ namespace Catalog.API.Controllers
             var data = await _productService.GetByIdAsync(id, default);
 
             // TODO: Маппинг в AutoMapper/Mapperly
-            var result = new ProductResponseDto(data.Id, data.Name, data.Description, data.Price, data.AvailableQty, data.CategoryId, data.Attributes);
+            var result = new ProductResponseDto(data.Id, data.Name, data.Description, data.Price, data.AvailableQty, data.CategoryId, data.Attributes, data.Images);
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Поиск товаров по списку id. Например, для получения данных о товарах в корзине или заказе
+        /// </summary>
+        /// <param name="idList">Список id</param>
+        /// <returns></returns>
+        [HttpGet("list")]
+        public async Task<IActionResult> Get([FromQuery]List<Guid> idList)
+        {
+            var data = await _productService.GetByManyIdAsync(idList, default);
+
+            return Ok(data);
         }
 
         /// <summary>

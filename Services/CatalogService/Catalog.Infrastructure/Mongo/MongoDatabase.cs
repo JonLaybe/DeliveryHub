@@ -1,4 +1,5 @@
-﻿using DeliveryHub.Catalog.Domain.Entities;
+﻿using Catalog.Domain.Entities;
+using DeliveryHub.Catalog.Domain.Entities;
 using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Mongo
@@ -13,6 +14,7 @@ namespace Catalog.Infrastructure.Mongo
 
         public IMongoCollection<Product> Products => _database.GetCollection<Product>("product");
         public IMongoCollection<ProductImage> ProductImages => _database.GetCollection<ProductImage>("product_image");
+        public IMongoCollection<ProductAttribute> ProductAttributes => _database.GetCollection<ProductAttribute>("product_attributes");
         public IMongoCollection<Stock> Stock => _database.GetCollection<Stock>("stock");
 
         public async Task CreateIndexesAsync()

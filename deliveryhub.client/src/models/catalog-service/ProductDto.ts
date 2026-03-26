@@ -9,4 +9,5 @@ export interface ProductDto extends BaseEntityIdentityGuid {
     availableQty: number;
     categoryId: UUIDTypes;
     images: ProductImageDto[] | undefined;
+    attributes: Record<string, string>;
 }

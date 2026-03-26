@@ -1,7 +1,9 @@
 ﻿using Catalog.Application.Models;
 using Catalog.Application.Repositories;
+using Catalog.Infrastructure.Mongo;
 using DeliveryHub.Catalog.Application.Services;
 using DeliveryHub.Catalog.Domain.Entities;
+using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Shared.Domain.Exceptions;
 
@@ -12,18 +14,35 @@ namespace DeliveryHub.Catalog.Infrastructure.Services
         private readonly IProductRepository _productRepository;
         private readonly IProductImageRepository _productImageRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly MongoDatabase _mongoDB;
 
-        public ProductService(IProductRepository productRepository, IProductImageRepository productImageRepository, IStockRepository stockRepository)
+        public ProductService(IProductRepository productRepository, IProductImageRepository productImageRepository, IStockRepository stockRepository, MongoDatabase mongo)
         {
             _productRepository = productRepository;
             _productImageRepository = productImageRepository;
             _stockRepository = stockRepository;
+            _mongoDB = mongo;
         }
 
-        public async Task<List<ProductDto>> GetAllAsync(CancellationToken cancellationToken)
+        private async Task<Dictionary<string, string>> GetAttributesAsync(Product product)
         {
-            var products = await _productRepository.GetAllAsync(cancellationToken);
+            var productAttributesDict = await _mongoDB.ProductAttributes.AsQueryable()
+                .ToListAsync();
 
+            var attributes = new Dictionary<string, string>();
+            foreach (var attr in product.Attributes)
+            {
+                var attrFromDict = productAttributesDict.FirstOrDefault(s => s.Key == attr.Key);
+                var key = attrFromDict?.Name ?? attr.Key;
+                var value = attrFromDict?.Values.FirstOrDefault(v => v.Value == attr.Value)?.Label ?? attr.Value;
+                attributes.Add(key, value);
+            }
+
+            return attributes;
+        }
+
+        private async Task<List<ProductDto>> DressProductsToDtoAsync(IEnumerable<Product> products)
+        {
             var productIds = products.Select(s => s.Id);
 
             var stocks = await _stockRepository.GetAll()
@@ -61,6 +80,22 @@ namespace DeliveryHub.Catalog.Infrastructure.Services
             }).ToList();
         }
 
+        public async Task<List<ProductDto>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            var products = await _productRepository.GetAllAsync(cancellationToken);
+
+            return await DressProductsToDtoAsync(products);
+        }
+
+        public async Task<List<ProductDto>> GetByManyIdAsync(List<Guid> ids, CancellationToken cancellationToken)
+        {
+            var products = await _productRepository.GetAll()
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            return await DressProductsToDtoAsync(products);
+        }
+
         public async Task<ProductDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetByIdAsync(id, cancellationToken);
@@ -70,6 +105,8 @@ namespace DeliveryHub.Catalog.Infrastructure.Services
                 throw new NotFoundEntityException(nameof(Product));
             }
 
+            var attributes = await GetAttributesAsync(product);
+
             var images = await _productImageRepository.GetAll()
                 .Where(x => x.ProductId == product.Id)
                 .ToListAsync();
@@ -78,7 +115,7 @@ namespace DeliveryHub.Catalog.Infrastructure.Services
 
             return new ProductDto
             {
-                Attributes = product.Attributes,
+                Attributes = attributes,
                 Description = product.Description,
                 Id = product.Id,
                 CategoryId = product.CategoryId,

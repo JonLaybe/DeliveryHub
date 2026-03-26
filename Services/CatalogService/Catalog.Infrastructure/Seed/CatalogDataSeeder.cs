@@ -1,9 +1,12 @@
 ﻿using Catalog.Application.Repositories;
+using Catalog.Domain.Entities;
 using Catalog.Infrastructure.Extensions;
+using Catalog.Infrastructure.Mongo;
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Domain.Entities;
 using DeliveryHub.CatalogService.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
 namespace Catalog.Infrastructure.Seed
@@ -17,12 +20,59 @@ namespace Catalog.Infrastructure.Seed
             var productRepo = scope.ServiceProvider.GetRequiredService<IProductRepository>();
             var imageRepo = scope.ServiceProvider.GetRequiredService<IProductImageRepository>();
             var stockRepo = scope.ServiceProvider.GetRequiredService<IStockRepository>();
+            var mongoDb = scope.ServiceProvider.GetRequiredService<MongoDatabase>();
 
             var categories = await SeedCategoriesAsync(categoryRepo);
             var productIds = await SeedProductsAsync(productRepo, categories);
 
             await SeedStockAsync(stockRepo, productIds);
             await SeedImagesAsync(imageRepo);
+            await SeedProductAttributesAync(mongoDb);
+        }
+
+        private static async Task SeedProductAttributesAync(MongoDatabase mongoDatabase)
+        {
+            var attributes = new List<ProductAttribute>
+            {
+                new ProductAttribute { Key = "Color", Name = "Цвет", 
+                    Values = [ 
+                        new ProductAttributeValue { Value = "Pink", Label = "Розовый" },
+                        new ProductAttributeValue { Value = "Black", Label = "Черный" },
+                        new ProductAttributeValue { Value = "Phantom Gray", Label = "Серый фантом" },
+                        new ProductAttributeValue { Value = "Blue", Label = "Синий" },
+                        new ProductAttributeValue { Value = "White", Label = "Белый" },
+                        new ProductAttributeValue { Value = "Brown", Label = "Коричневый" },
+                        ] },
+                new ProductAttribute { Key = "Storage", Name = "Объем памяти", 
+                    Values = [ 
+                        new ProductAttributeValue { Value = "128GB", Label = "128GB" },
+                        new ProductAttributeValue { Value = "64GB", Label = "64GB" }] },
+                new ProductAttribute { Key = "Size", Name = "Диагональ", 
+                    Values = [ 
+                        new ProductAttributeValue { Value = "55\"", Label = "55\"" }, 
+                        new ProductAttributeValue { Value = "50\"", Label = "50\"" },
+                        new ProductAttributeValue { Value = "43\"", Label = "43\"" }
+                        ] },
+                new ProductAttribute { Key = "Resolution", Name = "Разрешение", 
+                    Values = [ 
+                        new ProductAttributeValue { Value = "4K", Label = "4K" }, 
+                        new ProductAttributeValue { Value = "Full HD", Label = "Full HD" }] },
+                new ProductAttribute { Key = "Material", Name = "Материал", 
+                    Values = [
+                        new ProductAttributeValue { Value = "Leather", Label = "Кожа" }, 
+                        new ProductAttributeValue { Value = "Suede", Label = "Замша" }] },
+                new ProductAttribute { Key = "SizeRange", Name = "Размер", 
+                    Values = [ 
+                        new ProductAttributeValue { Value = "36-41", Label = "36-41" }, 
+                        new ProductAttributeValue { Value = "40-46", Label = "40-46" }] },
+            };
+
+            foreach (var attr in attributes)
+            {
+                var filter = Builders<ProductAttribute>.Filter.Eq(x => x.Key, attr.Key);
+
+                await mongoDatabase.ProductAttributes.ReplaceOneAsync(filter, attr, new ReplaceOptions { IsUpsert = true });
+            }
         }
 
         private static async Task SeedImagesAsync(IProductImageRepository imageRepository)
