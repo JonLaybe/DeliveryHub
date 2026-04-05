@@ -3,8 +3,11 @@ import HeaderComponent from './shared/layout/header/HeaderComponent'
 import RoutingComponent from './components/routing/RoutingComponent'
 import { BrowserRouter } from 'react-router-dom'
 import { SearchProvider } from './context/SearchContext'
+import ReactModal from 'react-modal'
 
 function App() {
+  ReactModal.setAppElement('#root');
+
   return (
     <BrowserRouter>
       <SearchProvider>

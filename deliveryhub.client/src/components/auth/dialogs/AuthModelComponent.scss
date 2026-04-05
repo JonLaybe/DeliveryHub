@@ -1,0 +1,45 @@
+@use '/src/styles/Variables' as var;
+
+.custom_model {
+  box-sizing: border-box;
+  width: 426px;
+  height: 700px;
+  min-height: 320px;
+  background: var.$background_color_auth_form_model;
+  backdrop-filter: blur(70px);
+  margin: 32px auto;
+  padding: 25px 10px;
+  border-radius: 32px;
+}
+
+.custom_model_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.182);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.contect_model_auth {
+  $self: &;
+
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+
+  &__header {
+    .contect__name_chapter {
+      font-weight: 400;
+
+      .body {
+        font-weight: bold;
+        color: blue;
+      }
+    }
+  }
+}
