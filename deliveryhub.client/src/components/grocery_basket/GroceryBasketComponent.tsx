@@ -8,7 +8,7 @@ import type { UUIDTypes } from 'uuid';
 import { formattedPrice } from '../../pipe/GeneralPipe';
 import { createOrderAsync } from '../../services/order-service/OrderService';
 import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
-import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasket/GroceryBasketPipe';
+import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
 import { Link, useNavigate } from 'react-router-dom';
 
 const GroceryBasketComponent: FC = () => {

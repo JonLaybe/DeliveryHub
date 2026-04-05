@@ -1,6 +1,6 @@
-import type { ProductDto } from "../../models/catalog-service/ProductDto";
-import type { GroceryBasketItem } from "../../models/grocery-basket/GroceryBasket";
-import type { ProductCreateDto } from "../../models/order-service/ProductCreateDto";
+import type { ProductDto } from "../models/catalog-service/ProductDto";
+import type { GroceryBasketItem } from "../models/grocery-basket/GroceryBasket";
+import type { ProductCreateDto } from "../models/order-service/ProductCreateDto";
 
 export function mapProductToGroceryBasketItem(product: ProductDto, quantity = 1): GroceryBasketItem {
     return {

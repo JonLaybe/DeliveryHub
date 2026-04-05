@@ -1,6 +1,6 @@
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import type { GroceryBasketItem } from "../../models/grocery-basket/GroceryBasket";
-import { mapProductToGroceryBasketItem } from "../../pipe/GroceryBasket/GroceryBasketPipe";
+import { mapProductToGroceryBasketItem } from "../../pipe/GroceryBasketPipe";
 
 const nameGroceryBasket = "groceryBasketProducts";
 
