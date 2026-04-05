@@ -1,3 +1,4 @@
+using Chat.Api.Hubs;
 using Chat.Application.Interfaces;
 using Chat.Application.Services;
 using Chat.Infrastructure.Persistence;
@@ -19,6 +20,7 @@ namespace Chat.Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddSignalR();
             builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
             builder.Services.AddScoped<IConversationService, ConversationService>();
 
@@ -52,6 +54,7 @@ namespace Chat.Api
                 });
             }
 
+            app.MapHub<ChatHub>("/chat");
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
