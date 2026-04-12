@@ -19,7 +19,7 @@ namespace Catalog.API.Contracts
         /// attributes[key]=value
         /// Example: attributes[color]=red&attributes[size]=xl
         /// </summary>
-        public Dictionary<string, string>? Attributes { get; init; }
+        public Dictionary<string, List<string>>? Attributes { get; init; }
 
         // Пагинация
         public int Page { get; init; } = 1;

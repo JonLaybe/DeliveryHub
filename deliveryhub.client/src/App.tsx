@@ -4,6 +4,7 @@ import RoutingComponent from './components/routing/RoutingComponent'
 import { BrowserRouter } from 'react-router-dom'
 import { SearchProvider } from './context/SearchContext'
 import ReactModal from 'react-modal'
+import FiltersComponent from './components/filters/FiltersComponent'
 
 function App() {
   ReactModal.setAppElement('#root');
@@ -12,6 +13,7 @@ function App() {
     <BrowserRouter>
       <SearchProvider>
         <HeaderComponent />
+        <FiltersComponent />
         <div className='wrapper'>
           <RoutingComponent />
         </div>
