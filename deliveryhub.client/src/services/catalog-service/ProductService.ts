@@ -1,7 +1,8 @@
 import type { UUIDTypes } from "uuid";
 import { CATALOGSERVICE_PRODUCT_URL } from "../../constants/EndpointConstants";
 import { catalog_api } from "../../http";
-import type { ProductDto } from "../../models/catalog-service/ProductDto";
+import type { ProductDto, ProductSearchResultDto } from "../../models/catalog-service/ProductDto";
+import type { ProductSearchQueryRequest } from "../../models/catalog-service/ProductSearchQueryRequest";
 
 
 export async function getListProductsAsync(): Promise<ProductDto[]> {
@@ -15,8 +16,8 @@ export async function getProductByIdAsync(id: UUIDTypes): Promise<ProductDto> {
     return res.data;
 }
 
-export async function searchProductsAsync(text: string): Promise<ProductDto[]> {
-    const res = await catalog_api.get(`${CATALOGSERVICE_PRODUCT_URL}/search?text=${text}`);
+export async function searchProductsAsync(request: ProductSearchQueryRequest): Promise<ProductSearchResultDto> {
+    const res = await catalog_api.get(`${CATALOGSERVICE_PRODUCT_URL}/search`, { params: request });
     return res.data;
 }
 

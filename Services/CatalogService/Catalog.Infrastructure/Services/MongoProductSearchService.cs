@@ -46,7 +46,7 @@ namespace Catalog.Infrastructure.Services
             return suggestions;
         }
 
-        public async Task<IEnumerable<ProductDto>> SearchAsync(ProductSearchQuery searchQuery, CancellationToken cancellationToken)
+        public async Task<ProductSearchResultDto> SearchAsync(ProductSearchQuery searchQuery, CancellationToken cancellationToken)
         {
             var filter = Builders<Product>.Filter.Empty;
             List<Product> matchExact = new();
@@ -56,7 +56,8 @@ namespace Catalog.Infrastructure.Services
                 var exactFilter = Builders<Product>.Filter.Eq(p => p.Name, searchQuery.Text);
                 matchExact = await _database.Products.Find(exactFilter).ToListAsync();
 
-                filter &= Builders<Product>.Filter.Text(searchQuery.Text);
+                //filter &= Builders<Product>.Filter.Text(searchQuery.Text);
+                filter &= Builders<Product>.Filter.AnyEq(p => p.SearchTokens, searchQuery.Text.ToLower());
             }
 
             if (searchQuery.CategoryId.HasValue)
@@ -79,27 +80,30 @@ namespace Catalog.Infrastructure.Services
 
             if (searchQuery.Attributes is not null)
             {
-                foreach (var (key, value) in searchQuery.Attributes)
+                foreach (var (key, values) in searchQuery.Attributes)
                 {
-                    filter &= Builders<Product>
-                        .Filter.Eq($"Attributes.{key}", value);
+                    foreach (var value in values)
+                    {
+                        if (!string.IsNullOrWhiteSpace(value))
+                            filter &= Builders<Product>.Filter.Eq($"Attributes.{key}", value);
+                    }
                 }
             }
 
-            List<Product> result = new();
+            List<Product> products = new();
 
             if (matchExact.Any())
             {
-                result = matchExact;
+                products = matchExact;
             }
             else
             {
                 var match = await _database.Products.FindAsync(filter, cancellationToken: cancellationToken);
 
-                result = match.ToList();
+                products = match.ToList();
             }
 
-            var productIds = result.Select(x => x.Id).ToList();
+            var productIds = products.Select(x => x.Id).ToList();
 
             var images = await _database.ProductImages.FindAsync(x => productIds.Contains(x.ProductId));
 
@@ -119,17 +123,28 @@ namespace Catalog.Infrastructure.Services
                         Type = s.Type,
                     }).ToList());
 
-            return result.Select(p => new ProductDto
+            //var categories = await _database.Categories.FindAsync(x => products.Select(p => p.CategoryId).Contains(x.Id));
+            var attributes = products.SelectMany(p => p.Attributes).GroupBy(a => a.Key)
+                .ToDictionary(k => k.Key, v => v.Select(s => s.Value)
+                .Distinct().ToList());
+
+            var result = new ProductSearchResultDto
             {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                CategoryId = p.CategoryId,
-                Attributes = p.Attributes,
-                AvailableQty = stocksDict.GetValueOrDefault(p.Id)?.AvailableQty ?? 0,
-                Images = imagesDict.GetValueOrDefault(p.Id) ?? [],
-            });
+                Attributes = attributes,
+                Products = products.Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    CategoryId = p.CategoryId,
+                    Attributes = p.Attributes,
+                    AvailableQty = stocksDict.GetValueOrDefault(p.Id)?.AvailableQty ?? 0,
+                    Images = imagesDict.GetValueOrDefault(p.Id) ?? [],
+                }).ToList()
+            };
+
+            return result;
         }
     }
 }

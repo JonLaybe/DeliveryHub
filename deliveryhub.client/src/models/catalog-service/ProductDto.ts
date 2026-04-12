@@ -11,3 +11,8 @@ export interface ProductDto extends BaseEntityIdentityGuid {
     images: ProductImageDto[] | undefined;
     attributes: Record<string, string>;
 }
+
+export interface ProductSearchResultDto {
+    products: ProductDto[];
+    attributes: Record<string, string[]>;
+}

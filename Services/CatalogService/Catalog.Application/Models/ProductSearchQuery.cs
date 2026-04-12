@@ -13,7 +13,7 @@
         public decimal? MaxPrice { get; init; }
 
         // Динамические атрибуты
-        public Dictionary<string, string>? Attributes { get; init; }
+        public Dictionary<string, List<string>>? Attributes { get; init; }
 
         // Пагинация
         public int Page { get; init; } = 1;
