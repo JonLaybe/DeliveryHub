@@ -1,0 +1,4 @@
+CREATE DATABASE "OrderDb";
+CREATE DATABASE "auth_db";
+CREATE DATABASE "DiscountDb";
+CREATE DATABASE "DeliveryHubChatDb";

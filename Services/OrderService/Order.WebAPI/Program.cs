@@ -6,7 +6,7 @@ namespace OrderService.WebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +28,19 @@ namespace OrderService.WebAPI
 
             var app = builder.Build();
 
-            //DbMigrate(app);
+            if (app.Environment.IsDevelopment())
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    if ((await context.Database.GetPendingMigrationsAsync()).Any())
+                    {
+                        await context.Database.MigrateAsync();
+                    }
+                }
+            }
 
             app.UseCors("AllowAll");
 
@@ -41,15 +53,6 @@ namespace OrderService.WebAPI
             app.MapControllers();
 
             app.Run();
-        }
-
-        private static void DbMigrate(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.CreateScope())
-            {
-                var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                ctx.Database.Migrate();
-            }
         }
     }
 }

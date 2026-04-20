@@ -12,14 +12,11 @@ interface ProductProps {
 }
 
 const ProductCardComponent: FC<ProductProps> = (props) => {
-    const prefix = `http://localhost:5000/${CATALOGSERVICE_PRODUCT_IMAGE_URL}`;
-
     const { product } = props;
 
     const imgThumb = product.images?.filter(x => x.type === 1)[0].url ?? '';
     const imgMain = product.images?.filter(x => x.type === 0)[0].url ?? '';
 
-    // const imageUrl = product.images ? `${prefix}/${product.images[0]?.productId}` : '';
     const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
 
     return (
