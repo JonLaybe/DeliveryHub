@@ -1,10 +1,8 @@
-using Auth.Infrastructure.Persistence;
-using Auth.Infrastructure;
 using Auth.Application;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using System.IO;
+using Auth.Infrastructure;
+using Auth.Infrastructure.Persistence;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +24,21 @@ builder.Services.AddDataProtection()
 
 builder.Services.AddAuthInfrastructure(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowAnyOrigin();
+    });
+});
+
 var app = builder.Build();
+
+app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.MapGet("/", () => Results.Ok("AuthService is running"));
 app.MapHealthChecks("/health");
@@ -48,5 +60,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
-

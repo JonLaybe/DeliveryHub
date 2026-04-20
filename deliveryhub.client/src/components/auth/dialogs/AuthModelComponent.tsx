@@ -1,6 +1,9 @@
 import { useEffect, useState, type FC } from "react";
 import Modal from "react-modal";
 import './AuthModelComponent.scss';
+import { useForm } from "react-hook-form";
+import type { LoginRequestDto, Password } from "../../../models/auth-service/LoginRequestDto";
+import { loginAsync } from "../../../services/auth-service/AuthService";
 
 interface AuthModelProps {
     value: boolean;
@@ -8,20 +11,45 @@ interface AuthModelProps {
 }
 
 const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
+
     const [modalIsOpen, setModalIsOpen] = useState(value);
+    const {
+        register,
+        reset,
+        handleSubmit,
+        formState: { isSubmitting, isSubmitSuccessful }
+    } = useForm({
+        defaultValues: {
+            email: '',
+            password: '' as Password,
+        }
+    });
 
     useEffect(() => {
         setModalIsOpen(value);
     }, [value]);
 
+    useEffect(() => {
+        if (isSubmitSuccessful)
+            reset();
+    }, [isSubmitSuccessful]);
+
     const openModal = () => {
         setModalIsOpen(true);
         onChange(true);
-    }
+    };
     const closeModal = () => {
         setModalIsOpen(false);
         onChange(false);
-    }
+    };
+
+    const onLogin = async (dataLoginRequest: LoginRequestDto) => {
+        await loginAsync(dataLoginRequest).then(() => closeModal())
+        .catch(() => {
+            console.log('>Login failed');
+            throw 'Login failed';
+        });
+    };
 
     return (
         <div className="container_model_auth">
@@ -34,12 +62,12 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
                         </h1>
                     </div>
                     <div className="contect_model_auth__main">
-                        <form>
+                        <form onSubmit={handleSubmit((data) => onLogin(data))}>
                             <label className="default_text">Логин</label>
-                            <input className="default_text" type="email" maxLength={250} />
+                            <input {...register('email')} className="default_text" type="email" maxLength={250} />
                             <label className="default_text">Пароль</label>
-                            <input className="default_text" type="password" />
-                            <button>Войти</button>
+                            <input {...register('password')} className="default_text" type="password" />
+                            <input type="submit" disabled={isSubmitting} value="Войти" />
                         </form>
                     </div>
                 </div>

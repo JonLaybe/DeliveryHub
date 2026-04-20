@@ -6,9 +6,15 @@ import icon_order from '../../../assets/icon_order.svg';
 import box_grocery_basket from '../../../assets/box_grocery_basket.svg';
 import profile_icon from '../../../assets/profile_icon.svg';
 import AuthModelComponent from "../../../components/auth/dialogs/AuthModelComponent";
+import { isAuthentication } from "../../../services/auth-service/AuthService";
 
 const HeaderComponent: FC = () => {
     const [isOpenModelLogin, setIsOpenModelLogin] = useState(false);
+
+    const clickAuthIcon = () => {
+        if (isAuthentication())
+            return
+    }
 
     return (
         <header className="header">
@@ -29,10 +35,18 @@ const HeaderComponent: FC = () => {
                         <img src={box_grocery_basket} alt="grocery_basket" />
                     </div>
                 </Link>
-                <button className="header__icon" onClick={() => setIsOpenModelLogin(true)}>
-                    <img src={profile_icon} alt="profile" />
-                </button>
-                <AuthModelComponent value={isOpenModelLogin} onChange={(newValue) => setIsOpenModelLogin(newValue)}/>
+                {
+                    isAuthentication() ?
+                        <Link to="/profile" className="rest_default_link">
+                            <div className="header__icon">
+                                <img src={profile_icon} alt="profile_icon" />
+                            </div>
+                        </Link> :
+                        <button className="header__icon" onClick={() => setIsOpenModelLogin(true)}>
+                            <img src={profile_icon} alt="profile" />
+                        </button>
+                }
+                <AuthModelComponent value={isOpenModelLogin} onChange={(newValue) => setIsOpenModelLogin(newValue)} />
             </div>
         </header>
     );

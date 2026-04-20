@@ -1,34 +1,72 @@
-version: "3.9"
+name: delivery-hub-cluster
 
 services:
 
   # ---------------- ORDER SERVICE ----------------
   order-service-webapi:
     build:
-      context: .
-      dockerfile: DeliveryHub/Services/OrderService/Dockerfile
+      context: ../../Services/OrderService
+      dockerfile: Dockerfile
     container_name: order-service-webapi
     ports:
-      - "8081:8080"
+      - "7225:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__OrderDb: "Host=order-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
+      # ConnectionStrings__OrderDatabase: "Host=order-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
+      ConnectionStrings__OrderDatabase: "Host=general-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
     depends_on:
-      - order-postgres
+      # - order-postgres
+      - general-postgres
     networks:
       - backend
 
-  order-postgres:
-    image: postgres:16-alpine
-    container_name: order-postgres
-    environment:
-      POSTGRES_DB: OrderDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+  # order-postgres:
+  #   image: postgres:16-alpine
+  #   container_name: order-postgres
+  #   environment:
+  #     POSTGRES_DB: OrderDb
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - order_postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - backend
+
+
+  # ---------------- CATALOG SERVICE ----------------
+  catalog-api:
+    build:
+      context: ../../
+      dockerfile: Services/CatalogService/Catalog.API/Dockerfile
+    container_name: catalog-api
     ports:
-      - "5433:5432"
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Mongo__Database=${MONGO_INITDB_DATABASE}
+      - Mongo__ConnectionString=${MONGO_ConnectionString}
+    depends_on:
+      - mongo
     volumes:
-      - order_postgres_data:/var/lib/postgresql/data
+      - ../../Services/CatalogService/Catalog.API/Assets/product-images:/app/wwwroot/images
+    networks:
+      - backend
+
+  mongo:
+    image: mongo:7.0
+    container_name: dh-catalog-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongo_data:/data/db
+      - ./init/mongo-init:/docker-entrypoint-initdb.d:ro
     networks:
       - backend
 
@@ -36,81 +74,86 @@ services:
   # ---------------- DISCOUNT SERVICE ----------------
   discount-service:
     build:
-      context: .
-      dockerfile: DeliveryHub/Services/DiscountService/Dockerfile
+      context: ../../Services/DiscountService
+      dockerfile: DiscountService.Api/Dockerfile
       args:
         MOD: Debug
-    container_name: discount-service-api
+    container_name: discount-service
     ports:
       - "8082:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DiscountDb: "Host=discount-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=123456"
+      # ConnectionStrings__DiscountDb: "Host=discount-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
+      ConnectionStrings__DiscountDb: "Host=general-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
     depends_on:
-      - discount-postgres
+      # - discount-postgres
+      - general-postgres
     networks:
       - backend
 
-  discount-postgres:
-    image: postgres:15-alpine
-    container_name: discount-postgres
-    environment:
-      POSTGRES_DB: DiscountDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - "5434:5432"
-    volumes:
-      - discount_postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend
+  # discount-postgres:
+  #   image: postgres:15-alpine
+  #   container_name: discount-postgres
+  #   environment:
+  #     POSTGRES_DB: DiscountDb
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5434:5432"
+  #   volumes:
+  #     - discount_postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - backend
 
 
   # ---------------- CHAT SERVICE ----------------
   chat-api:
     build:
-      context: .
-      dockerfile: DeliveryHub/Services/ChatService/Dockerfile
+      context: ../../Services/ChatService
+      dockerfile: Dockerfile
     container_name: chat-api
     ports:
-      - "8083:8080"
+      - "7190:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=chat-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
+      # ConnectionStrings__DefaultConnection: "Host=chat-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
+      ConnectionStrings__DefaultConnection: "Host=general-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
     depends_on:
-      - chat-postgres
+      # - chat-postgres
+      - general-postgres
     networks:
       - backend
     restart: unless-stopped
 
-  chat-postgres:
-    image: postgres:16
-    container_name: chat-postgres
-    environment:
-      POSTGRES_DB: DeliveryHubChatDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5435:5432"
-    volumes:
-      - chat_postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend
-    restart: unless-stopped
+  # chat-postgres:
+  #   image: postgres:16
+  #   container_name: chat-postgres
+  #   environment:
+  #     POSTGRES_DB: DeliveryHubChatDb
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5435:5432"
+  #   volumes:
+  #     - chat_postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - backend
+  #   restart: unless-stopped
 
 
   # ---------------- AUTH SERVICE ----------------
   auth-service:
     build:
-      context: .
-      dockerfile: DeliveryHub/Services/AuthService/Dockerfile
+      context: ../../Services/AuthService
+      dockerfile: Dockerfile
     container_name: auth-service
     ports:
-      - "8084:8080"
+      - "7119:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       APPLY_MIGRATIONS: "true"
-      ConnectionStrings__Postgres: "Host=auth-postgres;Port=5432;Database=auth_db;Username=auth_user;Password=auth_pwd"
+      # ConnectionStrings__Postgres: "Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=postgres"
+      ConnectionStrings__Postgres: "Host=general-postgres;Port=5432;Database=auth_db;Username=postgres;Password=postgres"
       Jwt__Issuer: "AuthService"
       Jwt__AccessTokenMinutes: "15"
       Jwt__RefreshTokenDays: "30"
@@ -118,43 +161,80 @@ services:
       Jwt__PrivateKeyPath: "/run/secrets/jwt_private.pem"
       Jwt__PublicKeyPath: "/run/secrets/jwt_public.pem"
     depends_on:
-      auth-postgres:
-        condition: service_healthy
+      - general-postgres
+      # auth-postgres:
+      #   condition: service_healthy
     networks:
       - backend
     volumes:
       - dp_keys:/var/dpkeys
-      - ./jwt_private.pem:/run/secrets/jwt_private.pem:ro
-      - ./jwt_public.pem:/run/secrets/jwt_public.pem:ro
+      - ../../Services/AuthService/src/Auth.Api/Secrets/jwt_private.pem:/run/secrets/jwt_private.pem:ro
+      - ../../Services/AuthService/src/Auth.Api/Secrets/jwt_public.pem:/run/secrets/jwt_public.pem:ro
 
-  auth-postgres:
-    image: postgres:16-alpine
-    container_name: auth-postgres
-    environment:
-      POSTGRES_DB: auth_db
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_pwd
+  # auth-postgres:
+  #   image: postgres:16-alpine
+  #   container_name: auth-postgres
+  #   environment:
+  #     POSTGRES_DB: auth_db
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5436:5432"
+  #   volumes:
+  #     - auth_postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 20
+  #   networks:
+  #     - backend
+  
+
+  # ---------------- NGINX ----------------
+  gateway:
+    build:
+      context: nginx
+    container_name: api-gateway
     ports:
-      - "5436:5432"
+      - "80:80"
+    depends_on:
+      - auth-service
+      - order-service-webapi
+      - catalog-api
+      - discount-service
+      - chat-api
+    networks:
+      - backend
+  
+  general-postgres:
+    image: postgres:16-alpine
+    container_name: general-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5437:5432"
     volumes:
-      - auth_postgres_data:/var/lib/postgresql/data
+      - general_postgres_data:/var/lib/postgresql/data
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d OrderDb"]
       interval: 5s
       timeout: 5s
       retries: 20
-    networks:
-      - backend
-
 
 networks:
   backend:
     driver: bridge
 
-
 volumes:
-  order_postgres_data:
-  discount_postgres_data:
-  chat_postgres_data:
-  auth_postgres_data:
+  # order_postgres_data:
+  # discount_postgres_data:
+  # chat_postgres_data:
+  # auth_postgres_data:
+  general_postgres_data:
+  mongo_data:
   dp_keys:
