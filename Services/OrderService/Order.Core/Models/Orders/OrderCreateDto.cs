@@ -5,6 +5,8 @@ namespace OrderService.Core.Models.Orders
 {
     public class OrderCreateDto
     {
+        public Guid UserId { get; set; }
+
         /// <summary>
         /// Delivery address.
         /// </summary>

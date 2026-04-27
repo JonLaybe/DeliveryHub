@@ -2,7 +2,7 @@
 using OrderService.Core.Models.Orders;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Core.Services.Interfaces.Orders;
-using OrderService.Core.Services.Interfaces.Products;
+using OrderService.Core.Services.Interfaces.Users;
 using OrderService.Domain.Entities.Oriders;
 
 namespace OrderService.Core.Services.Orders
@@ -10,16 +10,16 @@ namespace OrderService.Core.Services.Orders
     public class OrdersService : IOrderService
     {
         private readonly IOrderRepository orderRepository;
-        private readonly IProductService productService;
+        private readonly IUserService userService;
         private readonly IMapper mapper;
 
         public OrdersService(
             IOrderRepository repository,
-            IProductService productService,
+            IUserService userService,
             IMapper mapper)
         {
             this.orderRepository = repository;
-            this.productService = productService;
+            this.userService = userService;
             this.mapper = mapper;
         }
 
@@ -32,13 +32,18 @@ namespace OrderService.Core.Services.Orders
 
         public async Task<IList<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken = default)
         {
-            var orders = (await this.orderRepository.GetOrdersAsync(cancellationToken)).Select(ord => this.mapper.Map<OrderDto>(ord)).ToList();
+            var userId = this.userService.GetCurrentUserId();
+
+            var orders = (await this.orderRepository.GetOrdersWithUserIdAsync(userId, cancellationToken)).Select(ord => this.mapper.Map<OrderDto>(ord)).ToList();
 
             return orders;
         }
 
         public async Task<OrderDto> AddAsync(OrderCreateDto entity, CancellationToken cancellationToken = default)
         {
+            var userId = this.userService.GetCurrentUserId();
+            entity.UserId = userId;
+
             var order = await this.orderRepository.CreateAsync(this.mapper.Map<Order>(entity), cancellationToken);
 
             await this.orderRepository.SaveChangesAsync(cancellationToken);

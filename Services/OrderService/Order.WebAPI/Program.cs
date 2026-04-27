@@ -13,7 +13,9 @@ namespace OrderService.WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
-
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddHttpClient();
+            builder.Services.AddAuth(builder.Configuration);
             builder.Services.RegisterDependencies(builder.Configuration);
 
             builder.Services.AddCors(options =>
@@ -45,6 +47,10 @@ namespace OrderService.WebAPI
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseHttpsRedirection();
 

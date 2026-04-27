@@ -5,6 +5,8 @@ namespace OrderService.Domain.Entities.Oriders
 {
     public class Order : BaseEntity
     {
+        public Guid UserId { get; set; }
+
         /// <summary>
         ///  Order status.
         /// </summary>

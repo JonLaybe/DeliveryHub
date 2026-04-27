@@ -4,6 +4,8 @@ namespace OrderService.Core.Repositories.Interfaces.Orders
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        Task<IList<Order>> GetOrdersAsync(CancellationToken cancellationToken);
+        Task<Order> GetByIdWithUserIdAsync(int id, Guid userId, CancellationToken cancellationToken = default);
+
+        Task<IList<Order>> GetOrdersWithUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }
