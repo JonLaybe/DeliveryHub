@@ -10,22 +10,52 @@ import { createOrderAsync } from '../../services/order-service/OrderService';
 import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
 import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
 import { Link, useNavigate } from 'react-router-dom';
+import PromoCodePanel from '../discounts/PromoCodePanel';
+import type { PromoApplyResult } from '../discounts/PromoCodePanel';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
     const [totalPrice, setTotalPrice] = useState(0);
     const navigate = useNavigate();
 
+    // Новая: управление панелью промокода
+    const [promoOpen, setPromoOpen] = useState(false);
+
+    // Расчет итоговой цены (оставил как есть, можно добавить зависимость к groceryBasket)
     useEffect(() => {
         let result = 0;
-
         groceryBasket.map(prod => {
             result += prod.price;
         });
-
         setTotalPrice(result);
     }, []);
 
+    // Применение промокода (пример API-обработчика)
+    const applyPromo = async (code: string): Promise<PromoApplyResult> => {
+        // Замените на вашу реальную логику вызова API
+        try {
+            const res = await fetch('/api/apply-promo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code }),
+            });
+            if (!res.ok) {
+                return { success: false, message: 'Серверная ошибка' };
+            }
+            const data = await res.json();
+            return {
+                success: data.success,
+                code: data.code,
+                discount: data.discount,
+                type: data.type,
+                message: data.message,
+            };
+        } catch {
+            return { success: false, message: 'Ошибка связи с сервером' };
+        }
+    };
+
+    // Остальные функции корзины
     const decreaseQuantity = (productId: UUIDTypes) => {
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId && item.quantity > 1) {
@@ -34,11 +64,9 @@ const GroceryBasketComponent: FC = () => {
             }
             return item;
         });
-
         refreshGroceryBasket(refGroceryBasket);
         setGroceryBasket(refGroceryBasket);
     };
-
     const increaseQuantity = (productId: UUIDTypes) => {
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId) {
@@ -47,22 +75,18 @@ const GroceryBasketComponent: FC = () => {
             }
             return item;
         });
-
         refreshGroceryBasket(refGroceryBasket);
         setGroceryBasket(refGroceryBasket);
     };
-
     const sentGroceryBasket = () => {
         let order: OrderCreateDto = {
             address: "г. Москва, ул. Пупкина, д. 5, кв. 31",
             deliveryDate: new Date((new Date).getTime() + 1),
             products: mapGroceryBasketItemsToProduct(groceryBasket),
         }
-
         createOrderAsync(order).then(data => {
             if (!data)
                 return;
-
             resetGroceryBasket();
             navigate('/orders');
         });
@@ -116,7 +140,12 @@ const GroceryBasketComponent: FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Правая колонка: место под промокод и итог */}
                 <div className='default_container result_grocery_basket_container'>
+                    {/* Вставляем промокод-панель прямо здесь */}
+                    <PromoCodePanel value={promoOpen} onChange={setPromoOpen} onApply={applyPromo} />
+
                     <div className="form_registration_new_order">
                         <div className="total_price">
                             <h1 className='default_name_chapter name_chapter'>Итого:</h1>
@@ -131,5 +160,4 @@ const GroceryBasketComponent: FC = () => {
         </div>
     )
 }
-
 export default GroceryBasketComponent;
