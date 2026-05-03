@@ -4,10 +4,12 @@ import { getProductByIdAsync } from "../../services/catalog-service/ProductServi
 import './ProductPageComponent.scss';
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
+import { useNavigate } from "react-router-dom";
 
 const ProductPageComponent = () => {
     const { id } = useParams();
     const [product, setProduct] = useState<ProductDto | null>(null);
+	const navigate = useNavigate();
 
     useEffect(() => {
         if (!id) return;
@@ -57,6 +59,7 @@ const ProductPageComponent = () => {
                 <div className="action-block">
                     <button className="default-button">Добавить в корзину</button>
                     <button className="default-button buy-btn">Купить сейчас</button>
+					<button className="default-button" onClick={() => navigate(`/chats?productId=${product?.id}`)}>Написать продавцу</button>
                 </div>
             </div>
         </div>
