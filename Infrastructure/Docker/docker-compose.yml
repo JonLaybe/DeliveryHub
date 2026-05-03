@@ -153,7 +153,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       APPLY_MIGRATIONS: "true"
       # ConnectionStrings__Postgres: "Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=postgres"
-      ConnectionStrings__Postgres: "Host=general-postgres;Port=5432;Database=auth_db;Username=postgres;Password=postgres"
+      ConnectionStrings__Postgres: "Host=general-postgres;Port=5432;Database=auth_db;Username=postgres;Password=postgres;GssEncryptionMode=Disable"
       Jwt__Issuer: "AuthService"
       Jwt__AccessTokenMinutes: "15"
       Jwt__RefreshTokenDays: "30"

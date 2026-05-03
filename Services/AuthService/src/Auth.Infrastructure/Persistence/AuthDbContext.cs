@@ -1,8 +1,9 @@
 ﻿using Auth.Domain.Entities;
+using Auth.Infrastructure.Persistence.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Auth.Infrastructure.Persistence.Entities;
+using System;
 
 namespace Auth.Infrastructure.Persistence;
 
