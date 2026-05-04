@@ -29,7 +29,7 @@ namespace Chat.Infrastructure.Repositories
         public async Task<IReadOnlyList<Conversation>> GetForUserAsync(Guid userId)
         {
             return await _chatDbContext.Conversations
-                .Where(c => c.BuyerId == userId || c.SellerId == userId)
+                .Where(c => c.BuyerId == userId)
                 .OrderByDescending(c => c.LastMessageAt)
                 .ToListAsync();
         }

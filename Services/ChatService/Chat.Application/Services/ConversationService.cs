@@ -1,4 +1,6 @@
-﻿using Chat.Application.Interfaces;
+﻿using Chat.Application.DTOs;
+using Chat.Application.Helpers;
+using Chat.Application.Interfaces;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
 
@@ -35,9 +37,11 @@ namespace Chat.Application.Services
             return conversation.Id;
         }
 
-        public async Task<IReadOnlyList<Conversation>> GetUserConversationsAsync(Guid userId)
+        public async Task<IReadOnlyList<ConversationDto>> GetUserConversationsAsync(Guid userId)
         {
-            return await _repository.GetForUserAsync(userId);
+            var conversations = await _repository.GetForUserAsync(userId);
+            var dtos = Mapper.GetConversationDtoList(conversations);
+            return dtos;
         }
     }
 }
