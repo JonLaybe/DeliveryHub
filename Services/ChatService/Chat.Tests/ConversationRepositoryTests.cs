@@ -54,15 +54,15 @@ namespace Chat.Tests
                 Id = Guid.NewGuid(),
                 BuyerId = Guid.NewGuid(),
                 SellerId = Guid.NewGuid(),
-                Messages = new List<Message>
-            {
-                new Message
-                {
-                    Id = Guid.NewGuid(),
-                    Text = "Hello",
-                    CreatedAt = DateTime.UtcNow
-                }
-            }
+                Messages =
+                [
+                    new() 
+                    {
+                        Id = Guid.NewGuid(),
+                        Text = "Hello",
+                        CreatedAt = DateTime.UtcNow
+                    }
+                ]
             };
 
             context.Conversations.Add(conversation);
@@ -83,20 +83,20 @@ namespace Chat.Tests
             var userId = Guid.NewGuid();
 
             var conversations = new List<Conversation>
-        {
-            new Conversation
             {
-                Id = Guid.NewGuid(),
-                BuyerId = userId,
-                LastMessageAt = DateTime.UtcNow
-            },
-            new Conversation
-            {
-                Id = Guid.NewGuid(),
-                SellerId = userId,
-                LastMessageAt = DateTime.UtcNow.AddMinutes(-1)
-            }
-        };
+                new() 
+                {
+                    Id = Guid.NewGuid(),
+                    BuyerId = userId,
+                    LastMessageAt = DateTime.UtcNow
+                },
+                new() 
+                {
+                    Id = Guid.NewGuid(),
+                    BuyerId = userId,
+                    LastMessageAt = DateTime.UtcNow.AddMinutes(-1)
+                }
+            };
 
             context.Conversations.AddRange(conversations);
             await context.SaveChangesAsync();

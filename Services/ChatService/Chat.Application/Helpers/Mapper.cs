@@ -1,0 +1,33 @@
+﻿using Chat.Application.DTOs;
+using Chat.Domain.Entities;
+
+namespace Chat.Application.Helpers
+{
+    public static class Mapper
+    {
+        public static List<MessageDto> GetMessageDtoList(List<Message> messages)
+        {
+            return [.. messages.Select(m => new MessageDto
+            {
+                Id = m.Id,
+                SenderId = m.SenderId,
+                Text = m.Text ?? string.Empty,
+                CreatedAt = m.CreatedAt
+            })];
+        }
+
+        public static List<ConversationDto> GetConversationDtoList(IReadOnlyList<Conversation> conversations)
+        {
+            return [.. conversations.Select(c => new ConversationDto
+            {
+                Id = c.Id,
+                ProductId = c.ProductId,
+                BuyerId = c.BuyerId,
+                SellerId = c.SellerId,
+                Status = c.Status.ToString(),
+                CreatedAt = c.CreatedAt,
+                LastMessageAt = c.LastMessageAt
+            })];
+        }
+    }
+}

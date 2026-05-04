@@ -13,14 +13,16 @@ namespace Chat.Api.Controllers
     /// Идентификатор пользователя извлекается из JWT-токена (claim <c>sub</c>).
     /// </remarks>
     [ApiController]
-    [Route("api/conversations")]
-    public class ConversationsController : ControllerBase
+    [Route("api/chat")]
+    public class ChatController : ControllerBase
     {
-        private readonly IConversationService _service;
+        private readonly IConversationService _conversationService;
+        private readonly IMessageService _messageService;
 
-        public ConversationsController(IConversationService service)
+        public ChatController(IConversationService conversationService, IMessageService messageService)
         {
-            _service = service;
+            _conversationService = conversationService;
+            _messageService = messageService;
         }
 
         /// <summary>
@@ -42,13 +44,14 @@ namespace Chat.Api.Controllers
         /// <response code="200">Диалог успешно создан</response>
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateConversationRequest request)
+        [HttpPost("conversation")]
+        public async Task<IActionResult> CreateConversation([FromBody] CreateConversationRequest request)
         {
             // Взять из JWT потом
             var buyerId = Guid.NewGuid();
 
-            var conversationId = await _service.CreateConversationAsync(request.ProductId, buyerId, request.SellerId);
+            var conversationId = await _conversationService
+                .CreateConversationAsync(request.ProductId, buyerId, request.SellerId);
 
             return Ok(conversationId);
         }
@@ -67,12 +70,26 @@ namespace Chat.Api.Controllers
         /// </returns>
         /// <response code="200">Список диалогов успешно получен</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
-        [HttpGet("{userId:guid}")]
+        [HttpGet("conversation/{userId:guid}")]
         public async Task<IActionResult> GetMyConversations(Guid userId)
         {
-            var conversations = await _service.GetUserConversationsAsync(userId);
+            var conversations = await _conversationService.GetUserConversationsAsync(userId);
 
             return Ok(conversations);
+        }
+
+        /// <summary>
+        /// Получает все сообщения для указанного диалога (conversation).
+        /// </summary>
+        /// <param name="conversationId">Идентификатор диалога (ConversationId).</param>
+        /// <returns>Список сообщений в формате MessageDto для данного диалога.</returns>
+        /// <response code="200">Возвращает список сообщений для указанного диалога.</response>
+        [HttpGet("messages/{conversationId:guid}")]
+        public async Task<IActionResult> GetMessages(Guid conversationId)
+        {
+            var messages = await _messageService.GetMessagesAsync(conversationId);
+
+            return Ok(messages);
         }
     }
 }

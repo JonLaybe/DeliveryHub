@@ -23,6 +23,8 @@ namespace Chat.Api
             builder.Services.AddSignalR();
             builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
             builder.Services.AddScoped<IConversationService, ConversationService>();
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
 
             var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -53,6 +55,11 @@ namespace Chat.Api
                         .WithTheme(ScalarTheme.BluePlanet);
                 });
             }
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
 
             app.MapHub<ChatHub>("/chat");
             app.UseHttpsRedirection();
