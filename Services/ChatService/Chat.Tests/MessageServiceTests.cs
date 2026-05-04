@@ -80,9 +80,9 @@ namespace Chat.Tests
         {
             var conversationId = Guid.NewGuid();
             var messages = new List<Message>
-        {
-            new() { Id = Guid.NewGuid(), ConversationId = conversationId, Text = "Hi" }
-        };
+            {
+                new() { Id = Guid.NewGuid(), ConversationId = conversationId, Text = "Hi" }
+            };
 
             _messageRepoMock.Setup(r => r.GetByConversationIdAsync(conversationId))
                             .ReturnsAsync(messages);
@@ -91,6 +91,37 @@ namespace Chat.Tests
 
             Assert.Single(result);
             Assert.Equal("Hi", result[0].Text);
+        }
+
+        [Fact]
+        public async Task GetUnreadCountAsync_ReturnsCorrectCount()
+        {
+            var conversationId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var expectedCount = 5;
+
+            _messageRepoMock.Setup(r => r.CountUnreadMessagesAsync(conversationId, userId))
+                            .ReturnsAsync(expectedCount);
+
+            var count = await _service.GetUnreadCountAsync(conversationId, userId);
+
+            Assert.Equal(expectedCount, count);
+            _messageRepoMock.Verify(r => r.CountUnreadMessagesAsync(conversationId, userId), Times.Once);
+        }
+
+        [Fact]
+        public async Task MarkMessagesAsReadAsync_CallsRepository()
+        {
+            var conversationId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            _messageRepoMock.Setup(r => r.SetMessageIsReadTrueAsync(conversationId, userId))
+                            .Returns(Task.CompletedTask)
+                            .Verifiable();
+
+            await _service.MarkMessagesAsReadAsync(conversationId, userId);
+
+            _messageRepoMock.Verify(r => r.SetMessageIsReadTrueAsync(conversationId, userId), Times.Once);
         }
     }
 }

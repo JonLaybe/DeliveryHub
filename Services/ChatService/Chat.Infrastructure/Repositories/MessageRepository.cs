@@ -40,5 +40,28 @@ namespace Chat.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountUnreadMessagesAsync(Guid conversationId, Guid userId)
+        {
+            return await _context.Messages
+                .Where(m => m.ConversationId == conversationId
+                            && m.SenderId != userId
+                            && !m.IsRead)
+                .CountAsync();
+        }
+
+        public async Task SetMessageIsReadTrueAsync(Guid conversationId, Guid userId)
+        {
+            var messages = await _context.Messages
+                .Where(m => m.ConversationId == conversationId && m.SenderId != userId && !m.IsRead)
+                .ToListAsync();
+
+            foreach (var message in messages)
+            {
+                message.IsRead = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

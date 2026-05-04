@@ -21,7 +21,7 @@ namespace Chat.Api.Controllers
         private readonly IOnlineStatusService _onlineStatusService;
 
         public ChatController(
-            IConversationService conversationService, 
+            IConversationService conversationService,
             IMessageService messageService,
             IOnlineStatusService onlineStatusService)
         {
@@ -89,7 +89,7 @@ namespace Chat.Api.Controllers
         /// <param name="conversationId">Идентификатор диалога (ConversationId).</param>
         /// <returns>Список сообщений в формате MessageDto для данного диалога.</returns>
         /// <response code="200">Возвращает список сообщений для указанного диалога.</response>
-        [HttpGet("messages/{conversationId:guid}")]
+        [HttpGet("conversation/{conversationId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
             var messages = await _messageService.GetMessagesAsync(conversationId);
@@ -106,6 +106,13 @@ namespace Chat.Api.Controllers
             var status = await _onlineStatusService.IsOnlineAsync(userId);
 
             return Ok(status);
+        }
+
+        [HttpGet("conversation/{conversationId:guid}/unread")]
+        public async Task<IActionResult> GetUnreadMessagesCount(Guid conversationId, Guid userId)
+        {
+            var count = await _messageService.GetUnreadCountAsync(conversationId, userId);
+            return Ok(count);
         }
     }
 }
