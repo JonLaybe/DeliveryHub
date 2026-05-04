@@ -58,5 +58,15 @@ namespace Chat.Application.Services
             var dtos = Mapper.GetMessageDtoList(messages);
             return dtos;
         }
+
+        public async Task<int> GetUnreadCountAsync(Guid conversationId, Guid userId)
+        {
+            return await _messageRepository.CountUnreadMessagesAsync(conversationId, userId);
+        }
+
+        public async Task MarkMessagesAsReadAsync(Guid conversationId, Guid userId)
+        {
+            await _messageRepository.SetMessageIsReadTrueAsync(conversationId, userId);
+        }
     }
 }
