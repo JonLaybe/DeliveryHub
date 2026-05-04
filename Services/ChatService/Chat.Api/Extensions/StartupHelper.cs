@@ -3,8 +3,9 @@ using Chat.Infrastructure.Persistence;
 using Chat.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using StackExchange.Redis;
 
-namespace Chat.Api.NewFolder
+namespace Chat.Api.Extensions
 {
     public static class StartupHelper
     {
@@ -16,9 +17,13 @@ namespace Chat.Api.NewFolder
 
             services.AddChatServices();
 
-            var connection = configuration.GetConnectionString("DefaultConnection");
+            var dbConnection = configuration.GetConnectionString("Postgres");
             services.AddDbContext<ChatDbContext>(options =>
-                options.UseNpgsql(connection));
+                options.UseNpgsql(dbConnection));
+
+            var redisConnection = configuration.GetConnectionString("Redis");
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+                ConnectionMultiplexer.Connect(redisConnection));
         }
 
         public static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
@@ -26,7 +31,7 @@ namespace Chat.Api.NewFolder
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
 
-             await context.Database.MigrateAsync();
+            await context.Database.MigrateAsync();
 
             if (app.Environment.IsDevelopment())
             {

@@ -1,4 +1,4 @@
-using Chat.Api.NewFolder;
+using Chat.Api.Extensions;
 
 namespace Chat.Api
 {

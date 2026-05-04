@@ -9,13 +9,16 @@ namespace Chat.Application.Services
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IConversationRepository _conversationRepository;
+        private readonly IOnlineStatusService _onlineStatusService;
 
         public MessageService(
             IMessageRepository messageRepository,
-            IConversationRepository conversationRepository)
+            IConversationRepository conversationRepository,
+            IOnlineStatusService onlineStatusService)
         {
             _messageRepository = messageRepository;
             _conversationRepository = conversationRepository;
+            _onlineStatusService = onlineStatusService;
         }
 
         public async Task<Guid> SendMessageAsync(Guid conversationId, Guid senderId, string text)
@@ -39,6 +42,7 @@ namespace Chat.Application.Services
             };
 
             await _messageRepository.AddAsync(message);
+            await _onlineStatusService.SetOnlineAsync(senderId);
 
             conversation.LastMessageAt = DateTime.UtcNow;
 

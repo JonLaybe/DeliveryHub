@@ -2,7 +2,7 @@
 using Chat.Application.Services;
 using Chat.Infrastructure.Repositories;
 
-namespace Chat.Api.NewFolder
+namespace Chat.Api.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -13,6 +13,7 @@ namespace Chat.Api.NewFolder
 
             services.AddScoped<IConversationService, ConversationService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IOnlineStatusService, OnlineStatusService>();
 
             return services;
         }
