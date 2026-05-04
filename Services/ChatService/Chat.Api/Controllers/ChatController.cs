@@ -18,11 +18,16 @@ namespace Chat.Api.Controllers
     {
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
+        private readonly IOnlineStatusService _onlineStatusService;
 
-        public ChatController(IConversationService conversationService, IMessageService messageService)
+        public ChatController(
+            IConversationService conversationService, 
+            IMessageService messageService,
+            IOnlineStatusService onlineStatusService)
         {
             _conversationService = conversationService;
             _messageService = messageService;
+            _onlineStatusService = onlineStatusService;
         }
 
         /// <summary>
@@ -90,6 +95,17 @@ namespace Chat.Api.Controllers
             var messages = await _messageService.GetMessagesAsync(conversationId);
 
             return Ok(messages);
+        }
+
+        [HttpGet("status/{userId:guid}")]
+        public async Task<IActionResult> GetOnlineStatus(Guid userId)
+        {
+            // Для тестирования потом убрать
+            await _onlineStatusService.SetOnlineAsync(userId);
+
+            var status = await _onlineStatusService.IsOnlineAsync(userId);
+
+            return Ok(status);
         }
     }
 }
