@@ -9,13 +9,20 @@ namespace Chat.Tests
     {
         private readonly Mock<IMessageRepository> _messageRepoMock;
         private readonly Mock<IConversationRepository> _conversationRepoMock;
+        private readonly Mock<IOnlineStatusService> _onlineStatusServiceMock;
         private readonly MessageService _service;
 
         public MessageServiceTests()
         {
             _messageRepoMock = new Mock<IMessageRepository>();
             _conversationRepoMock = new Mock<IConversationRepository>();
-            _service = new MessageService(_messageRepoMock.Object, _conversationRepoMock.Object);
+            _onlineStatusServiceMock = new Mock<IOnlineStatusService>();
+
+            _service = new MessageService(
+                _messageRepoMock.Object,
+                _conversationRepoMock.Object,
+                _onlineStatusServiceMock.Object
+            );
         }
 
         [Fact]
@@ -37,7 +44,7 @@ namespace Chat.Tests
         }
 
         [Fact]
-        public async Task SendMessageAsync_SavesMessage()
+        public async Task SendMessageAsync_SavesMessage_AndSetsOnline()
         {
             var conversationId = Guid.NewGuid();
             var conversation = new Conversation
@@ -63,6 +70,8 @@ namespace Chat.Tests
             _messageRepoMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _conversationRepoMock.Verify(r => r.SaveChangesAsync(), Times.Once);
 
+            _onlineStatusServiceMock.Verify(s => s.SetOnlineAsync(senderId), Times.Once);
+
             Assert.NotEqual(Guid.Empty, result);
         }
 
@@ -71,9 +80,9 @@ namespace Chat.Tests
         {
             var conversationId = Guid.NewGuid();
             var messages = new List<Message>
-            {
-                new() { Id = Guid.NewGuid(), ConversationId = conversationId, Text = "Hi" }
-            };
+        {
+            new() { Id = Guid.NewGuid(), ConversationId = conversationId, Text = "Hi" }
+        };
 
             _messageRepoMock.Setup(r => r.GetByConversationIdAsync(conversationId))
                             .ReturnsAsync(messages);

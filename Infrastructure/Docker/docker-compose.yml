@@ -118,13 +118,15 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       # ConnectionStrings__DefaultConnection: "Host=chat-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
       ConnectionStrings__DefaultConnection: "Host=general-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
+      ConnectionStrings__Redis: "redis:6379"
     depends_on:
       # - chat-postgres
       - general-postgres
+      - redis
     networks:
       - backend
     restart: unless-stopped
-
+    
   # chat-postgres:
   #   image: postgres:16
   #   container_name: chat-postgres
@@ -225,6 +227,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+      
+  redis:
+    image: redis:7-alpine
+    container_name: chat-redis
+    ports:
+      - "6379:6379"
 
 networks:
   backend:
