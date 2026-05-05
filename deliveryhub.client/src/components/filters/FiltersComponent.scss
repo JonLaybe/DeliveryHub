@@ -1,6 +1,7 @@
 .filters {
     z-index: 100;
     top: 0;
+    left: 0;
     background-color: #fffbfb;
     width: 358px;
     height: 100vh;
@@ -49,6 +50,7 @@
             .filters-dismiss {
                 height: 28px;
                 width: 28px;
+                caret-color: transparent;
                 margin: -6px -6px -2px;
 
                 &::before {

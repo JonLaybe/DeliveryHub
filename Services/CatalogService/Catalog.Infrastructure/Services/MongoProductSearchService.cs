@@ -1,19 +1,23 @@
 ﻿using Catalog.Application.Models;
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Mongo;
+using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Catalog.Infrastructure.Services
 {
     public class MongoProductSearchService : IProductSearchService
     {
         private MongoDatabase _database;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public MongoProductSearchService(MongoDatabase database)
+        public MongoProductSearchService(MongoDatabase database, ICategoryRepository categoryRepository)
         {
             _database = database;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<IEnumerable<string>> SuggestAsync(string query, CancellationToken cancellationToken)
@@ -62,8 +66,22 @@ namespace Catalog.Infrastructure.Services
 
             if (searchQuery.CategoryId.HasValue)
             {
-                filter &= Builders<Product>
-                    .Filter.Eq(p => p.CategoryId, searchQuery.CategoryId.Value);
+                var allCategories = await _categoryRepository.GetAll().ToListAsync();
+
+                var subCategories = allCategories
+                    .Where(x => x.ParentId == searchQuery.CategoryId.Value)
+                    .Select(x => x.Id);
+
+                if (subCategories.Any())
+                {
+                    filter &= Builders<Product>.Filter
+                        .In(p => p.CategoryId, subCategories);
+                }
+                else
+                {
+                    filter &= Builders<Product>
+                        .Filter.Eq(p => p.CategoryId, searchQuery.CategoryId.Value);
+                }
             }
 
             if (searchQuery.MinPrice.HasValue)
@@ -82,12 +100,15 @@ namespace Catalog.Infrastructure.Services
             {
                 foreach (var (key, values) in searchQuery.Attributes)
                 {
-                    foreach (var value in values)
-                    {
-                        if (!string.IsNullOrWhiteSpace(value))
-                            filter &= Builders<Product>.Filter.Eq($"Attributes.{key}", value);
-                    }
+                    filter &= Builders<Product>.Filter.In($"Attributes.{key}", values);
                 }
+            }
+
+            var sorting = Builders<Product>.Sort.Ascending(x => x.Price);
+
+            if (searchQuery.Sort == SortOption.PriceDesc)
+            {
+                sorting = sorting.Descending(x => x.Price);
             }
 
             List<Product> products = new();
@@ -98,7 +119,9 @@ namespace Catalog.Infrastructure.Services
             }
             else
             {
-                var match = await _database.Products.FindAsync(filter, cancellationToken: cancellationToken);
+                var match = await _database.Products.FindAsync(filter, 
+                    options: new FindOptions<Product, Product>() { Sort = sorting }, 
+                    cancellationToken: cancellationToken);
 
                 products = match.ToList();
             }
@@ -123,7 +146,7 @@ namespace Catalog.Infrastructure.Services
                         Type = s.Type,
                     }).ToList());
 
-            //var categories = await _database.Categories.FindAsync(x => products.Select(p => p.CategoryId).Contains(x.Id));
+            //var queryCategories = allCategories.Where(x => products.Select(p => p.CategoryId).Contains(x.Id));
             var attributes = products.SelectMany(p => p.Attributes).GroupBy(a => a.Key)
                 .ToDictionary(k => k.Key, v => v.Select(s => s.Value)
                 .Distinct().ToList());
@@ -131,6 +154,7 @@ namespace Catalog.Infrastructure.Services
             var result = new ProductSearchResultDto
             {
                 Attributes = attributes,
+                //Categories = queryCategories,
                 Products = products.Select(p => new ProductDto
                 {
                     Id = p.Id,

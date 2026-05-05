@@ -2,17 +2,15 @@ import { useEffect, useContext, type FC } from "react";
 import './ProductsComponent.scss';
 import ProductCardComponent from "../../common/product-card/ProductCardComponent";
 import { SearchContext } from "../../context/SearchContext";
+import FiltersControlComponent from "../filters/FiltersControlComponent";
 
 const ProductsComponent: FC = () => {
     const { 
         products, 
         searchBoxChangeHandler,
-        showFiltersBlock,
-        showFilters,
         clearFilters,
-        filtersCount,
         setFiltersCount,
-        serachProductsAndSetResults
+        serachProductsAndSetResults,
     } = useContext(SearchContext);
 
     useEffect(() => {
@@ -28,11 +26,7 @@ const ProductsComponent: FC = () => {
 
     return (
         <>
-            {showFiltersBlock && 
-            <div className="filters-block">
-                <button onClick={() => showFilters(true)} className="filter-button">Фильтры</button>
-                {filtersCount > 0 && <span className="filters-count">{filtersCount}</span>}
-            </div>}
+            <FiltersControlComponent />
 
             <div className="container" >
                 <div className="list_products">

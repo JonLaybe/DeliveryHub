@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Catalog.API.Controllers
 {
     [ApiController]
-    [Route("product/[controller]")]
+    [Route("api/product/[controller]")]
     public class ImageController : ControllerBase
     {
         private readonly IImageService imageService;

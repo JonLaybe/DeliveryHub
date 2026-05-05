@@ -13,7 +13,6 @@ function App() {
     <BrowserRouter>
       <SearchProvider>
         <HeaderComponent />
-        <FiltersComponent />
         <div className='wrapper'>
           <RoutingComponent />
         </div>
