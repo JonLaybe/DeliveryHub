@@ -1,11 +1,12 @@
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useState } from "react";
 import './OrderComponent.scss';
 import { getListOrdersAsync } from "../../services/order-service/OrderService";
 import type { OrderDto } from "../../models/order-service/OrderDto";
 import OrderListComponent from "../../common/order-list/OrderListComponent";
 import { Link } from "react-router-dom";
+import OrderDetailsComponent from "./dialogs/details/OrderDetailsComponent";
 
-const OrderComponent: FC = () => {
+const OrderComponent = () => {
     const [orders, setOrders] = useState<{ orders: OrderDto[] }>();
 
     useEffect(() => {
@@ -24,7 +25,10 @@ const OrderComponent: FC = () => {
             {orders && orders.orders.length > 0 ? (
                 <div className="my_orders">
                     <h1 className="default_name_chapter my_orders__name_chapter">Мои заказы</h1>
-                    <OrderListComponent listOrders={orders.orders}></OrderListComponent>
+                    <div className="order_grid">
+                        <OrderListComponent listOrders={orders.orders}></OrderListComponent>
+                        <OrderDetailsComponent order={orders.orders[0]} />
+                    </div>
                 </div>
             ) : (
                 <div className="shopping_cart_empy">

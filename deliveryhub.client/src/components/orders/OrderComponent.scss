@@ -41,5 +41,10 @@
         &__name_chapter {
             margin: 0 0 10px 0;
         }
+
+        .order_grid {
+            display: grid;
+            grid-template-columns: 70% 30%;
+        }
     }
 }

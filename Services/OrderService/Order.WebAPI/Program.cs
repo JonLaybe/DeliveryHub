@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.WebAPI.Extensions;
+using Shared.RabbitMq.Interfaces;
 
 namespace OrderService.WebAPI
 {
@@ -29,6 +30,9 @@ namespace OrderService.WebAPI
             });
 
             var app = builder.Build();
+
+            var rabbitClient = app.Services.GetRequiredService<IClientRabbitMq>();
+            await rabbitClient.Connection();
 
             if (app.Environment.IsDevelopment())
             {

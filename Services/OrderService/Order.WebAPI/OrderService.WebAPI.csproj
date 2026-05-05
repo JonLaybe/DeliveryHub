@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Shared.RabbitMq\Shared.RabbitMq.csproj" />
     <ProjectReference Include="..\Order.Core\OrderService.Core.csproj" />
     <ProjectReference Include="..\Order.Domain\OrderService.Domain.csproj" />
     <ProjectReference Include="..\Order.Infrastructure\OrderService.Infrastructure.csproj" />
