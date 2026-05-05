@@ -1,7 +1,6 @@
-import type { FC } from "react";
 import './ProfileComponent.scss';
 
-const ProfileComponent: FC = () => {
+const ProfileComponent = () => {
     return (
         <div className="default_container profile_container">
             <h1>Profile</h1>

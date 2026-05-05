@@ -1,0 +1,71 @@
+{
+    "bindings": [],
+    "exchanges": [],
+    "global_parameters": [],
+    "parameters": [],
+    "permissions": [
+        {
+            "configure": ".*",
+            "read": ".*",
+            "user": "guest",
+            "vhost": "/",
+            "write": ".*"
+        }
+    ],
+    "policies": [],
+    "users": [
+        {
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "limits": {},
+            "name": "guest",
+            "password_hash": "gQVx/B2cdezO1Rbovs0UOtaYVFRQOTNhdbGZY26NvIWHk5lz",
+            "tags": [
+                "administrator"
+            ]
+        }
+    ],
+    "vhosts": [
+        {
+            "limits": [],
+            "metadata": {
+                "description": "Default virtual host",
+                "tags": []
+            },
+            "name": "/"
+        }
+    ],
+    "queues": [
+        {
+            "arguments": {
+                "x-dead-letter-exchange": "",
+                "x-dead-letter-routing-key": "ProductDeadLetter",
+                "x-dead-letter-strategy": "at-least-once",
+                "x-overflow": "reject-publish",
+                "x-queue-type": "quorum"
+            },
+            "auto_delete": false,
+            "durable": true,
+            "name": "Product",
+            "type": "quorum",
+            "vhost": "/"
+        },
+        {
+            "arguments": {
+                "x-dead-letter-exchange": "",
+                "x-dead-letter-routing-key": "Product",
+                "x-dead-letter-strategy": "at-least-once",
+                "x-message-ttl": 300000,
+                "x-overflow": "reject-publish",
+                "x-queue-type": "quorum"
+            },
+            "auto_delete": false,
+            "durable": true,
+            "name": "ProductDeadLetter",
+            "type": "quorum",
+            "vhost": "/"
+        }
+    ],
+    "rabbit_version": "3.12.6",
+    "rabbitmq_version": "3.12.6",
+    "topic_permissions": []
+}

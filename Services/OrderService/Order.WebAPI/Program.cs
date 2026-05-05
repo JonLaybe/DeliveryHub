@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.WebAPI.Extensions;
+using Shared.RabbitMq.Interfaces;
 
 namespace OrderService.WebAPI
 {
@@ -13,7 +14,9 @@ namespace OrderService.WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
-
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddHttpClient();
+            builder.Services.AddAuth(builder.Configuration);
             builder.Services.RegisterDependencies(builder.Configuration);
 
             builder.Services.AddCors(options =>
@@ -27,6 +30,9 @@ namespace OrderService.WebAPI
             });
 
             var app = builder.Build();
+
+            var rabbitClient = app.Services.GetRequiredService<IClientRabbitMq>();
+            await rabbitClient.Connection();
 
             if (app.Environment.IsDevelopment())
             {
@@ -45,6 +51,10 @@ namespace OrderService.WebAPI
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseHttpsRedirection();
 

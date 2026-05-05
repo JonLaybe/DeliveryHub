@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrderService.Core.Models.Orders;
 using OrderService.Core.Services.Interfaces.Orders;
 
 namespace OrderService.WebAPI.Controllers.Orders
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController
