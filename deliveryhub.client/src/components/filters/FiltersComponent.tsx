@@ -1,9 +1,11 @@
 import './FiltersComponent.scss';
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import { filterNamesMapping } from "../../constants/FilterNameValueMap";
+import type { ProductSearchQueryRequest } from '../../models/catalog-service/ProductSearchQueryRequest';
+import type { UUIDTypes } from 'uuid';
 
-const FiltersComponent = () => {
+const FiltersComponent = (props: { selectedSort: string, selectedCategoryId: UUIDTypes | undefined }) => {
     const minPrice = useRef<HTMLInputElement>(null);
     const maxPrice = useRef<HTMLInputElement>(null);
     const { 
@@ -15,6 +17,8 @@ const FiltersComponent = () => {
         filtersCount,
         query,
      } = useContext(SearchContext);
+
+     const [selectedSort, selectedCategoryId] = [props.selectedSort, props.selectedCategoryId];
 
     const [selectedFilters, setSelectedFilters] = useState<{[key: string]: string[]}>({});
 
@@ -39,16 +43,22 @@ const FiltersComponent = () => {
         setFiltersCount(0);
     }
 
-    const applyFilters = () => {
+    const applyFilters = (request: ProductSearchQueryRequest) => {
         showFilters(false);
 
-        serachProductsAndSetResults({
-            text: query,
-            minPrice: minPrice.current?.value ? Number(minPrice.current.value) : undefined,
-            maxPrice: maxPrice.current?.value ? Number(maxPrice.current.value) : undefined,
-            attributes: selectedFilters,
-        });
+        request.text = query;
+        request.minPrice = minPrice.current?.value ? Number(minPrice.current.value) : undefined;
+        request.maxPrice = maxPrice.current?.value ? Number(maxPrice.current.value) : undefined;
+        request.attributes = selectedFilters;
+        request.sort = selectedSort;
+        request.categoryId = selectedCategoryId;
+
+        serachProductsAndSetResults(request);
     }
+
+    useEffect(() => {
+        applyFilters({});
+    }, [selectedSort, selectedCategoryId]);
 
     return (filtersIsShown &&
         <div className="filters">
@@ -100,7 +110,7 @@ const FiltersComponent = () => {
                     ))}
                 </div>
                 <div className='filter-footer'>
-                    <button onClick={applyFilters} className='default-button w-100'>Применить</button>
+                    <button onClick={() => applyFilters({})} className='default-button w-100'>Применить</button>
                     {filtersCount > 0 && <button onClick={clearFilters} className='w-100 clear-button'>Очистить</button>}
                 </div>
             </div>
