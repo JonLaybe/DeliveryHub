@@ -1,21 +1,23 @@
-﻿using DiscountService.Api.Infrastructure;
-using DiscountService.Core.Repositories;
+﻿using DiscountService.Core.Repositories;
 using DiscountService.Core.Services;
 using DiscountService.Core.Services.Abstractions;
 using DiscountService.Data;
 using DiscountService.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using DiscountService.Core;
 
 namespace DiscountService.Api
 {
-    internal class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container
             builder.Services.AddControllers();
+            // Core
+            builder.Services.AddCoreServices();
 
             // Регистрация DbContext (раскомментируйте и настройте)
             var connection = builder.Configuration.GetConnectionString("DiscountDb");
@@ -76,7 +78,9 @@ namespace DiscountService.Api
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-                db.Database.Migrate(); // Применяет миграции при запуске
+                await db.Database.MigrateAsync(); // Применяет миграции при запуске
+
+                await DatabaseInitializer.InitializeAsync(db);
             }
 
             app.Run();

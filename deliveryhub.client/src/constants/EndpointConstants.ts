@@ -10,3 +10,7 @@ export const AUTH_URL = 'api/v1/auth';
 export const CATALOG_BASE_URL = 'http://localhost:5000';
 export const CATALOGSERVICE_PRODUCT_URL = '/api/catalog/product';
 export const CATALOGSERVICE_PRODUCT_IMAGE_URL = '/api/catalog/product/image';
+
+//Discount
+export const DISCOUNT_BASE_URL = 'http://localhost:8082';
+export const DISCOUNTSERVICE_APPLY = '/api/Discounts/Apply';

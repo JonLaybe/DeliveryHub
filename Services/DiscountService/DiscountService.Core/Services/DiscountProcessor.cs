@@ -1,4 +1,5 @@
-﻿using DiscountService.Core.Entities;
+﻿using DiscountService.Abstractions;
+using DiscountService.Core.Entities;
 using DiscountService.Core.Repositories;
 using DiscountService.Core.Services.Abstractions;
 
