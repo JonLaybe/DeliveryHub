@@ -45,8 +45,8 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
 
     const onLogin = async (dataLoginRequest: LoginRequestDto) => {
         await loginAsync(dataLoginRequest).then(() => closeModal())
-        .catch(() => {
-            console.log('>Login failed');
+        .catch((e) => {
+            console.log('>Login failed', e);
             throw 'Login failed';
         });
     };

@@ -27,6 +27,7 @@ button {
     }
     
     &__suggester {
+        z-index: 10;
         position: relative;
         margin-top: 5px;
         background-color: white;
