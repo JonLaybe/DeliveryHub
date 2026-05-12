@@ -15,7 +15,7 @@ const ProductsComponent: FC = () => {
 
     useEffect(() => {
         clearFilters();
-        searchBoxChangeHandler({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
+        searchBoxChangeHandler({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
 
         serachProductsAndSetResults({
             text: '',
@@ -39,5 +39,6 @@ const ProductsComponent: FC = () => {
             </div>
         </>
     );
-}
+};
 
+export default ProductsComponent;
