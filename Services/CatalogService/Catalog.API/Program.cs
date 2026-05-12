@@ -1,6 +1,7 @@
 using Catalog.Application.Repositories;
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Helpers;
+using Catalog.Infrastructure.Messaging.Consumers;
 using Catalog.Infrastructure.Mongo;
 using Catalog.Infrastructure.Repositories;
 using Catalog.Infrastructure.Seed;
@@ -9,6 +10,7 @@ using DeliveryHub.Catalog.Application.Services;
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Services;
+using MassTransit;
 using MongoDB.Driver;
 using Shared.Web.Middlewares;
 using System.Reflection;
@@ -54,6 +56,32 @@ services
     .AddScoped<IProductSearchService, MongoProductSearchService>()
     .AddScoped<IProductService, ProductService>()
     .AddScoped<IImageService, ImageService>();
+
+services.AddMassTransit(x =>
+{
+    x.AddConsumer<OrderCreatedMessageConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/");
+
+        // Auto-configure endpoints for registered consumers
+        //cfg.ConfigureEndpoints(context);
+
+        cfg.ReceiveEndpoint("Product", e =>
+        {
+            e.UseRawJsonDeserializer(isDefault: true);
+
+            e.SetQueueArgument("x-dead-letter-exchange", "");
+            e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
+            e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
+            e.SetQueueArgument("x-overflow", "reject-publish");
+            e.SetQueueArgument("x-queue-type", "quorum");
+
+            e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
+        });
+    });
+});
 
 MongoMappings.Register();
 
