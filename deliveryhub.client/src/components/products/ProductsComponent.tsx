@@ -41,4 +41,3 @@ const ProductsComponent: FC = () => {
     );
 }
 
-export default ProductsComponent;

@@ -7,6 +7,7 @@ import type { RegisterRequestDto } from "../../models/auth-service/RegisterReque
 import type { RefreshTokenRequestDto } from "../../models/auth-service/RefreshTokenRequestDto";
 
 const TOKEN_STORAGE_KEY = "token";
+const AUTH_CHANGED_EVENT = "auth:changed";
 
 
 export async function loginAsync(loginRequest: LoginRequestDto) {
@@ -95,8 +96,19 @@ export function isAuthentication(): boolean {
 
 export function clearTokens() {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    notifyAuthChanged();
+}
+
+export function onAuthChanged(handler: () => void) {
+    window.addEventListener(AUTH_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(AUTH_CHANGED_EVENT, handler);
 }
 
 function setResultTokens(loginResponse: LoginResponseDto) {
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(loginResponse));
+    notifyAuthChanged();
+}
+
+function notifyAuthChanged() {
+    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
