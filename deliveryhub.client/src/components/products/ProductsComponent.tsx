@@ -13,8 +13,11 @@ const ProductsComponent: FC = () => {
         serachProductsAndSetResults,
     } = useContext(SearchContext);
 
+    console.log('products from context:', products);
+
     useEffect(() => {
         clearFilters();
+
         searchBoxChangeHandler({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
 
         serachProductsAndSetResults({
@@ -27,7 +30,7 @@ const ProductsComponent: FC = () => {
     return (
         <>
             <FiltersControlComponent />
-
+            
             <div className="container" >
                 <div className="list_products">
                     {

@@ -57,31 +57,31 @@ services
     .AddScoped<IProductService, ProductService>()
     .AddScoped<IImageService, ImageService>();
 
-services.AddMassTransit(x =>
-{
-    x.AddConsumer<OrderCreatedMessageConsumer>();
-
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("localhost", "/");
-
-        // Auto-configure endpoints for registered consumers
-        //cfg.ConfigureEndpoints(context);
-
-        cfg.ReceiveEndpoint("Product", e =>
-        {
-            e.UseRawJsonDeserializer(isDefault: true);
-
-            e.SetQueueArgument("x-dead-letter-exchange", "");
-            e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
-            e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
-            e.SetQueueArgument("x-overflow", "reject-publish");
-            e.SetQueueArgument("x-queue-type", "quorum");
-
-            e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
-        });
-    });
-});
+//services.AddMassTransit(x =>
+//{
+//    x.AddConsumer<OrderCreatedMessageConsumer>();
+//
+//    x.UsingRabbitMq((context, cfg) =>
+//    {
+//        cfg.Host("localhost", "/");
+//
+//        // Auto-configure endpoints for registered consumers
+//        //cfg.ConfigureEndpoints(context);
+//
+//        cfg.ReceiveEndpoint("Product", e =>
+//        {
+//            e.UseRawJsonDeserializer(isDefault: true);
+//
+//            e.SetQueueArgument("x-dead-letter-exchange", "");
+//            e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
+//            e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
+//            e.SetQueueArgument("x-overflow", "reject-publish");
+//            e.SetQueueArgument("x-queue-type", "quorum");
+//
+//            e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
+//        });
+//    });
+//});
 
 MongoMappings.Register();
 
