@@ -2,6 +2,7 @@
 using Chat.Application.Helpers;
 using Chat.Application.Interfaces;
 using Chat.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Services
 {
@@ -10,15 +11,18 @@ namespace Chat.Application.Services
         private readonly IMessageRepository _messageRepository;
         private readonly IConversationRepository _conversationRepository;
         private readonly IOnlineStatusService _onlineStatusService;
+        private readonly ILogger<MessageService> _logger;
 
         public MessageService(
             IMessageRepository messageRepository,
             IConversationRepository conversationRepository,
-            IOnlineStatusService onlineStatusService)
+            IOnlineStatusService onlineStatusService,
+            ILogger<MessageService> logger)
         {
             _messageRepository = messageRepository;
             _conversationRepository = conversationRepository;
             _onlineStatusService = onlineStatusService;
+            _logger = logger;
         }
 
         public async Task<Guid> SendMessageAsync(Guid conversationId, Guid senderId, string text)
@@ -49,6 +53,7 @@ namespace Chat.Application.Services
             await _messageRepository.SaveChangesAsync();
             await _conversationRepository.SaveChangesAsync();
 
+            _logger.LogInformation("Message saved: {@message}", message);
             return message.Id;
         }
 
