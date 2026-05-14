@@ -3,6 +3,7 @@ using Chat.Infrastructure.Persistence;
 using Chat.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Serilog;
 using StackExchange.Redis;
 
 namespace Chat.Api.Extensions
@@ -14,6 +15,8 @@ namespace Chat.Api.Extensions
             services.AddControllers();
             services.AddSignalR();
             services.AddOpenApi();
+            services.AddSerilog((context, conf) =>
+                conf.ReadFrom.Configuration(configuration));
 
             services.AddChatServices();
 
@@ -57,9 +60,10 @@ namespace Chat.Api.Extensions
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
+            app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseAuthorization();
-
+            
             app.MapHub<ChatHub>("/chat");
             app.MapControllers();
         }

@@ -2,6 +2,7 @@
 using Chat.Application.Services;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Chat.Tests
@@ -9,12 +10,14 @@ namespace Chat.Tests
     public class ConversationServiceTests
     {
         private readonly Mock<IConversationRepository> _repositoryMock;
+        private readonly Mock<ILogger<ConversationService>> _loggerMock;
         private readonly IConversationService _service;
 
         public ConversationServiceTests()
         {
             _repositoryMock = new Mock<IConversationRepository>();
-            _service = new ConversationService(_repositoryMock.Object);
+            _loggerMock = new Mock<ILogger<ConversationService>>();
+            _service = new ConversationService(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]

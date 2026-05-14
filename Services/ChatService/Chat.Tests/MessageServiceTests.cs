@@ -1,6 +1,7 @@
 ﻿using Chat.Application.Interfaces;
 using Chat.Application.Services;
 using Chat.Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Chat.Tests
@@ -10,18 +11,21 @@ namespace Chat.Tests
         private readonly Mock<IMessageRepository> _messageRepoMock;
         private readonly Mock<IConversationRepository> _conversationRepoMock;
         private readonly Mock<IOnlineStatusService> _onlineStatusServiceMock;
+        private readonly Mock<ILogger<MessageService>> _loggerMock;
         private readonly MessageService _service;
 
         public MessageServiceTests()
         {
             _messageRepoMock = new Mock<IMessageRepository>();
             _conversationRepoMock = new Mock<IConversationRepository>();
+            _loggerMock = new Mock<ILogger<MessageService>>();
             _onlineStatusServiceMock = new Mock<IOnlineStatusService>();
 
             _service = new MessageService(
                 _messageRepoMock.Object,
                 _conversationRepoMock.Object,
-                _onlineStatusServiceMock.Object
+                _onlineStatusServiceMock.Object,
+                _loggerMock.Object
             );
         }
 

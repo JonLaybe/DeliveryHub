@@ -3,16 +3,21 @@ using Chat.Application.Helpers;
 using Chat.Application.Interfaces;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Services
 {
     public class ConversationService : IConversationService
     {
         private readonly IConversationRepository _repository;
+        private readonly ILogger<ConversationService> _logger;
 
-        public ConversationService(IConversationRepository repository)
+        public ConversationService(
+            IConversationRepository repository,
+            ILogger<ConversationService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<Guid> CreateConversationAsync(Guid productId, Guid buyerId, Guid sellerId)
@@ -33,6 +38,7 @@ namespace Chat.Application.Services
 
             await _repository.AddAsync(conversation);
             await _repository.SaveChangesAsync();
+            _logger.LogInformation("Conversation created: {@conversation}", conversation);
 
             return conversation.Id;
         }
