@@ -1,5 +1,6 @@
 using Chat.Application.DTOs;
 using Chat.Application.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers
@@ -19,15 +20,18 @@ namespace Chat.Api.Controllers
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
         private readonly IOnlineStatusService _onlineStatusService;
+        private readonly IValidator<CreateConversationRequest> _validator;
 
         public ChatController(
             IConversationService conversationService,
             IMessageService messageService,
-            IOnlineStatusService onlineStatusService)
+            IOnlineStatusService onlineStatusService,
+            IValidator<CreateConversationRequest> validator)
         {
             _conversationService = conversationService;
             _messageService = messageService;
             _onlineStatusService = onlineStatusService;
+            _validator = validator;
         }
 
         /// <summary>
@@ -52,11 +56,14 @@ namespace Chat.Api.Controllers
         [HttpPost("conversation")]
         public async Task<IActionResult> CreateConversation([FromBody] CreateConversationRequest request)
         {
+
+            _validator.ValidateAndThrow(request);
             // Взять из JWT потом
             var buyerId = Guid.NewGuid();
+            var productId = Guid.Parse(request.ProductId);
+            var sellerId = Guid.Parse(request.SellerId);
 
-            var conversationId = await _conversationService
-                .CreateConversationAsync(request.ProductId, buyerId, request.SellerId);
+            var conversationId = await _conversationService.CreateConversationAsync(productId, buyerId, sellerId);
 
             return Ok(conversationId);
         }
