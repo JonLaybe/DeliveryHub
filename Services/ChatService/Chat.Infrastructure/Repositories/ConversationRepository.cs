@@ -29,9 +29,15 @@ namespace Chat.Infrastructure.Repositories
         public async Task<IReadOnlyList<Conversation>> GetForUserAsync(Guid userId)
         {
             return await _chatDbContext.Conversations
-                .Where(c => c.BuyerId == userId)
+                .Where(c => c.BuyerId == userId || c.SellerId == userId)
                 .OrderByDescending(c => c.LastMessageAt)
                 .ToListAsync();
+        }
+
+        public async Task<Conversation?> FindByUsers(Guid buyerId, Guid sellerId)
+        {
+            return await _chatDbContext.Conversations
+                .SingleOrDefaultAsync(r => r.BuyerId == buyerId && r.SellerId == sellerId);
         }
 
         public async Task SaveChangesAsync()

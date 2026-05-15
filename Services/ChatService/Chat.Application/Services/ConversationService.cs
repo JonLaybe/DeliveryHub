@@ -20,15 +20,22 @@ namespace Chat.Application.Services
             _logger = logger;
         }
 
-        public async Task<Guid> CreateConversationAsync(Guid productId, Guid buyerId, Guid sellerId)
+        public async Task<Guid> CreateConversationAsync(Guid buyerId, Guid sellerId)
         {
             if (buyerId == sellerId)
+            {
                 throw new InvalidOperationException("Buyer and seller cannot be the same");
+            }
+
+            var existingConversation = await _repository.FindByUsers(buyerId, sellerId);
+            if (IsExist(existingConversation))
+            {
+                throw new InvalidOperationException("Attempt to create new Conversation with existing Buyer-Seller pair");
+            }
 
             var conversation = new Conversation
             {
                 Id = Guid.NewGuid(),
-                ProductId = productId,
                 BuyerId = buyerId,
                 SellerId = sellerId,
                 Status = ConversationStatus.Open,
@@ -48,6 +55,15 @@ namespace Chat.Application.Services
             var conversations = await _repository.GetForUserAsync(userId);
             var dtos = Mapper.GetConversationDtoList(conversations);
             return dtos;
+        }
+
+        private static bool IsExist(Conversation? conversation)
+        {
+            if (conversation != null)
+            {
+                return true; 
+            }
+            return false;
         }
     }
 }

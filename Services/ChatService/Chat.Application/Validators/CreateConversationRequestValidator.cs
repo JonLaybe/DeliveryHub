@@ -9,10 +9,10 @@ namespace Chat.Application.Validators
 
         public CreateConversationRequestValidator()
         {
-            RuleFor(x => x.ProductId)
-                .NotEmpty().WithMessage("ProductId обязателен")
-                .Must(x => x != ForbiddenGuid).WithMessage($"ProductId не может быть {ForbiddenGuid}")
-                .Must(IsValidGuid).WithMessage("ProductId должен быть корректным GUID");
+            RuleFor(x => x.BuyerId)
+                .NotEmpty().WithMessage("BuyerId обязателен")
+                .Must(x => x != ForbiddenGuid).WithMessage($"BuyerId не может быть {ForbiddenGuid}")
+                .Must(IsValidGuid).WithMessage("BuyerId должен быть корректным GUID");
 
             RuleFor(x => x.SellerId)
                 .NotEmpty().WithMessage("SellerId обязателен")
