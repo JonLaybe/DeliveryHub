@@ -18,7 +18,6 @@ namespace Chat.Infrastructure.Seed
             var conversation = new Conversation
             {
                 Id = conversationId,
-                ProductId = new Guid("49a067a0-b2cb-4839-8c7e-cbe662e009ea"),
                 BuyerId = buyerId,
                 SellerId = sellerId,
                 Status = ConversationStatus.Open,

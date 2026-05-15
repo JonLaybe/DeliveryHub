@@ -22,7 +22,6 @@ namespace Chat.Application.Helpers
             return [.. conversations.Select(c => new ConversationDto
             {
                 Id = c.Id,
-                ProductId = c.ProductId,
                 BuyerId = c.BuyerId,
                 SellerId = c.SellerId,
                 Status = c.Status.ToString(),

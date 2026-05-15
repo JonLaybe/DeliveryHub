@@ -26,7 +26,6 @@ namespace Chat.Tests
             var conversation = new Conversation
             {
                 Id = Guid.NewGuid(),
-                ProductId = Guid.NewGuid(),
                 BuyerId = Guid.NewGuid(),
                 SellerId = Guid.NewGuid(),
                 Status = ConversationStatus.Open,
@@ -65,7 +64,7 @@ namespace Chat.Tests
                 ]
             };
 
-            context.Conversations.Add(conversation);
+            await context.Conversations.AddAsync(conversation);
             await context.SaveChangesAsync();
 
             var result = await repo.GetByIdAsync(conversation.Id);
@@ -93,7 +92,7 @@ namespace Chat.Tests
                 new() 
                 {
                     Id = Guid.NewGuid(),
-                    BuyerId = userId,
+                    SellerId = userId,
                     LastMessageAt = DateTime.UtcNow.AddMinutes(-1)
                 }
             };
@@ -105,6 +104,32 @@ namespace Chat.Tests
 
             Assert.Equal(2, result.Count);
             Assert.True(result[0].LastMessageAt >= result[1].LastMessageAt);
+        }
+
+        [Fact]
+        public async Task FindByUsers_ShouldReturnSingleUserConversation()
+        {
+            var context = CreateContext();
+            var repo = new ConversationRepository(context);
+
+            var buyerId = Guid.NewGuid();
+            var sellerId = Guid.NewGuid();
+
+            var conversation = new Conversation()
+            {
+                Id = Guid.NewGuid(),
+                BuyerId = buyerId,
+                SellerId = sellerId,
+                LastMessageAt = DateTime.UtcNow
+            };
+
+            await context.Conversations.AddAsync(conversation);
+            await context.SaveChangesAsync();
+
+            var result = await repo.FindByUsers(buyerId, sellerId);
+
+            Assert.NotNull(result);
+            Assert.Equal(conversation.Id, result.Id);
         }
     }
 }

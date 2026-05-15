@@ -38,14 +38,13 @@ namespace Chat.Api.Controllers
         /// Создаёт новый диалог между покупателем и продавцом.
         /// </summary>
         /// <remarks>
-        /// Диалог создаётся для конкретного товара.
         /// Покупатель определяется автоматически на основе JWT-токена.
-        /// Если диалог между этими пользователями по данному товару уже существует,
+        /// Если диалог между этими пользователями уже существует,
         /// сервис может вернуть существующий идентификатор.
         /// </remarks>
         /// <param name="request">
         /// Данные для создания диалога:
-        /// идентификатор товара и идентификатор продавца.
+        /// идентификатор продавца.
         /// </param>
         /// <returns>
         /// Идентификатор созданного (или существующего) диалога.
@@ -58,12 +57,11 @@ namespace Chat.Api.Controllers
         {
 
             _validator.ValidateAndThrow(request);
-            // Взять из JWT потом
-            var buyerId = Guid.NewGuid();
-            var productId = Guid.Parse(request.ProductId);
+            // Взять buyerId из JWT потом
+            var buyerId = Guid.Parse(request.BuyerId);
             var sellerId = Guid.Parse(request.SellerId);
 
-            var conversationId = await _conversationService.CreateConversationAsync(productId, buyerId, sellerId);
+            var conversationId = await _conversationService.CreateConversationAsync(buyerId, sellerId);
 
             return Ok(conversationId);
         }
