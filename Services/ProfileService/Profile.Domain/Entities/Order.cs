@@ -11,6 +11,6 @@ namespace Profile.Domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public decimal TotalAmount { get; set; }
-        public List<Product> Products { get; set; } = [];
+        public List<Item> Items { get; set; } = [];
     }
 }
