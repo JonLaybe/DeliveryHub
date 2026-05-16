@@ -9,13 +9,13 @@ namespace Profile.Infrastructure.Persistence
 
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
-        public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<Item> Items { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             ConfigureOrder(modelBuilder);
             ConfigureConversation(modelBuilder);
-            ConfigureProduct(modelBuilder);
+            ConfigureItem(modelBuilder);
         }
 
         private static ModelBuilder ConfigureOrder(ModelBuilder modelBuilder)
@@ -30,16 +30,16 @@ namespace Profile.Infrastructure.Persistence
             });
         }
 
-        private static ModelBuilder ConfigureProduct(ModelBuilder modelBuilder)
+        private static ModelBuilder ConfigureItem(ModelBuilder modelBuilder)
         {
-            return modelBuilder.Entity<Product>(entity =>
+            return modelBuilder.Entity<Item>(entity =>
             {
                 entity.HasKey(x => x.Id);
 
                 entity.Property(x => x.Name).IsRequired().HasMaxLength(50);
 
                 entity.HasOne(x => x.Order)
-                      .WithMany(r => r.Products)
+                      .WithMany(r => r.Items)
                       .HasForeignKey(x => x.OrderId);
             });
         }
