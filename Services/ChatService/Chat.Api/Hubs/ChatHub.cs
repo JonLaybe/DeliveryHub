@@ -1,20 +1,30 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Chat.Application.DTOs;
+using Chat.Application.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chat.Api.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task JoinConversation(Guid conversationId)
+        private readonly IMessageService _messageService;
+
+        public ChatHub(IMessageService messageService)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString()
-            );
+            _messageService = messageService;
         }
 
-        public async Task SendMessage(Guid conversationId, string senderId, string text)
+        public async Task JoinConversation(Guid conversationId)
         {
-            var message = new
+            await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
+        }
+
+        public async Task SendMessage(Guid conversationId, Guid senderId, string text)
+        {
+            var messageId = await _messageService.SendMessageAsync(conversationId, senderId, text);
+
+            var message = new MessageDto
             {
-                Id = Guid.NewGuid(),
+                Id = messageId,
                 ConversationId = conversationId,
                 SenderId = senderId,
                 Text = text,

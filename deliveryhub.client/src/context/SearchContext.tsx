@@ -1,14 +1,14 @@
 import { createContext, useEffect, useState } from "react";
-import { searchProductsAsync, suggestProductsAsync } from "../services/catalog-service/ProductService";
+import { getCategoriesAsync, searchProductsAsync, suggestProductsAsync } from "../services/catalog-service/ProductService";
 import { useDebounce } from "../hooks/useDebounce";
 import type { ProductDto } from "../models/catalog-service/ProductDto";
 import type { ProductSearchQueryRequest } from "../models/catalog-service/ProductSearchQueryRequest";
+import type { CategoryDto } from "../models/catalog-service/CategoryDto";
 
 interface SearchContextType {
     products: { products: ProductDto[] } | undefined
     setProducts: (value: { products: ProductDto[] } | undefined) => void
     query: string,
-    showFiltersBlock: boolean,
     showFilters: (value: boolean) => void,
     filtersIsShown: boolean,
     filtersCount: number,
@@ -19,14 +19,14 @@ interface SearchContextType {
     searchProductHandler: (event: React.MouseEvent<HTMLInputElement>) => void,
     searchBoxKeyDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void,
     serachProductsAndSetResults: (request: ProductSearchQueryRequest) => void,
-    clearFilters: () => void
+    clearFilters: () => void,
+    filterCategories: CategoryDto[],
 }
 
 export const SearchContext = createContext<SearchContextType>({
     products: undefined,
     setProducts: () => {},
     query: '',
-    showFiltersBlock: true,
     showFilters: () => {},
     filtersIsShown: false,
     filtersCount: 0,
@@ -36,14 +36,16 @@ export const SearchContext = createContext<SearchContextType>({
     searchBoxChangeHandler: () => {},
     searchProductHandler: () => {},
     serachProductsAndSetResults: () => {},
-    clearFilters: () => {}
+    clearFilters: () => {},
+    filterCategories: [],
 });
 
 export const SearchProvider = (props:any) => {
     const { children } = props;
     const [products, setProducts] = useState<{ products: ProductDto[] }>();
     const [query, setQuery] = useState<string>('');
-    const [showFiltersBlock, setShowFiltersBlock] = useState<boolean>(true);
+    const [allCategories, setAllCategories] = useState<CategoryDto[]>([]);
+    const [filterCategories, setFilterCategories] = useState<CategoryDto[]>([]);
     const [filtersIsShown, setFiltersIsShown] = useState<boolean>(false);
     const [filtersCount, setFiltersCount] = useState(0);
     const [suggestedProducts, setSuggestedProducts] = useState<string[]>([]);
@@ -53,9 +55,13 @@ export const SearchProvider = (props:any) => {
         setFiltersIsShown(value);
     }
 
+    useEffect(() => {
+        getCategoriesAsync().then(data => 
+            { setAllCategories(data); setFilterCategories(data); });
+    }, []);
+
     const clearFilters = () => {
         setFilterAttributes(undefined);
-        // setShowFiltersBlock(false);
     }
 
     const searchBoxChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +69,6 @@ export const SearchProvider = (props:any) => {
     };
 
     const serachProductsAndSetResults = (request: ProductSearchQueryRequest) => {
-        if (request.text.length === 0) {
-        }
 
         searchProductsAsync(request)
         .then(data => {
@@ -74,8 +78,12 @@ export const SearchProvider = (props:any) => {
             });
             setFilterAttributes(data.attributes);
 
-            if (data.products.length > 0) {
-                // setShowFiltersBlock(true);
+            if (filtersCount > 0) {
+                setFilterCategories(allCategories.filter(c => data.products.some(p => p.categoryId === c.id)));
+            }
+            else {
+                if (allCategories.length > 0)
+                    setFilterCategories(allCategories);
             }
         });
     };
@@ -118,7 +126,6 @@ export const SearchProvider = (props:any) => {
             setProducts,
             suggestedProducts,
             query,
-            showFiltersBlock,
             showFilters,
             filtersIsShown,
             filterAttributes,
@@ -128,7 +135,8 @@ export const SearchProvider = (props:any) => {
             searchBoxChangeHandler,
             searchProductHandler,
             searchBoxKeyDownHandler,
-            serachProductsAndSetResults
+            serachProductsAndSetResults,
+            filterCategories,
         }}>
             {children}
         </SearchContext.Provider>

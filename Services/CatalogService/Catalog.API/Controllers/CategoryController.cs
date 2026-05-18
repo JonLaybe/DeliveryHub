@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DeliveryHub.Catalog.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
         private readonly ILogger<CategoryController> _logger;

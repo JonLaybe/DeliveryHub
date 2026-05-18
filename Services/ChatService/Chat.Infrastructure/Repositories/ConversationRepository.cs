@@ -34,6 +34,12 @@ namespace Chat.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Conversation?> FindByUsers(Guid buyerId, Guid sellerId)
+        {
+            return await _chatDbContext.Conversations
+                .SingleOrDefaultAsync(r => r.BuyerId == buyerId && r.SellerId == sellerId);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _chatDbContext.SaveChangesAsync();

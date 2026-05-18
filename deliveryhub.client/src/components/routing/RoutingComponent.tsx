@@ -12,8 +12,12 @@ export default function RoutingComponent() {
         <Routes>
             <Route path="/" element={<ProductsComponent key={location.key} />} />
             <Route path="/product/:id" element={<ProductPageComponent />} />
-            <Route path="/orders" element={<OrderComponent />} />
-            <Route path="/grocery_basket" element={<GroceryBasketComponent/>}/>
+            <Route path="/grocery_basket" element={<GroceryBasketComponent />} />
+            <Route path="/orders" element={
+                <PrivateRoute>
+                    <OrderComponent />
+                </PrivateRoute>
+            } />
             <Route path="/profile" element={
                 <PrivateRoute>
                     <ProfileComponent />

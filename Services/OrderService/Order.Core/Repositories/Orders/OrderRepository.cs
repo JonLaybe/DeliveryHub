@@ -25,9 +25,15 @@ namespace OrderService.Core.Repositories.Orders
             return order;
         }
 
-        public async Task<IList<Order>> GetOrdersAsync(CancellationToken cancellationToken)
+        public Task<Order> GetByIdWithUserIdAsync(int id, Guid userId, CancellationToken cancellationToken = default)
         {
-            var orders = await this.applicationDbContext.Orders.Include(x => x.Products).ToListAsync(cancellationToken);
+            throw new NotImplementedException();
+        }
+
+        public async Task<IList<Order>> GetOrdersWithUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var orders = await this.applicationDbContext.Orders.Where(ord => ord.UserId == userId)
+                .Include(x => x.Products).ToListAsync(cancellationToken);
 
             return orders;
         }

@@ -1,11 +1,4 @@
-using Chat.Api.Hubs;
-using Chat.Application.Interfaces;
-using Chat.Application.Services;
-using Chat.Infrastructure.Persistence;
-using Chat.Infrastructure.Repositories;
-using Chat.Infrastructure.Seed;
-using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
+using Chat.Api.Extensions;
 
 namespace Chat.Api
 {
@@ -15,52 +8,13 @@ namespace Chat.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-            builder.Services.AddSignalR();
-            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-            builder.Services.AddScoped<IConversationService, ConversationService>();
-
-            var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<ChatDbContext>(options => options.UseNpgsql(connection));
+            StartupHelper.ConfigureServices(builder.Services, builder.Configuration);
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-                db.Database.Migrate();
-            }
+            await StartupHelper.ApplyMigrationsAndSeedAsync(app);
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                using (var scope = app.Services.CreateScope())
-                {
-                    var context = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-                    await ChatDbSeeder.SeedAsync(context);
-                }
-
-                app.MapOpenApi();
-                app.MapScalarApiReference(options =>
-                {
-                    options
-                        .WithTitle("ChatService API")
-                        .WithTheme(ScalarTheme.BluePlanet);
-                });
-            }
-
-            app.MapHub<ChatHub>("/chat");
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
+            StartupHelper.ConfigureMiddleware(app);
 
             app.Run();
         }

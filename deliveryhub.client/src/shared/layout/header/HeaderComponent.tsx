@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import './HeaderComponent.scss';
 import SearchBoxComponent from "../../../common/search-box/SearchBoxComponent";
 import { Link } from "react-router";
@@ -6,15 +6,18 @@ import icon_order from '../../../assets/icon_order.svg';
 import box_grocery_basket from '../../../assets/box_grocery_basket.svg';
 import profile_icon from '../../../assets/profile_icon.svg';
 import AuthModelComponent from "../../../components/auth/dialogs/AuthModelComponent";
-import { isAuthentication } from "../../../services/auth-service/AuthService";
+import { isAuthentication, onAuthChanged } from "../../../services/auth-service/AuthService";
 
 const HeaderComponent: FC = () => {
     const [isOpenModelLogin, setIsOpenModelLogin] = useState(false);
+    const [isAuthed, setIsAuthed] = useState(isAuthentication());
 
-    const clickAuthIcon = () => {
-        if (isAuthentication())
-            return
-    }
+    useEffect(() => {
+        const sync = () => setIsAuthed(isAuthentication());
+        sync();
+        const unsubscribe = onAuthChanged(sync);
+        return unsubscribe;
+    }, []);
 
     return (
         <header className="header">
@@ -36,7 +39,7 @@ const HeaderComponent: FC = () => {
                     </div>
                 </Link>
                 {
-                    isAuthentication() ?
+                    isAuthed ?
                         <Link to="/profile" className="rest_default_link">
                             <div className="header__icon">
                                 <img src={profile_icon} alt="profile_icon" />

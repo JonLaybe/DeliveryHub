@@ -1,0 +1,150 @@
+.filters-block {
+    margin-left: 20px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    height: 36px;
+
+    .filters-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ff0000;
+        color: #fff;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        margin-left: -25px;
+        z-index: 1;
+    }
+
+    .filter-button {
+        caret-color: transparent;
+        padding-inline: 36px 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #242424;
+        background-color: #dedee8f5;
+        border-radius: 12px;
+        align-items: center;
+        width: auto;
+        height: 100%;
+        font-size: 14px;
+        line-height: 20px;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+
+        .clear-state {
+            font-size: 24px;
+            margin-left: 5px;
+            &::after {
+                content: '\00D7';
+            }
+        }
+
+        &--category {
+            padding-inline: 16px 16px;
+        }
+
+        &--sort {
+            &::before {
+                content: "";
+                background-image: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2214%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23242424%22%20fill-rule%3D%22evenodd%22%20d%3D%22M12%20.5c.406%200%20.735.332.735.74v9.732l2.01-2.027a.73.73%200%200%201%201.04%200%20.745.745%200%200%201%200%201.047l-3.265%203.291a.73.73%200%200%201-1.033.007l-.007-.007-3.265-3.291a.745.745%200%200%201%200-1.047.73.73%200%200%201%201.04%200l2.01%202.027V1.24c0-.41.33-.741.735-.741ZM4%2013.5a.738.738%200%200%200%20.735-.74V3.027l2.01%202.027a.73.73%200%200%200%201.04%200%20.745.745%200%200%200%200-1.047L4.52.717a.73.73%200%200%200-1.04%200L.215%204.008a.745.745%200%200%200%200%201.047.73.73%200%200%200%201.04%200l2.01-2.027v9.731c0%20.41.33.741.735.741Z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E);
+                background-position: 50%;
+                background-repeat: no-repeat;
+                background-size: contain;
+                block-size: 13px;
+                inline-size: 16px;
+                display: block;
+                position: absolute;
+                inset-block-start: 12px;
+                inset-inline-start: 12px;
+            }
+        }
+        
+        &--all {
+             &::before {
+                content: "";
+                top: 11px;
+                background-image: url(data:image/svg+xml,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M6.5%204a1.5%201.5%200%201%201-3%200%201.5%201.5%200%200%201%203%200Zm1.459.5a3%203%200%200%201-5.918%200H.75a.75.75%200%200%201%200-1.5h1.42a3.001%203.001%200%200%201%205.66%200h7.42a.75.75%200%200%201%200%201.5H7.959Zm5.87%205.5h1.421a.75.75%200%200%201%200%201.5h-1.291a3%203%200%200%201-5.918%200H.75a.75.75%200%200%201%200-1.5h7.42a3.001%203.001%200%200%201%205.66%200ZM12.5%2011a1.5%201.5%200%201%201-3%200%201.5%201.5%200%200%201%203%200Z%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E);
+                background-position: 50%;
+                background-repeat: no-repeat;
+                background-size: contain;
+                width: 16px;
+                height: 16px;
+                display: block;
+                position: absolute;
+                inset-inline-start: 12px;
+            }
+        }
+       
+        &:hover {
+            background-color: #dedee89f;
+        }
+    }
+
+    .dropdown-filter {
+        .dropdown-filter-content {
+            margin-top: 10px;
+            display: flex;
+            z-index: 10;
+            background: #fff;
+            border-radius: 8px;
+            flex-direction: column;
+            align-items: flex-start;
+            inline-size: 200px;
+            padding-block: 20px;
+            padding-inline: 20px;
+            position: absolute;
+            box-shadow: 0 0 20px #0000001a;
+
+            .filter-list {
+                list-style-type: none;
+
+                li.filter-item {
+                    .radio-with-text {
+                        display: flex;
+                        padding-bottom: 12px;
+                        cursor: pointer;
+
+                        &.selected {
+                            .radio {
+                                border: 2px solid #a73afd;
+
+                                &::after {
+                                    content: "";
+                                    background: #a73afd;
+                                    border-radius: 50%;
+                                    block-size: 10px;
+                                    inline-size: 10px;
+                                    display: block;
+                                    position: absolute;
+                                    inset-block-start: 4px;
+                                    inset-inline-start: 4px
+                                }
+                            }
+                        }
+
+                        .radio {
+                            background: #fff;
+                            border: 1px solid #d3d4dd;
+                            border-radius: 50%;
+                            block-size: 18px;
+                            inline-size: 18px;
+                            display: block;
+                            position: relative;
+                            caret-color: transparent;
+                        }
+
+                        .text {
+                            margin-left: 8px;
+                            caret-color: transparent;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

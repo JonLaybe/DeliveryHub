@@ -37,9 +37,6 @@ namespace Chat.Infrastructure.Migrations
                     b.Property<DateTime>("LastMessageAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("SellerId")
                         .HasColumnType("uuid");
 

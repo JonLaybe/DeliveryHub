@@ -2,6 +2,7 @@
 using Chat.Application.Services;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Chat.Tests
@@ -9,12 +10,14 @@ namespace Chat.Tests
     public class ConversationServiceTests
     {
         private readonly Mock<IConversationRepository> _repositoryMock;
+        private readonly Mock<ILogger<ConversationService>> _loggerMock;
         private readonly IConversationService _service;
 
         public ConversationServiceTests()
         {
             _repositoryMock = new Mock<IConversationRepository>();
-            _service = new ConversationService(_repositoryMock.Object);
+            _loggerMock = new Mock<ILogger<ConversationService>>();
+            _service = new ConversationService(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -24,11 +27,10 @@ namespace Chat.Tests
             var buyerId = Guid.NewGuid();
             var sellerId = Guid.NewGuid();
 
-            var id = await _service.CreateConversationAsync(productId, buyerId, sellerId);
+            var id = await _service.CreateConversationAsync(buyerId, sellerId);
 
             _repositoryMock.Verify(r =>
                 r.AddAsync(It.Is<Conversation>(c =>
-                    c.ProductId == productId &&
                     c.BuyerId == buyerId &&
                     c.SellerId == sellerId &&
                     c.Status == ConversationStatus.Open
@@ -46,7 +48,25 @@ namespace Chat.Tests
             var userId = Guid.NewGuid();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _service.CreateConversationAsync(Guid.NewGuid(), userId, userId));
+                _service.CreateConversationAsync(userId, userId));
+        }
+
+        [Fact]
+        public async Task CreateConversationAsync_ShouldThrow_WhenBuyerAndSellerExist()
+        {
+            var conversation = new Conversation()
+            {
+                Id = Guid.NewGuid(),
+                BuyerId = Guid.NewGuid(),
+                SellerId = Guid.NewGuid()
+            };
+
+            _repositoryMock
+                .Setup(r => r.FindByUsers(conversation.BuyerId, conversation.SellerId))
+                .ReturnsAsync(conversation);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.CreateConversationAsync(conversation.BuyerId, conversation.SellerId));
         }
 
         [Fact]
@@ -55,10 +75,10 @@ namespace Chat.Tests
             var userId = Guid.NewGuid();
 
             var conversations = new List<Conversation>
-        {
-            new Conversation { Id = Guid.NewGuid(), BuyerId = userId },
-            new Conversation { Id = Guid.NewGuid(), SellerId = userId }
-        };
+            {
+                new() { Id = Guid.NewGuid(), BuyerId = userId },
+                new() { Id = Guid.NewGuid(), SellerId = userId }
+            };
 
             _repositoryMock
                 .Setup(r => r.GetForUserAsync(userId))
