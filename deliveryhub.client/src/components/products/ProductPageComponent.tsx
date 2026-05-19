@@ -59,7 +59,7 @@ const ProductPageComponent = () => {
                 <div className="action-block">
                     <button className="default-button">Добавить в корзину</button>
                     <button className="default-button buy-btn">Купить сейчас</button>
-					<button className="default-button" onClick={() => navigate(`/chat`)}>Написать продавцу</button>
+					<button className="default-button" onClick={() => navigate(`/chats?productId=${product?.id}`)}>Написать продавцу</button>
                 </div>
             </div>
         </div>

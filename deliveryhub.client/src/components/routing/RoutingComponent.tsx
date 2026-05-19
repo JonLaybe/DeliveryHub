@@ -5,7 +5,6 @@ import ProductPageComponent from "../products/ProductPageComponent";
 import GroceryBasketComponent from "../grocery_basket/GroceryBasketComponent";
 import ProfileComponent from "../auth/profile/ProfileComponent";
 import PrivateRoute from "./PrivateRoute";
-import ChatComponent from "../chat/ChatComponent";
 
 export default function RoutingComponent() {
     const location = useLocation();
@@ -24,7 +23,6 @@ export default function RoutingComponent() {
                     <ProfileComponent />
                 </PrivateRoute>
             } />
-			<Route path="/chat" element={<ChatComponent />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
