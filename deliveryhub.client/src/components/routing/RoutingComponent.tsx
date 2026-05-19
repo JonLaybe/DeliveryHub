@@ -18,11 +18,7 @@ export default function RoutingComponent() {
                     <OrderComponent />
                 </PrivateRoute>
             } />
-            <Route path="/profile" element={
-                <PrivateRoute>
-                    <ProfileComponent />
-                </PrivateRoute>
-            } />
+            <Route path="/profile" element={<ProfileComponent />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
