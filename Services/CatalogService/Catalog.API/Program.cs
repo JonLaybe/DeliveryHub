@@ -1,4 +1,4 @@
-using Catalog.Application.Repositories;
+﻿using Catalog.Application.Repositories;
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Helpers;
 using Catalog.Infrastructure.Messaging.Consumers;
@@ -12,10 +12,17 @@ using DeliveryHub.Catalog.Infrastructure.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Services;
 using MassTransit;
 using MongoDB.Driver;
+using Serilog;
 using Shared.Web.Middlewares;
 using System.Reflection;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Подключаем Serilog и заставляем его читать конфигурацию из builder.Configuration
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext());
 
 // Add services to the container.
 
@@ -102,6 +109,8 @@ services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {

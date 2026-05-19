@@ -94,6 +94,8 @@ namespace Catalog.API.Controllers
             };
             var result = await _productSearchService.SearchAsync(searchQuery, default);
 
+            _logger.LogInformation("Search result: {productCount} products has found by query: {@query}", result.Products.Count, searchQueryReq);
+
             return Ok(result);
         }
     }
