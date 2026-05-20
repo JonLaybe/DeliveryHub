@@ -73,5 +73,33 @@ namespace Chat.Tests
             _dbMock.Verify(db => db.KeyExistsAsync(expectedKey, It.IsAny<CommandFlags>()), Times.Once);
             Assert.True(result);
         }
+
+        [Fact]
+        public async Task IsOnlineAsync_ShouldReturnCorrectStatusesForMultipleUsers()
+        {
+            var userId1 = Guid.NewGuid();
+            var userId2 = Guid.NewGuid();
+            var userId3 = Guid.NewGuid();
+
+            var userIds = new[] { userId1, userId2, userId3 };
+
+            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId1}"), It.IsAny<CommandFlags>()))
+           .ReturnsAsync(true);
+            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId2}"), It.IsAny<CommandFlags>()))
+                   .ReturnsAsync(false);
+            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId3}"), It.IsAny<CommandFlags>()))
+                   .ReturnsAsync(true);
+
+            var result = await _service.IsOnlineAsync(userIds);
+
+            Assert.Equal(3, result.Count);
+            Assert.True(result[userId1]);
+            Assert.False(result[userId2]);
+            Assert.True(result[userId3]);
+
+            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId1}", It.IsAny<CommandFlags>()), Times.Once);
+            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId2}", It.IsAny<CommandFlags>()), Times.Once);
+            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId3}", It.IsAny<CommandFlags>()), Times.Once);
+        }
     }
 }

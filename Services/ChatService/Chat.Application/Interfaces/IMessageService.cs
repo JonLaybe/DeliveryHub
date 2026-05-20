@@ -6,7 +6,7 @@ namespace Chat.Application.Interfaces
     {
         Task<Guid> SendMessageAsync(Guid conversationId, Guid senderId, string text);
         Task<IReadOnlyList<MessageDto>> GetMessagesAsync(Guid conversationId);
-        Task<int> GetUnreadCountAsync(Guid conversationId, Guid userId);
         Task MarkMessagesAsReadAsync(Guid conversationId, Guid userId);
+        Task<Dictionary<Guid, (int unreadCount, string lastMessage)>> GetConversationStatsAsync(IEnumerable<Guid> conversationIds, Guid userId);
     }
 }
