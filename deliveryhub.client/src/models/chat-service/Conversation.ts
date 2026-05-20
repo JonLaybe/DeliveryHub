@@ -1,6 +1,5 @@
 export interface Conversation {
   id: string;
-  buyerId: string;
-  sellerId: string;
+  name: string;
   lastMessage?: string;
 }

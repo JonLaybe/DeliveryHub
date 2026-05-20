@@ -6,7 +6,7 @@ import "./ChatList.scss";
 
 const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null); // <-- выбранный чат
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const didFetchRef = useRef(false);
 
   useEffect(() => {
@@ -18,42 +18,33 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
     const fetchConversations = async () => {
       try {
         const data = await getUserConversationsAsync(userId);
-        console.log("API Response:", data);
+		console.log("Conversations for UI:", data);
+        setConversations(data);
       } catch (err) {
         console.error("Ошибка при получении чатов:", err);
       }
     };
-
-    // Заглушка
-    const fakeConversations: Conversation[] = [
-      { id: "1", name: "Иван Петров", lastMessage: "Привет!" },
-      { id: "2", name: "Мария Сидорова", lastMessage: "До встречи завтра" },
-      { id: "3", name: "Александр Любимов" },
-    ];
-    setConversations(fakeConversations);
-
+	
     fetchConversations();
   }, [userId]);
 
   const handleSelect = (conv: Conversation) => {
-    setSelectedId(conv.id);       // <-- сохраняем выбранный чат
-    onSelectConversation(conv);   // <-- передаем в родителя
+    setSelectedId(conv.id);
+    onSelectConversation(conv);
   };
 
   return (
     <div className="chat-list">
-      {conversations.map((conv) => (
-        <div
-          key={conv.id}
-          className={`chat-item ${selectedId === conv.id ? "selected" : ""}`} // <-- выделение
-          onClick={() => handleSelect(conv)}
-        >
-          <span className="chat-name">{conv.name}</span>
-          {conv.lastMessage && (
-            <span className="chat-last-message">{conv.lastMessage}</span>
-          )}
-        </div>
-      ))}
+		{conversations.map((conv, index) => (
+			<div
+				key={conv.id || index} // гарантируем уникальный ключ
+				className={`chat-item ${selectedId === conv.id ? "selected" : ""}`}
+				onClick={() => handleSelect(conv)}
+			>
+				<span className="chat-name">{conv.name}</span>
+				{conv.lastMessage && <span className="chat-last-message">{conv.lastMessage}</span>}
+			</div>
+		))}
     </div>
   );
 };
