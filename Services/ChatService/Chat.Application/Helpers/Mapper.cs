@@ -16,18 +16,5 @@ namespace Chat.Application.Helpers
                 CreatedAt = m.CreatedAt
             })];
         }
-
-        public static List<ConversationDto> GetConversationDtoList(IReadOnlyList<Conversation> conversations)
-        {
-            return [.. conversations.Select(c => new ConversationDto
-            {
-                Id = c.Id,
-                BuyerId = c.BuyerId,
-                SellerId = c.SellerId,
-                Status = c.Status.ToString(),
-                CreatedAt = c.CreatedAt,
-                LastMessageAt = c.LastMessageAt
-            })];
-        }
     }
 }

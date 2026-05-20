@@ -59,19 +59,32 @@ namespace Chat.Application.Services
 
         public async Task<IReadOnlyList<MessageDto>> GetMessagesAsync(Guid conversationId)
         {
-            var messages = await _messageRepository.GetByConversationIdAsync(conversationId);
+            var messages = await _messageRepository.GetMessagesByConversationIdAsync(conversationId);
             var dtos = Mapper.GetMessageDtoList(messages);
             return dtos;
-        }
-
-        public async Task<int> GetUnreadCountAsync(Guid conversationId, Guid userId)
-        {
-            return await _messageRepository.CountUnreadMessagesAsync(conversationId, userId);
         }
 
         public async Task MarkMessagesAsReadAsync(Guid conversationId, Guid userId)
         {
             await _messageRepository.SetMessageIsReadTrueAsync(conversationId, userId);
+        }
+
+        public async Task<Dictionary<Guid, (int unreadCount, string lastMessage)>> GetConversationStatsAsync(IEnumerable<Guid> conversationIds, Guid userId)
+        {
+            var messages = await _messageRepository.GetMessagesByConversationIdAsync(conversationIds);
+
+            var grouped = messages
+                .GroupBy(m => m.ConversationId)
+                .ToDictionary(
+                    g => g.Key,
+                    g =>
+                    {
+                        var unreadCount = g.Count(m => m.SenderId != userId && !m.IsRead);
+                        var lastMessage = g.OrderByDescending(m => m.CreatedAt).FirstOrDefault()?.Text ?? string.Empty;
+                        return (UnreadCount: unreadCount, LastMessage: lastMessage);
+                    });
+
+            return grouped;
         }
     }
 }

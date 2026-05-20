@@ -14,15 +14,7 @@ namespace Chat.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<Message>> GetAllAsync()
-        {
-            return await _context.Messages
-                .AsNoTracking()
-                .OrderBy(m => m.CreatedAt)
-                .ToListAsync();
-        }
-
-        public async Task<List<Message>> GetByConversationIdAsync(Guid conversationId)
+        public async Task<List<Message>> GetMessagesByConversationIdAsync(Guid conversationId)
         {
             return await _context.Messages
                 .AsNoTracking()
@@ -41,13 +33,12 @@ namespace Chat.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> CountUnreadMessagesAsync(Guid conversationId, Guid userId)
+        public async Task<List<Message>> GetMessagesByConversationIdAsync(IEnumerable<Guid> conversationIds)
         {
+            // добавить в Редис
             return await _context.Messages
-                .Where(m => m.ConversationId == conversationId
-                            && m.SenderId != userId
-                            && !m.IsRead)
-                .CountAsync();
+                .Where(m => conversationIds.Contains(m.ConversationId))
+                .ToListAsync();
         }
 
         public async Task SetMessageIsReadTrueAsync(Guid conversationId, Guid userId)
