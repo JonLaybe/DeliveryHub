@@ -11,7 +11,7 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
   console.log("API Response:", data);
 
   return data.map((c) => ({
-    id: c.id,
+    id: c.conversationId,
     name: c.sellerName, 
     lastMessage: c.lastMessage,
   }));

@@ -78,7 +78,7 @@ namespace Chat.Application.Services
 
                 return new ConversationResponse
                 {
-                    Id = c.Id,
+                    ConversationId = c.Id,
                     SellerId = c.SellerId,
                     SellerName = $"Магазин {c.SellerId}",
                     UnreadMessagesCount = stat.unreadCount,

@@ -2,7 +2,7 @@
 {
     public class ConversationResponse
     {
-        public Guid Id { get; set; }
+        public Guid ConversationId { get; set; }
         public Guid SellerId { get; set; }
         public string SellerName { get; set; } = string.Empty;
         public string LastMessage { get; set; } = string.Empty;

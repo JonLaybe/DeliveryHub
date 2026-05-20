@@ -1,5 +1,5 @@
 export interface ConversationResponse {
-  id: string;
+  conversationId: string;
   sellerId: string;
   sellerName: string;
   lastMessage: string;
