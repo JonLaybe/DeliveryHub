@@ -19,11 +19,10 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
 	if (didFetchRef.current) return;
     didFetchRef.current = true;
 	
-	// setMessages([]);
-	
     const fetchMessages = async () => {
       try {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
+		console.log("Messages for UI:", msgs);
         setMessages(msgs);
       } catch (err) {
         console.error("Ошибка при получении сообщений:", err);
