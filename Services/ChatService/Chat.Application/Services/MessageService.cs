@@ -57,11 +57,11 @@ namespace Chat.Application.Services
             return message.Id;
         }
 
-        public async Task<IReadOnlyList<MessageDto>> GetMessagesAsync(Guid conversationId)
+        public async Task<IReadOnlyList<MessageResponse>> GetMessagesAsync(Guid conversationId)
         {
             var messages = await _messageRepository.GetMessagesByConversationIdAsync(conversationId);
-            var dtos = Mapper.GetMessageDtoList(messages);
-            return dtos;
+            var response = Mapper.GetMessageResponseList(messages);
+            return response;
         }
 
         public async Task MarkMessagesAsReadAsync(Guid conversationId, Guid userId)

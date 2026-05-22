@@ -5,15 +5,14 @@ namespace Chat.Application.Helpers
 {
     public static class Mapper
     {
-        public static List<MessageDto> GetMessageDtoList(List<Message> messages)
+        public static List<MessageResponse> GetMessageResponseList(List<Message> messages)
         {
-            return [.. messages.Select(m => new MessageDto
+            return [.. messages.Select(m => new MessageResponse
             {
-                Id = m.Id,
+                MessageId = m.Id,
                 SenderId = m.SenderId,
-                ConversationId = m.ConversationId,
                 Text = m.Text ?? string.Empty,
-                CreatedAt = m.CreatedAt
+                CreatedAt = m.CreatedAt,
             })];
         }
     }

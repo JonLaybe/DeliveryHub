@@ -1,26 +1,31 @@
 import { useState } from "react";
 import ChatList from "./ChatList";
+import ChatWindow from "./ChatWindow";
 import type { Conversation } from "../../models/chat-service/Conversation";
-import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 
-const ChatPage = () => {
+const ChatComponent = () => {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const currentUserId = "c8e4a03b-960e-4874-80b0-fea30a90fc7b";
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <ChatList
-        userId="c8e4a03b-960e-4874-80b0-fea30a90fc7b"
+        userId={currentUserId}
         onSelectConversation={setSelectedConversation}
       />
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <div style={{ flex: 1, display: "flex" }}>
         {selectedConversation ? (
-          <div>Окно чата: {selectedConversation.name}</div>
+          <ChatWindow
+		    key={selectedConversation.id}
+            conversation={selectedConversation}
+            currentUserId={currentUserId}
+          />
         ) : (
-          <div>Выберите чат</div>
+          <div style={{ margin: "auto" }}>Выберите чат</div>
         )}
       </div>
     </div>
   );
 };
 
-export default ChatPage;
+export default ChatComponent;
