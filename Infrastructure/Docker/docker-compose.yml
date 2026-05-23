@@ -121,7 +121,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       # ConnectionStrings__DefaultConnection: "Host=chat-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
-      ConnectionStrings__DefaultConnection: "Host=general-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
+      ConnectionStrings__Postgres: "Host=general-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
       ConnectionStrings__Redis: "redis:6379"
     depends_on:
       # - chat-postgres
