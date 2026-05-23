@@ -24,7 +24,6 @@ namespace Chat.Api.Controllers
         public ChatController(
             IConversationService conversationService,
             IMessageService messageService,
-            IOnlineStatusService onlineStatusService,
             IValidator<CreateConversationRequest> validator)
         {
             _conversationService = conversationService;

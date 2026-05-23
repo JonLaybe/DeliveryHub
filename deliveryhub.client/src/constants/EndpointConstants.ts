@@ -13,5 +13,5 @@ export const CATALOGSERVICE_CATEGORY_URL = '/api/catalog/category';
 export const CATALOGSERVICE_PRODUCT_IMAGE_URL = '/api/catalog/product/image';
 
 // Chat
-export const CHAT_URL = 'https://localhost:7190';
+export const CHAT_URL = 'http://localhost:7190';
 export const CONVERSATION_URL = '/api/chat/conversation';
