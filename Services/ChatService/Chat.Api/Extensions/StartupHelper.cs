@@ -36,10 +36,10 @@ namespace Chat.Api.Extensions
 
             await context.Database.MigrateAsync();
 
-            if (app.Environment.IsDevelopment())
-            {
-                await ChatDbSeeder.SeedAsync(context);
-            }
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    await ChatDbSeeder.SeedAsync(context);
+            //}
         }
 
         public static void ConfigureMiddleware(WebApplication app)
