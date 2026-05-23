@@ -5,6 +5,6 @@ namespace Chat.Application.Interfaces
     public interface IConversationService
     {
         Task<Guid> CreateConversationAsync(Guid buyerId, Guid sellerId);
-        Task<IReadOnlyList<ConversationDto>> GetUserConversationsAsync(Guid userId);
+        Task<IReadOnlyList<ConversationResponse>> GetUserConversationsAsync(Guid userId);
     }
 }

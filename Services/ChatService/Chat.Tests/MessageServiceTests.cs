@@ -88,7 +88,7 @@ namespace Chat.Tests
                 new() { Id = Guid.NewGuid(), ConversationId = conversationId, Text = "Hi" }
             };
 
-            _messageRepoMock.Setup(r => r.GetByConversationIdAsync(conversationId))
+            _messageRepoMock.Setup(r => r.GetMessagesByConversationIdAsync(conversationId))
                             .ReturnsAsync(messages);
 
             var result = await _service.GetMessagesAsync(conversationId);
@@ -98,19 +98,36 @@ namespace Chat.Tests
         }
 
         [Fact]
-        public async Task GetUnreadCountAsync_ReturnsCorrectCount()
+        public async Task GetConversationStatsAsync_ReturnsCorrectUnreadAndLastMessage()
         {
-            var conversationId = Guid.NewGuid();
             var userId = Guid.NewGuid();
-            var expectedCount = 5;
+            var conversationId1 = Guid.NewGuid();
+            var conversationId2 = Guid.NewGuid();
 
-            _messageRepoMock.Setup(r => r.CountUnreadMessagesAsync(conversationId, userId))
-                            .ReturnsAsync(expectedCount);
+            var messages = new List<Message>
+            {
+                CreateMessage(conversationId1, Guid.NewGuid(), "Msg1"),
+                CreateMessage(conversationId1, userId, "MyMsg", true),
+                CreateMessage(conversationId1, Guid.NewGuid(), "Msg2"),
+                CreateMessage(conversationId2, userId, "OtherMsg", true),
+            };
 
-            var count = await _service.GetUnreadCountAsync(conversationId, userId);
+            _messageRepoMock.Setup(r => r.GetMessagesByConversationIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                            .ReturnsAsync((IEnumerable<Guid> ids) => messages.Where(m => ids.Contains(m.ConversationId)).ToList());
 
-            Assert.Equal(expectedCount, count);
-            _messageRepoMock.Verify(r => r.CountUnreadMessagesAsync(conversationId, userId), Times.Once);
+            var conversationIds = new[] { conversationId1, conversationId2 };
+
+            var result = await _service.GetConversationStatsAsync(conversationIds, userId);
+
+            Assert.Equal(2, result.Count);
+
+            var (unreadCount, lastMessage) = result[conversationId1];
+            Assert.Equal(2, unreadCount);
+            Assert.Equal("Msg2", lastMessage);
+
+            var conv2 = result[conversationId2];
+            Assert.Equal(0, conv2.unreadCount);
+            Assert.Equal("OtherMsg", conv2.lastMessage);
         }
 
         [Fact]
@@ -126,6 +143,19 @@ namespace Chat.Tests
             await _service.MarkMessagesAsReadAsync(conversationId, userId);
 
             _messageRepoMock.Verify(r => r.SetMessageIsReadTrueAsync(conversationId, userId), Times.Once);
+        }
+
+        private static Message CreateMessage(Guid conversationId, Guid senderId, string text, bool isRead = false)
+        {
+            return new Message
+            {
+                Id = Guid.NewGuid(),
+                ConversationId = conversationId,
+                SenderId = senderId,
+                Text = text,
+                IsRead = isRead,
+                CreatedAt = DateTime.UtcNow
+            };
         }
     }
 }

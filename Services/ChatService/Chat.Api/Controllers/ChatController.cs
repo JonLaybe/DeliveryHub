@@ -19,18 +19,15 @@ namespace Chat.Api.Controllers
     {
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
-        private readonly IOnlineStatusService _onlineStatusService;
         private readonly IValidator<CreateConversationRequest> _validator;
 
         public ChatController(
             IConversationService conversationService,
             IMessageService messageService,
-            IOnlineStatusService onlineStatusService,
             IValidator<CreateConversationRequest> validator)
         {
             _conversationService = conversationService;
             _messageService = messageService;
-            _onlineStatusService = onlineStatusService;
             _validator = validator;
         }
 
@@ -100,24 +97,6 @@ namespace Chat.Api.Controllers
             var messages = await _messageService.GetMessagesAsync(conversationId);
 
             return Ok(messages);
-        }
-
-        [HttpGet("status/{userId:guid}")]
-        public async Task<IActionResult> GetOnlineStatus(Guid userId)
-        {
-            // Для тестирования потом убрать
-            await _onlineStatusService.SetOnlineAsync(userId);
-
-            var status = await _onlineStatusService.IsOnlineAsync(userId);
-
-            return Ok(status);
-        }
-
-        [HttpGet("conversation/{conversationId:guid}/unread")]
-        public async Task<IActionResult> GetUnreadMessagesCount(Guid conversationId, Guid userId)
-        {
-            var count = await _messageService.GetUnreadCountAsync(conversationId, userId);
-            return Ok(count);
         }
     }
 }
