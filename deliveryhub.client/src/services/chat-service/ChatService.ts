@@ -21,6 +21,10 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
 
 export async function createConversationAsync(request: CreateConversationRequest): Promise<string> {
   const res = await api.post(`${CHAT_URL}${CONVERSATION_URL}`, request);
+  const data = res.data;
+  
+  console.log("API Response (conversations created):", data);
+  
   return res.data;
 }
 

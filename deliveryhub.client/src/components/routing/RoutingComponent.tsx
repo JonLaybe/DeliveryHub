@@ -24,6 +24,7 @@ export default function RoutingComponent() {
                     <ProfileComponent />
                 </PrivateRoute>
             } />
+			<Route path="/chat/:conversationId" element={<ChatComponent />} />
 			<Route path="/chat" element={<ChatComponent />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
