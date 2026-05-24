@@ -50,7 +50,12 @@ namespace Chat.Application.Services
 
             await _repository.AddAsync(conversation);
             await _repository.SaveChangesAsync();
-            _logger.LogInformation("Conversation created: {@conversation}", conversation);
+            _logger.LogInformation(
+                "Conversation created: Id={Id}, BuyerId={BuyerId}, SellerId={SellerId}, CreatedAt={CreatedAt}",
+                conversation.Id,
+                conversation.BuyerId,
+                conversation.SellerId,
+                conversation.CreatedAt);
 
             return conversation.Id;
         }

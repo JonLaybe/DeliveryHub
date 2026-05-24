@@ -27,6 +27,18 @@ namespace Chat.Api.Extensions
             var redisConnection = configuration.GetConnectionString("Redis");
             services.AddSingleton<IConnectionMultiplexer>(sp =>
                 ConnectionMultiplexer.Connect(redisConnection));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
         }
 
         public static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
@@ -54,17 +66,16 @@ namespace Chat.Api.Extensions
                         .WithTheme(ScalarTheme.BluePlanet);
                 });
             }
-
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            
+            app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
-            
-            app.MapHub<ChatHub>("/chat");
+
+            app.MapHub<ChatHub>("/hubs/chat");
             app.MapControllers();
         }
     }
