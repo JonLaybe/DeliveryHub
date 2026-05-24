@@ -53,7 +53,12 @@ namespace Chat.Application.Services
             await _messageRepository.SaveChangesAsync();
             await _conversationRepository.SaveChangesAsync();
 
-            _logger.LogInformation("Message saved: {@message}", message);
+            _logger.LogInformation(
+                "Message saved. Id={Id}, ConversationId={ConversationId}, SenderId={SenderId}",
+                message.Id,
+                message.ConversationId,
+                message.SenderId);
+
             return message.Id;
         }
 
