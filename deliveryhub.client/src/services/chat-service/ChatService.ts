@@ -10,7 +10,7 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
   const res = await api.get<ConversationResponse[]>(`${CHAT_URL}${CONVERSATION_URL}/${userId}`);
   const data = res.data;
 
-  console.log("API Response:", data);
+  console.log("API Response (conversations):", data);
 
   return data.map((c) => ({
     id: c.conversationId,
