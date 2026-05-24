@@ -1,10 +1,11 @@
 import { FC, useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
 import "./ChatList.scss";
 
-const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
+const ChatList: FC<ChatListProps> = ({ userId, }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const didFetchRef = useRef(false);
@@ -28,9 +29,11 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
     fetchConversations();
   }, [userId]);
 
+  const navigate = useNavigate();
+
   const handleSelect = (conv: Conversation) => {
     setSelectedId(conv.id);
-    onSelectConversation(conv);
+    navigate(`/chat/${conv.id}`);
   };
 
   return (

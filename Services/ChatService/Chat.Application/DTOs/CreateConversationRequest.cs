@@ -1,6 +1,8 @@
 ﻿namespace Chat.Application.DTOs
 {
-    public record CreateConversationRequest(
-        string BuyerId,
-        string SellerId);
+    public class CreateConversationRequest
+    {
+        public string BuyerId { get; set; }
+        public string SellerId { get; set; }
+    }
 }
