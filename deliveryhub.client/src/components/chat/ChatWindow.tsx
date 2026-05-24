@@ -31,7 +31,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, }) => {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
         setMessages(msgs);
       } catch (err) {
-        console.error("Ошибка при получении сообщений:", err);
+        console.error(err);
       }
     };
 
