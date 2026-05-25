@@ -69,6 +69,9 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
         _logger.LogInformation("Seeding roles...");
         await SeedRolesAsync(ct);
+
+        _logger.LogInformation("Seeding service clients...");
+        await SeedServiceClientsAsync(ct);
     }
 
     private static bool IsDbNotReady(Exception ex)
@@ -102,5 +105,42 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
         );
 
         await _db.SaveChangesAsync(ct);
+    }
+
+    private async Task SeedServiceClientsAsync(CancellationToken ct)
+    {
+        var clients = _cfg.GetSection("ServiceClients").Get<List<ServiceClientSeedOptions>>();
+
+        if (clients is null || clients.Count == 0)
+        {
+            _logger.LogInformation("No service clients configured for seed.");
+            return;
+        }
+
+        foreach (var item in clients)
+        {
+            var exists = await _db.ServiceClients
+                .AnyAsync(x => x.ClientId == item.ClientId, ct);
+
+            if (exists)
+                continue;
+
+            _db.ServiceClients.Add(new ServiceClientEntity
+            {
+                Id = Guid.NewGuid(),
+                ClientId = item.ClientId,
+                SecretHash = Sha256Hex(item.ClientSecret),
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow
+            });
+        }
+
+        await _db.SaveChangesAsync(ct);
+    }
+
+    private sealed class ServiceClientSeedOptions
+    {
+        public string ClientId { get; set; } = null!;
+        public string ClientSecret { get; set; } = null!;
     }
 }
