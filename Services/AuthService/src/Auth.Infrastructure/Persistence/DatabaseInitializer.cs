@@ -7,6 +7,7 @@ using Npgsql;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Auth.Infrastructure.Persistence.Entities;
 
 namespace Auth.Infrastructure.Persistence;
 
@@ -136,6 +137,15 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
         }
 
         await _db.SaveChangesAsync(ct);
+    }
+
+    private static string Sha256Hex(string value)
+    {
+        return Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(
+                System.Text.Encoding.UTF8.GetBytes(value)
+            )
+        );
     }
 
     private sealed class ServiceClientSeedOptions
