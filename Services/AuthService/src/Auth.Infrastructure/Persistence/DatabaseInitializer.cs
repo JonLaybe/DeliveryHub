@@ -126,13 +126,23 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             if (exists)
                 continue;
 
+            if (string.IsNullOrWhiteSpace(item.ClientId))
+                throw new InvalidOperationException("Service client ClientId is required.");//TODO:убрать, когда перестанет валиться
+
+            if (string.IsNullOrWhiteSpace(item.ClientSecret))
+                throw new InvalidOperationException($"ClientSecret is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+
+            if (string.IsNullOrWhiteSpace(item.AllowedScopes))
+                throw new InvalidOperationException($"AllowedScopes is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+
             _db.ServiceClients.Add(new ServiceClientEntity
             {
                 Id = Guid.NewGuid(),
                 ClientId = item.ClientId,
                 SecretHash = Sha256Hex(item.ClientSecret),
                 IsActive = true,
-                CreatedAt = DateTimeOffset.UtcNow
+                CreatedAt = DateTimeOffset.UtcNow,
+                AllowedScopes = NormalizeScopes(item.AllowedScopes)
             });
         }
 
@@ -148,9 +158,23 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
         );
     }
 
+    private static string NormalizeScopes(string? scopes)
+    {
+        if (string.IsNullOrWhiteSpace(scopes))
+            throw new InvalidOperationException("AllowedScopes is required for service client.");
+
+        return string.Join(
+            ' ',
+            scopes
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
+    }
+
     private sealed class ServiceClientSeedOptions
     {
-        public string ClientId { get; set; } = null!;
-        public string ClientSecret { get; set; } = null!;
+        public string? ClientId { get; set; }
+        public string? ClientSecret { get; set; }
+        public string? AllowedScopes { get; set; }
     }
 }
