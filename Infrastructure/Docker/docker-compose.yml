@@ -167,6 +167,33 @@ services:
       Jwt__KeyId: "auth-key-001"
       Jwt__PrivateKeyPath: "/run/secrets/jwt_private.pem"
       Jwt__PublicKeyPath: "/run/secrets/jwt_public.pem"
+      ServiceClients__0__ClientId: order-service
+      ServiceClients__0__ClientSecret: order-service-secret-dev
+      ServiceClients__0__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__1__ClientId: catalog-service
+      ServiceClients__1__ClientSecret: catalog-service-secret-dev
+      ServiceClients__1__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__2__ClientId: discount-service
+      ServiceClients__2__ClientSecret: discount-service-secret-dev
+      ServiceClients__2__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__3__ClientId: chat-service
+      ServiceClients__3__ClientSecret: chat-service-secret-dev
+      ServiceClients__3__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__4__ClientId: feedback-service
+      ServiceClients__4__ClientSecret: feedback-service-secret-dev
+      ServiceClients__4__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__5__ClientId: profile-service
+      ServiceClients__5__ClientSecret: profile-service-secret-dev
+      ServiceClients__5__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
+
+      ServiceClients__6__ClientId: auth-service
+      ServiceClients__6__ClientSecret: auth-service-secret-dev
+      ServiceClients__6__AllowedScopes: service order.read order.write catalog.read catalog.write discount.read discount.write chat.read chat.write feedback.read feedback.write profile.read profile.write auth.read auth.write
     depends_on:
       - general-postgres
       # auth-postgres:

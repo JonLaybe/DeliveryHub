@@ -16,6 +16,7 @@ public sealed class ServiceClientConfiguration : IEntityTypeConfiguration<Servic
         b.Property(x => x.SecretHash).HasColumnName("secret_hash").IsRequired();
         b.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
         b.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        b.Property(x => x.AllowedScopes).HasColumnName("allowed_scopes").IsRequired();
 
         b.HasIndex(x => x.ClientId).IsUnique();
     }
