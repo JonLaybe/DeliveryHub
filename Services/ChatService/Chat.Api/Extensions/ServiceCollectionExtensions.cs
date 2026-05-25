@@ -1,9 +1,6 @@
-﻿using Chat.Application.DTOs;
-using Chat.Application.Interfaces;
+﻿using Chat.Application.Interfaces;
 using Chat.Application.Services;
-using Chat.Application.Validators;
 using Chat.Infrastructure.Repositories;
-using FluentValidation;
 
 namespace Chat.Api.Extensions
 {
@@ -17,7 +14,6 @@ namespace Chat.Api.Extensions
             services.AddScoped<IConversationService, ConversationService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IOnlineStatusService, OnlineStatusService>();
-            services.AddScoped<IValidator<CreateConversationRequest>, CreateConversationRequestValidator>();
 
             return services;
         }

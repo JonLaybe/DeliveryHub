@@ -1,7 +1,11 @@
-﻿using Chat.Api.Hubs;
+﻿using Chat.Api.Configs;
+using Chat.Api.Hubs;
+using Chat.Application.Interfaces;
+using Chat.Application.Services;
 using Chat.Infrastructure.Persistence;
 using Chat.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
 using StackExchange.Redis;
@@ -19,6 +23,14 @@ namespace Chat.Api.Extensions
                 conf.ReadFrom.Configuration(configuration));
 
             services.AddChatServices();
+
+            services.Configure<ServicesConfig>(configuration.GetSection("ServicesConfig"));
+            services.AddHttpClient<ICatalogService, CatalogService>("CatalogApi", (provider, client) =>
+            {
+                var config = provider.GetRequiredService<IOptions<ServicesConfig>>().Value;
+                client.BaseAddress = new Uri(config.CatalogApi!.BaseUrl);
+            });
+
 
             var dbConnection = configuration.GetConnectionString("Postgres");
             services.AddDbContext<ChatDbContext>(options =>
@@ -66,7 +78,7 @@ namespace Chat.Api.Extensions
                         .WithTheme(ScalarTheme.BluePlanet);
                 });
             }
-            
+
             app.UseRouting();
             app.UseCors("CorsPolicy");
 
