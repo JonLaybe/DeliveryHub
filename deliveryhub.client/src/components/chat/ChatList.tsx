@@ -81,16 +81,37 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     });
   };
 
-  const formatTime = (lastMessage?: string) => {
-    if (!lastMessage) return "";
+  const formatMessageTime = (lastMessageAt?: string) => {
+    if (!lastMessageAt) return "";
     
     try {
-      const date = new Date(lastMessage);
+      const date = new Date(lastMessageAt);
       if (isNaN(date.getTime())) {
         return "";
       }
-      return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      
+      if (today.getTime() === messageDate.getTime()) {
+        return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      }
+      
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (yesterday.getTime() === messageDate.getTime()) {
+        return "Вчера";
+      }
+      
+      const weekDays = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+      if (now.getTime() - date.getTime() < 7 * 24 * 60 * 60 * 1000) {
+        return weekDays[date.getDay()];
+      }
+	  
+      return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
     } catch (error) {
+      console.error("Error formatting date:", error);
       return "";
     }
   };
@@ -133,11 +154,9 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
               <div className="chat-info">
                 <div className="chat-name">
                   <span>{conv.name || `Чат ${index + 1}`}</span>
-                  {conv.lastMessage && (
-                    <span className="chat-time">
-                      {formatTime(conv.lastMessage)}
-                    </span>
-                  )}
+                  <span className="chat-time">
+                    {formatMessageTime(conv.lastMessageAt)}
+                  </span>
                 </div>
                 <span className="chat-last-message">
                   {conv.lastMessage || "Нет сообщений"}

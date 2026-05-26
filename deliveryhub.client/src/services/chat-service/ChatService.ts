@@ -15,6 +15,7 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
     id: c.conversationId,
     name: c.sellerName,
     lastMessage: c.lastMessage,
+	lastMessageAt: c.lastMessageAt,
     isOnline: c.isOnline,
     unreadMessagesCount: c.unreadMessagesCount,
   }));
