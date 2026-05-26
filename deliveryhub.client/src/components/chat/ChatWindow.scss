@@ -71,6 +71,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    scroll-behavior: smooth;
     
     &::-webkit-scrollbar {
       width: 6px;
@@ -89,18 +90,6 @@
   .message {
     margin-bottom: 16px;
     display: flex;
-    animation: slideIn 0.3s ease-out;
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
     
     &.incoming {
       justify-content: flex-start;

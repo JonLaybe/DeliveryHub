@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
+import { useChatSignalR } from "../../services/chat-service/SignalRService";
 import "./ChatList.scss";
 
 const ChatList: FC<ChatListProps> = ({ userId }) => {
@@ -11,6 +12,7 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
   const didFetchRef = useRef(false);
   const navigate = useNavigate();
   const { conversationId } = useParams();
+  const { connection } = useChatSignalR();
 
   useEffect(() => {
     if (conversationId) {
@@ -37,6 +39,31 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     fetchConversations();
   }, [userId]);
 
+  useEffect(() => {
+    if (!connection) return;
+
+    const handleNewMessage = (messageDto: any) => {
+      console.log("New message received in ChatList:", messageDto);
+      
+      const refreshConversations = async () => {
+        try {
+          const data = await getUserConversationsAsync(userId);
+          setConversations(data);
+        } catch (err) {
+          console.error("Ошибка при обновлении чатов:", err);
+        }
+      };
+      
+      refreshConversations();
+    };
+
+    connection.on("ReceiveMessage", handleNewMessage);
+
+    return () => {
+      connection.off("ReceiveMessage", handleNewMessage);
+    };
+  }, [connection, userId]);
+
   const handleSelect = (conv: Conversation) => {
     setSelectedId(conv.id);
     navigate(`/chat/${conv.id}`, { 
@@ -47,6 +74,20 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     });
   };
 
+  const formatTime = (lastMessage?: string) => {
+    if (!lastMessage) return "";
+    
+    try {
+      const date = new Date(lastMessage);
+      if (isNaN(date.getTime())) {
+        return "";
+      }
+      return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      return "";
+    }
+  };
+
   return (
     <div className="chat-list">
       <div className="chat-list-header">
@@ -54,7 +95,7 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          Чаты
+          Сообщения
         </h2>
         <div className="chat-count">{conversations.length} чатов</div>
       </div>
@@ -87,7 +128,7 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
                   <span>{conv.name || `Чат ${index + 1}`}</span>
                   {conv.lastMessage && (
                     <span className="chat-time">
-                      {new Date(conv.lastMessage).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                      {formatTime(conv.lastMessage)}
                     </span>
                   )}
                 </div>

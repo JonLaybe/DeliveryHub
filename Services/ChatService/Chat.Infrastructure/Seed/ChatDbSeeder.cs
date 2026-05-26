@@ -46,7 +46,7 @@ namespace Chat.Infrastructure.Seed
                     SenderId = buyerId,
                     SenderRole = SenderRole.User,
                     Text = "Здравствуйте! Товар ещё доступен?",
-                    CreatedAt = new DateTime(2026, 4, 15, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2026, 4, 15, 12, 12, 12, DateTimeKind.Utc),
                     IsRead = true
                 },
                 new()
@@ -56,7 +56,7 @@ namespace Chat.Infrastructure.Seed
                     SenderId = sellerId,
                     SenderRole = SenderRole.User,
                     Text = "Здравствуйте! Да! В наличие еще 5 штук.",
-                    CreatedAt = new DateTime(2026, 4, 16, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2026, 4, 16, 13, 13, 13, DateTimeKind.Utc),
                     IsRead = false
                 }
             ];
