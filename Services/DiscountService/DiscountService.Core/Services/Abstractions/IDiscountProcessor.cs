@@ -11,9 +11,9 @@ namespace DiscountService.Core.Services.Abstractions
         Task<Discount> CreateDiscountAsync(Discount discount);
         Task<Discount> UpdateDiscountAsync(int id, Discount discount);
         Task DeleteDiscountAsync(int id);
-        Task<bool> ValidateDiscountAsync(string code, decimal orderAmount, int userId);
+        Task<bool> ValidateDiscountAsync(string code, decimal orderAmount);
         Task<decimal> CalculateDiscountAsync(string code, decimal orderAmount);
-        Task<DiscountUsage> ApplyDiscountAsync(string code, Guid orderId, int userId, decimal orderAmount);
+        Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid productId);
         Task<IEnumerable<DiscountUsage>> GetDiscountUsagesAsync(int discountId);
     }
 }

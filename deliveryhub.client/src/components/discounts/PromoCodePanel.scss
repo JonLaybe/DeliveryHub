@@ -1,0 +1,68 @@
+.promo_trigger {
+  background: #0b5bd3;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.custom_model {
+  width: 420px;
+  max-width: 90vw;
+  border-radius: 8px;
+  padding: 0;
+}
+.custom_model_overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+.contect_model_auth {
+  padding: 16px;
+}
+.contect_model_auth__header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+.contect__name_chapter {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0;
+}
+.default_text {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.promo_actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.apply_button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #0b5bd3;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.close_button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  cursor: pointer;
+}
+.error {
+  color: #b91c1c;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.success {
+  color: #16a34a;
+  font-size: 13px;
+  margin-top: 6px;
+}

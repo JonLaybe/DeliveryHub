@@ -1,4 +1,6 @@
-﻿namespace DiscountService.Core.Entities
+﻿using DiscountService.Abstractions;
+
+namespace DiscountService.Core.Entities
 {
     public class Discount
     {

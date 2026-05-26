@@ -1,4 +1,4 @@
-﻿namespace DiscountService.Core.Entities
+﻿namespace DiscountService.Abstractions
 {
     public enum DiscountType
     {

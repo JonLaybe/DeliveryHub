@@ -18,5 +18,6 @@ export function mapGroceryBasketItemsToProduct(basket: GroceryBasketItem[]): Pro
         articleNumber: gb.product.id,
         quantity: gb.quantity,
         price: gb.price,
+        discount: gb.product.discount
     }) as ProductCreateDto);
 }
