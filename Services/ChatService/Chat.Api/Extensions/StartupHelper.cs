@@ -6,8 +6,9 @@ using Chat.Infrastructure.Persistence;
 using Chat.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Scalar.AspNetCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 
 namespace Chat.Api.Extensions
 {
@@ -17,7 +18,6 @@ namespace Chat.Api.Extensions
         {
             services.AddControllers();
             services.AddSignalR();
-            services.AddOpenApi();
             services.AddSerilog((context, conf) =>
                 conf.ReadFrom.Configuration(configuration));
 
@@ -52,6 +52,22 @@ namespace Chat.Api.Extensions
                         .AllowCredentials();
                 });
             });
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ChatService API",
+                    Version = "v1",
+                    Description = "API для управления диалогами и сообщениями между покупателями и продавцами",
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+
+                options.EnableAnnotations();
+            });
         }
 
         public static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
@@ -71,12 +87,12 @@ namespace Chat.Api.Extensions
         {
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-                app.MapScalarApiReference(options =>
+
+                app.UseSwagger();
+                app.UseSwaggerUI(options =>
                 {
-                    options
-                        .WithTitle("ChatService API")
-                        .WithTheme(ScalarTheme.BluePlanet);
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "ChatService API v1");
+                    options.RoutePrefix = "swagger";
                 });
             }
 
