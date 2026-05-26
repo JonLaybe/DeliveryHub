@@ -1,6 +1,5 @@
 import { CHAT_URL, CONVERSATION_URL } from "../../constants/EndpointConstants";
 import { api } from "../../http";
-import type { CreateConversationRequest } from "../../models/chat-service/CreateConversationRequest";
 import type { ConversationResponse } from "../../models/chat-service/ConversationResponse";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { Message } from "../../models/chat-service/Message";
@@ -19,8 +18,8 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
   }));
 }
 
-export async function createConversationAsync(request: CreateConversationRequest): Promise<string> {
-  const res = await api.post(`${CHAT_URL}${CONVERSATION_URL}`, request);
+export async function createConversationAsync(productId: string): Promise<string> {
+  const res = await api.post(`${CHAT_URL}${CONVERSATION_URL}/${productId}`);
   const data = res.data;
   
   console.log("API Response (conversations created):", data);
