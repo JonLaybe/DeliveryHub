@@ -49,9 +49,9 @@ namespace Chat.Api.Controllers
         {
 
             // заглушка
-            var buyerId = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
+            var currentUser = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
 
-            var conversationId = await _conversationService.CreateConversationAsync(buyerId, productId);
+            var conversationId = await _conversationService.CreateConversationAsync(currentUser, productId);
 
             return Ok(conversationId);
         }
@@ -87,7 +87,9 @@ namespace Chat.Api.Controllers
         [HttpGet("conversation/{conversationId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
-            var messages = await _messageService.GetMessagesAsync(conversationId);
+            // заглушка
+            var currentUser = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
+            var messages = await _messageService.GetMessagesAsync(conversationId, currentUser);
 
             return Ok(messages);
         }

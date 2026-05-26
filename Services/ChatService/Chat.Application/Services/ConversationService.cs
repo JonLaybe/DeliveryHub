@@ -85,8 +85,8 @@ namespace Chat.Application.Services
                     ConversationId = c.Id,
                     SellerId = c.SellerId,
                     SellerName = $"Магазин {c.SellerId}",
-                    UnreadMessagesCount = stat.unreadCount,
-                    LastMessage = stat.lastMessage,
+                    UnreadMessagesCount = stat.UnreadCount,
+                    LastMessage = stat.LastMessage,
                     IsOnline = onlineStatuses.ContainsKey(c.SellerId) && onlineStatuses[c.SellerId]
                 };
             }).ToList();
