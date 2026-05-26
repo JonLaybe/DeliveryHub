@@ -1,81 +1,96 @@
 ﻿using Chat.Application.Services;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
-using StackExchange.Redis;
+using System.Text;
 
 namespace Chat.Tests
 {
     public class OnlineStatusServiceTests
     {
-        private readonly Mock<IDatabase> _dbMock;
-        private readonly Mock<IConnectionMultiplexer> _redisMock;
+        private readonly Mock<IDistributedCache> _cacheMock;
         private readonly OnlineStatusService _service;
 
         public OnlineStatusServiceTests()
         {
-            _dbMock = new Mock<IDatabase>();
-            _redisMock = new Mock<IConnectionMultiplexer>();
-            _redisMock.Setup(r => r.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
-                      .Returns(_dbMock.Object);
-
-            _service = new OnlineStatusService(_redisMock.Object);
-        }
-
-        [Fact(Skip = "Почему-то не работает Verify")]
-        public async Task SetOnlineAsync_ShouldCall_StringSetAsync_WithCorrectKeyAndTTL()
-        {
-            var userId = Guid.NewGuid();
-            string expectedKey = $"user:online:{userId}";
-
-            _dbMock.Setup(db => db.StringSetAsync(
-                expectedKey,
-                true,
-                It.IsAny<TimeSpan?>(),
-                It.IsAny<When>(),
-                It.IsAny<CommandFlags>()))
-            .ReturnsAsync(true);
-
-            await _service.SetOnlineAsync(userId);
-
-            _dbMock.Verify(db => db.StringSetAsync(
-                It.Is<RedisKey>(k => k == expectedKey),
-                It.Is<RedisValue>(v => v == true),
-                It.IsAny<TimeSpan>(),
-                It.IsAny<When>(),
-                It.IsAny<CommandFlags>()),
-                Times.Once);
+            _cacheMock = new Mock<IDistributedCache>();
+            _service = new OnlineStatusService(_cacheMock.Object);
         }
 
         [Fact]
-        public async Task SetOfflineAsync_ShouldCall_KeyDeleteAsync_WithCorrectKey()
+        public async Task SetOnlineAsync_ShouldCall_SetAsync_WithCorrectKeyAndTTL()
+        {
+            var userId = Guid.NewGuid();
+            string expectedKey = $"user:online:{userId}";
+            byte[] expectedValue = Encoding.UTF8.GetBytes("true");
+
+            await _service.SetOnlineAsync(userId);
+
+            _cacheMock.Verify(cache => cache.SetAsync(
+                expectedKey,
+                It.Is<byte[]>(v => v.SequenceEqual(expectedValue)),
+                It.Is<DistributedCacheEntryOptions>(options =>
+                    options.AbsoluteExpirationRelativeToNow == TimeSpan.FromSeconds(300)),
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetOfflineAsync_ShouldCall_RemoveAsync_WithCorrectKey()
         {
             var userId = Guid.NewGuid();
             string expectedKey = $"user:online:{userId}";
 
             await _service.SetOfflineAsync(userId);
 
-            _dbMock.Verify(db => db.KeyDeleteAsync(
+            _cacheMock.Verify(cache => cache.RemoveAsync(
                 expectedKey,
-                It.IsAny<CommandFlags>()),
-                Times.Once);
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
         }
 
         [Fact]
-        public async Task IsOnlineAsync_ShouldCall_KeyExistsAsync_WithCorrectKey_AndReturnResult()
+        public async Task IsOnlineAsync_ShouldReturnTrue_WhenKeyExists()
+        {
+            var userId = Guid.NewGuid();
+            string expectedKey = $"user:online:{userId}";
+            byte[] expectedValue = Encoding.UTF8.GetBytes("true");
+
+            _cacheMock.Setup(cache => cache.GetAsync(
+                expectedKey,
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync(expectedValue);
+
+            var result = await _service.IsOnlineAsync(userId);
+
+            Assert.True(result);
+            _cacheMock.Verify(cache => cache.GetAsync(
+                expectedKey,
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task IsOnlineAsync_ShouldReturnFalse_WhenKeyDoesNotExist()
         {
             var userId = Guid.NewGuid();
             string expectedKey = $"user:online:{userId}";
 
-            _dbMock.Setup(db => db.KeyExistsAsync(expectedKey, It.IsAny<CommandFlags>()))
-                   .ReturnsAsync(true);
+            _cacheMock.Setup(cache => cache.GetAsync(
+                expectedKey,
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync((byte[])null);
 
             var result = await _service.IsOnlineAsync(userId);
 
-            _dbMock.Verify(db => db.KeyExistsAsync(expectedKey, It.IsAny<CommandFlags>()), Times.Once);
-            Assert.True(result);
+            Assert.False(result);
+            _cacheMock.Verify(cache => cache.GetAsync(
+                expectedKey,
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
         }
 
         [Fact]
-        public async Task IsOnlineAsync_ShouldReturnCorrectStatusesForMultipleUsers()
+        public async Task IsOnlineAsync_MultipleUsers_ShouldReturnCorrectStatuses()
         {
             var userId1 = Guid.NewGuid();
             var userId2 = Guid.NewGuid();
@@ -83,12 +98,20 @@ namespace Chat.Tests
 
             var userIds = new[] { userId1, userId2, userId3 };
 
-            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId1}"), It.IsAny<CommandFlags>()))
-           .ReturnsAsync(true);
-            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId2}"), It.IsAny<CommandFlags>()))
-                   .ReturnsAsync(false);
-            _dbMock.Setup(db => db.KeyExistsAsync(It.Is<RedisKey>(k => k == $"user:online:{userId3}"), It.IsAny<CommandFlags>()))
-                   .ReturnsAsync(true);
+            _cacheMock.Setup(cache => cache.GetAsync(
+                $"user:online:{userId1}",
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync(Encoding.UTF8.GetBytes("true"));
+
+            _cacheMock.Setup(cache => cache.GetAsync(
+                $"user:online:{userId2}",
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync((byte[])null);
+
+            _cacheMock.Setup(cache => cache.GetAsync(
+                $"user:online:{userId3}",
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync(Encoding.UTF8.GetBytes("true"));
 
             var result = await _service.IsOnlineAsync(userIds);
 
@@ -97,9 +120,57 @@ namespace Chat.Tests
             Assert.False(result[userId2]);
             Assert.True(result[userId3]);
 
-            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId1}", It.IsAny<CommandFlags>()), Times.Once);
-            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId2}", It.IsAny<CommandFlags>()), Times.Once);
-            _dbMock.Verify(db => db.KeyExistsAsync($"user:online:{userId3}", It.IsAny<CommandFlags>()), Times.Once);
+            _cacheMock.Verify(cache => cache.GetAsync(
+                $"user:online:{userId1}",
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+
+            _cacheMock.Verify(cache => cache.GetAsync(
+                $"user:online:{userId2}",
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+
+            _cacheMock.Verify(cache => cache.GetAsync(
+                $"user:online:{userId3}",
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetOnlineAsync_ShouldOverrideExistingKey()
+        {
+            var userId = Guid.NewGuid();
+            string expectedKey = $"user:online:{userId}";
+            byte[] expectedValue = Encoding.UTF8.GetBytes("true");
+
+            await _service.SetOnlineAsync(userId);
+            await _service.SetOnlineAsync(userId);
+
+            _cacheMock.Verify(cache => cache.SetAsync(
+                expectedKey,
+                It.Is<byte[]>(v => v.SequenceEqual(expectedValue)),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                It.IsAny<CancellationToken>()
+            ), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task SetOfflineAsync_ShouldNotThrow_WhenKeyDoesNotExist()
+        {
+            var userId = Guid.NewGuid();
+
+            _cacheMock.Setup(cache => cache.RemoveAsync(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()
+            )).Returns(Task.CompletedTask);
+
+            var exception = await Record.ExceptionAsync(() => _service.SetOfflineAsync(userId));
+            Assert.Null(exception);
+
+            _cacheMock.Verify(cache => cache.RemoveAsync(
+                $"user:online:{userId}",
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
         }
     }
 }

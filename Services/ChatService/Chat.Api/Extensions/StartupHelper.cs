@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
-using StackExchange.Redis;
 
 namespace Chat.Api.Extensions
 {
@@ -36,9 +35,11 @@ namespace Chat.Api.Extensions
             services.AddDbContext<ChatDbContext>(options =>
                 options.UseNpgsql(dbConnection));
 
-            var redisConnection = configuration.GetConnectionString("Redis");
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(redisConnection));
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("Redis");
+                options.InstanceName = "ChatServiceCache";
+            });
 
             services.AddCors(options =>
             {
