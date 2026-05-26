@@ -34,13 +34,8 @@ namespace Chat.Api.Controllers
         /// Если диалог между этими пользователями уже существует,
         /// сервис может вернуть существующий идентификатор.
         /// </remarks>
-        /// <param name="productId">
-        /// Данные для создания диалога:
-        /// идентификатор продавца.
-        /// </param>
-        /// <returns>
-        /// Идентификатор созданного (или существующего) диалога.
-        /// </returns>
+        /// <param name="productId">Идентификатор товара</param>
+        /// <returns>Идентификатор созданного (или существующего) диалога</returns>
         /// <response code="200">Диалог успешно создан</response>
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
@@ -61,13 +56,11 @@ namespace Chat.Api.Controllers
         /// </summary>
         /// <remarks>
         /// Пользователь определяется на основе JWT-токена.
-        /// Пока как заглушка используется id из тела запроса
         /// В список входят все диалоги, в которых пользователь является
         /// покупателем или продавцом.
         /// </remarks>
-        /// <returns>
-        /// Коллекция диалогов пользователя.
-        /// </returns>
+        /// <param name="userId">Идентификатор пользователя (временно, пока не подключен JWT)</param>
+        /// <returns>Коллекция диалогов пользователя</returns>
         /// <response code="200">Список диалогов успешно получен</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
         [HttpGet("conversation/{userId:guid}")]
@@ -79,11 +72,12 @@ namespace Chat.Api.Controllers
         }
 
         /// <summary>
-        /// Получает все сообщения для указанного диалога (conversation).
+        /// Получает все сообщения для указанного диалога.
         /// </summary>
-        /// <param name="conversationId">Идентификатор диалога (ConversationId).</param>
-        /// <returns>Список сообщений в формате MessageDto для данного диалога.</returns>
-        /// <response code="200">Возвращает список сообщений для указанного диалога.</response>
+        /// <param name="conversationId">Идентификатор диалога</param>
+        /// <returns>Список сообщений для данного диалога</returns>
+        /// <response code="200">Возвращает список сообщений для указанного диалога</response>
+        /// <response code="404">Диалог не найден</response>
         [HttpGet("conversation/{conversationId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
