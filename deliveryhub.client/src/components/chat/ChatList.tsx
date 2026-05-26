@@ -48,8 +48,31 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     };
   }, [userId]);
 
+  useEffect(() => {
+    const handleResetUnread = (event: CustomEvent) => {
+      const { conversationId } = event.detail;
+      if (conversationId) {
+        console.log("Resetting unread count for:", conversationId);
+        setConversations(prev => prev.map(conv => 
+          conv.id === conversationId ? { ...conv, unreadMessagesCount: 0 } : conv
+        ));
+      }
+    };
+
+    window.addEventListener('chat:resetUnread', handleResetUnread as EventListener);
+
+    return () => {
+      window.removeEventListener('chat:resetUnread', handleResetUnread as EventListener);
+    };
+  }, []);
+
   const handleSelect = (conv: Conversation) => {
     setSelectedId(conv.id);
+    
+    setConversations(prev => prev.map(c => 
+      c.id === conv.id ? { ...c, unreadMessagesCount: 0 } : c
+    ));
+    
     navigate(`/chat/${conv.id}`, { 
       state: { 
         conversationName: conv.name,

@@ -17,6 +17,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
   
   const [newMessage, setNewMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const hasSentResetEvent = useRef(false); // Флаг для предотвращения множественных событий
   
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -53,7 +54,16 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     }
   }, []);
 
-  // Загрузка сообщений и проверка истории
+  useEffect(() => {
+    if (conversation?.id && !hasSentResetEvent.current) {
+      console.log("Chat opened, resetting unread count for:", conversation.id);
+      window.dispatchEvent(new CustomEvent('chat:resetUnread', { 
+        detail: { conversationId: conversation.id }
+      }));
+      hasSentResetEvent.current = true;
+    }
+  }, [conversation?.id]);
+
   useEffect(() => {
     if (!conversation?.id) return;
 
@@ -63,21 +73,13 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
         setMessages(msgs);
         
-        // Проверяем, есть ли ВООБЩЕ какие-либо сообщения от текущего пользователя в этом чате
         if (productName && !hasCheckedHistoryRef.current) {
-          // Проверяем, есть ли хотя бы одно сообщение от пользователя в этом чате
           const hasUserMessage = msgs.some(msg => msg.senderName === "Вы");
           
-          console.log("Has user sent any message?", hasUserMessage);
-          console.log("Total messages:", msgs.length);
-          
-          // Если пользователь еще не отправлял сообщения в этот чат, подставляем приветственное
           if (!hasUserMessage) {
             const greetingMessage = `Здравствуйте, меня заинтересовал ваш товар: ${productName}`;
-            console.log("Setting greeting message to input:", greetingMessage);
             setNewMessage(greetingMessage);
           } else {
-            console.log("User already sent messages, keeping input empty");
             setNewMessage("");
           }
           hasCheckedHistoryRef.current = true;
@@ -107,7 +109,6 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     }
   }, [messages, scrollToBottom, isLoading]);
 
-  // Подписка на SignalR
   useEffect(() => {
     if (!conversation?.id) return;
 
