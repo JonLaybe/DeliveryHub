@@ -13,8 +13,10 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
 
   return data.map((c) => ({
     id: c.conversationId,
-    name: c.sellerName, 
+    name: c.sellerName,
     lastMessage: c.lastMessage,
+    isOnline: c.isOnline,
+    unreadMessagesCount: c.unreadMessagesCount,
   }));
 }
 

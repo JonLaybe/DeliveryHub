@@ -8,6 +8,7 @@
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+  min-width: 0;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -37,6 +38,7 @@
       width: 24px;
       height: 24px;
       color: #667eea;
+      flex-shrink: 0;
     }
   }
   
@@ -80,6 +82,8 @@
   border-bottom: 1px solid #f0f2f5;
   transition: all 0.2s ease;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
   
   &:hover {
     background: #f8f9fc;
@@ -95,6 +99,18 @@
     }
   }
   
+  &.has-unread {
+    .chat-name span:first-child {
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    
+    .chat-last-message {
+      font-weight: 500;
+      color: #1a1a2e;
+    }
+  }
+  
   .chat-avatar {
     width: 48px;
     height: 48px;
@@ -104,11 +120,24 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: relative;
     
     svg {
       width: 24px;
       height: 24px;
       color: white;
+    }
+    
+    .online-indicator {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background-color: #4caf50;
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 2s infinite;
     }
     
     img {
@@ -122,6 +151,7 @@
   .chat-info {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
   
   .chat-name {
@@ -132,11 +162,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    
+    span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
     
     .chat-time {
       font-size: 11px;
       font-weight: normal;
       color: #8899aa;
+      flex-shrink: 0;
     }
   }
   
@@ -147,6 +187,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    width: 100%;
   }
   
   .unread-badge {
@@ -154,14 +195,17 @@
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    background: #667eea;
+    background: #ff4444; // Красный цвет
     color: white;
     font-size: 11px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 10px;
-    min-width: 18px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 12px;
+    min-width: 20px;
     text-align: center;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    animation: bounce 0.3s ease-out;
   }
 }
 
@@ -184,5 +228,32 @@
     color: #8899aa;
     font-size: 14px;
     margin: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-50%) scale(0);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
   }
 }

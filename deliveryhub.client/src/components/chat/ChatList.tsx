@@ -5,7 +5,7 @@ import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
 import "./ChatList.scss";
 
-const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
+const ChatList: FC<ChatListProps> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const didFetchRef = useRef(false);
@@ -39,7 +39,12 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
 
   const handleSelect = (conv: Conversation) => {
     setSelectedId(conv.id);
-    navigate(`/chat/${conv.id}`, { state: { conversationName: conv.name } });
+    navigate(`/chat/${conv.id}`, { 
+      state: { 
+        conversationName: conv.name,
+        isOnline: conv.isOnline 
+      } 
+    });
   };
 
   return (
@@ -49,7 +54,7 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          Сообщения
+          Чаты
         </h2>
         <div className="chat-count">{conversations.length} чатов</div>
       </div>
@@ -67,7 +72,7 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
           conversations.map((conv, index) => (
             <div
               key={conv.id || index}
-              className={`chat-item ${selectedId === conv.id ? "selected" : ""}`}
+              className={`chat-item ${selectedId === conv.id ? "selected" : ""} ${conv.unreadMessagesCount && conv.unreadMessagesCount > 0 ? "has-unread" : ""}`}
               onClick={() => handleSelect(conv)}
             >
               <div className="chat-avatar">
@@ -75,13 +80,14 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
+                {conv.isOnline && <div className="online-indicator"></div>}
               </div>
               <div className="chat-info">
                 <div className="chat-name">
                   <span>{conv.name || `Чат ${index + 1}`}</span>
-                  {conv.lastMessageDate && (
+                  {conv.lastMessage && (
                     <span className="chat-time">
-                      {new Date(conv.lastMessageDate).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(conv.lastMessage).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   )}
                 </div>
@@ -89,8 +95,8 @@ const ChatList: FC<ChatListProps> = ({ userId, onSelectConversation }) => {
                   {conv.lastMessage || "Нет сообщений"}
                 </span>
               </div>
-              {conv.unreadCount > 0 && (
-                <div className="unread-badge">{conv.unreadCount}</div>
+              {conv.unreadMessagesCount !== undefined && conv.unreadMessagesCount !== null && conv.unreadMessagesCount > 0 && (
+                <div className="unread-badge">{conv.unreadMessagesCount}</div>
               )}
             </div>
           ))

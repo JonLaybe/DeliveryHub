@@ -13,6 +13,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
   
   const productName = (location.state as any)?.productName ?? "";
   const conversationName = (location.state as any)?.conversationName ?? conversation?.name ?? "Чат";
+  const isOnline = (location.state as any)?.isOnline ?? conversation?.isOnline ?? false;
   
   const [newMessage, setNewMessage] = useState(() => {
     return productName
@@ -115,9 +116,11 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
+          {isOnline && <div className="online-indicator-header"></div>}
         </div>
         <div className="chat-header-info">
           <h3>{conversationName}</h3>
+          <p className="online-status">{isOnline ? "В сети" : "Не в сети"}</p>
         </div>
       </div>
 
