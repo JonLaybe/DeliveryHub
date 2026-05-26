@@ -2,6 +2,7 @@ import { useEffect, useState, type FC } from "react";
 import Modal from "react-modal";
 import './PromoCodePanel.scss';
 import { useForm } from "react-hook-form";
+import type { UUIDTypes } from "uuid";
 
 /**
  * Тип выдачи результата применения промокода.
@@ -10,10 +11,16 @@ import { useForm } from "react-hook-form";
 export type PromoApplyResult = {
   success: boolean;
   code?: string;
-  discount?: number;
-  type?: 'percent' | 'amount';
+  appliedAmount?: number;
+  discountType?: number;
   message?: string;
 };
+
+export type PromoApplyRequest = {
+  Code: string;
+  OrderAmount: number;
+  ProductId: UUIDTypes;
+}
 
 interface PromoCodePanelProps {
   // Управление модальным окном: показывать/скрывать
@@ -23,7 +30,7 @@ interface PromoCodePanelProps {
   onApply: (code: string) => Promise<PromoApplyResult>;
 }
 
-const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply }) => {
+const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply}) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(value);
   const {
     register,
@@ -35,7 +42,7 @@ const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply }) =
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [applied, setApplied] = useState<{ code: string; discount?: number; type?: 'percent' | 'amount' } | null>(null);
+  const [applied, setApplied] = useState<{ code: string; appliedAmount?: number; discountType?: number } | null>(null);
 
   useEffect(() => setModalIsOpen(value), [value]);
 
@@ -57,7 +64,7 @@ const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply }) =
   const onSubmitPromo = async (data: { code: string }) => {
     const res = await onApply(data.code);
     if (res?.success) {
-      setApplied({ code: res.code ?? data.code, discount: res.discount, type: res.type });
+      setApplied({ code: res.code ?? data.code, appliedAmount: res.appliedAmount, discountType: res.discountType });
       setError(null);
       // Можно закрывать автоматически после успеха
       closeModal();
@@ -111,15 +118,7 @@ const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply }) =
             </form>
 
             {error && <div className="error">{error}</div>}
-
-            {applied && (
-              <div className="success">
-                Применено: {applied.code}
-                {typeof applied.discount === 'number' && (
-                  <span> • Скидка: {applied.type === 'percent' ? `${applied.discount}%` : `${applied.discount}`}</span>
-                )}
-              </div>
-            )}
+            {applied && (<div className="success">Применено: {applied.code} {typeof applied.appliedAmount === 'number' && (<span> • Скидка: {applied.discountType === 0 ? `${applied.appliedAmount}%` : `${applied.appliedAmount}`}</span>)}</div>)}
           </div>
         </div>
       </Modal>

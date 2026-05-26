@@ -81,7 +81,7 @@ namespace DiscountService.Core.Services
             await _discountRepository.DeleteAsync(id);
         }
 
-        public async Task<bool> ValidateDiscountAsync(string code, decimal orderAmount, int userId)
+        public async Task<bool> ValidateDiscountAsync(string code, decimal orderAmount)
         {
             var discount = await _discountRepository.GetByCodeAsync(code);
             if (discount == null)
@@ -113,7 +113,7 @@ namespace DiscountService.Core.Services
             if (discount == null)
                 return 0;
 
-            if (!await ValidateDiscountAsync(code, orderAmount, 0))
+            if (!await ValidateDiscountAsync(code, orderAmount))
                 return 0;
 
             decimal discountAmount = 0;
@@ -143,13 +143,16 @@ namespace DiscountService.Core.Services
             return discountAmount;
         }
 
-        public async Task<DiscountUsage> ApplyDiscountAsync(string code, Guid orderId, int userId, decimal orderAmount)
+        public async Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid productId)
         {
+            var discountUsage = await _discountRepository.GetUsageAsync(code, orderAmount, productId);
+            if (discountUsage)
+                throw new KeyNotFoundException($"Discount code '{code}' has already been applied to this product");
             var discount = await _discountRepository.GetByCodeAsync(code);
             if (discount == null)
                 throw new KeyNotFoundException($"Discount code '{code}' not found");
 
-            if (!await ValidateDiscountAsync(code, orderAmount, userId))
+            if (!await ValidateDiscountAsync(code, orderAmount))
                 throw new InvalidOperationException($"Discount code '{code}' is not valid for this order");
 
             var discountAmount = await CalculateDiscountAsync(code, orderAmount);
@@ -157,11 +160,10 @@ namespace DiscountService.Core.Services
             var usage = new DiscountUsage
             {
                 DiscountId = discount.Id,
-                OrderId = orderId,
-                UserId = userId,
                 AppliedAmount = discountAmount,
                 OrderTotal = orderAmount,
-                UsedAt = DateTime.UtcNow
+                UsedAt = DateTime.UtcNow,
+                ProductId = productId
             };
 
             return await _discountRepository.AddUsageAsync(usage);

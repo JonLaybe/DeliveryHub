@@ -3,6 +3,7 @@ using System;
 using DiscountService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DiscountService.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260525134754_AddProductIdToDiscountUsage")]
+    partial class AddProductIdToDiscountUsage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace DiscountService.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(297));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 47, 54, 377, DateTimeKind.Utc).AddTicks(4575));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -68,7 +71,7 @@ namespace DiscountService.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(529));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 47, 54, 377, DateTimeKind.Utc).AddTicks(4831));
 
                     b.Property<int>("UsageCount")
                         .HasColumnType("integer");
@@ -107,7 +110,7 @@ namespace DiscountService.Data.Migrations
                     b.Property<int>("DiscountId")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("OrderId")
+                    b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("OrderTotal")
@@ -120,9 +123,9 @@ namespace DiscountService.Data.Migrations
                     b.Property<DateTime>("UsedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(1754));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 47, 54, 377, DateTimeKind.Utc).AddTicks(6160));
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

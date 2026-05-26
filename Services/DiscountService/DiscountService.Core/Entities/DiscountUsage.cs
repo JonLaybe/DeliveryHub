@@ -10,8 +10,9 @@ namespace DiscountService.Core.Entities
     {
         public int Id { get; set; }
         public int DiscountId { get; set; }
-        public Guid OrderId { get; set; }
-        public int UserId { get; set; }
+        public Guid? OrderId { get; set; }
+        public int? UserId { get; set; }
+        public Guid ProductId { get; set; }
         public decimal AppliedAmount { get; set; }
         public decimal OrderTotal { get; set; }
         public DateTime UsedAt { get; set; } = DateTime.UtcNow;

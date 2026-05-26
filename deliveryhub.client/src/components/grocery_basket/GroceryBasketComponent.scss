@@ -56,6 +56,13 @@
                             color: var.$background_product_card_description;
                         }
                     }
+
+                    .discount-label{
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                        white-space: normal;
+                        max-width: 100%; 
+                    }
                 }
 
                 &__actions_quantity {

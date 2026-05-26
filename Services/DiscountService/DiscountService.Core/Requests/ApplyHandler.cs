@@ -17,7 +17,7 @@ namespace DiscountService.Core.Requests
         {
             try
             {
-                var result = await _discountService.ApplyDiscountAsync(request.Code, request.OrderId, request.UserId, request.OrderAmount);
+                var result = await _discountService.ApplyDiscountAsync(request.Code, request.OrderAmount, request.ProductId);
                 var discount = await _discountService.GetDiscountByCodeAsync(request.Code);
                 if (discount == null)
                 {

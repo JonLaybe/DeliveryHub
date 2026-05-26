@@ -10,16 +10,13 @@ import { createOrderAsync } from '../../services/order-service/OrderService';
 import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
 import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
 import { Link, useNavigate } from 'react-router-dom';
-import PromoCodePanel from '../discounts/PromoCodePanel';
-import type { PromoApplyResult } from '../discounts/PromoCodePanel';
+import PromoCodePanel, { type PromoApplyResult, type PromoApplyRequest } from '../discounts/PromoCodePanel';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
     const [totalPrice, setTotalPrice] = useState(0);
     const navigate = useNavigate();
-
-    // Новая: управление панелью промокода
-    const [promoOpen, setPromoOpen] = useState(false);
+    const [openPromoId, setOpenPromoId] = useState<string | false>(false);
 
     // Расчет итоговой цены (оставил как есть, можно добавить зависимость к groceryBasket)
     useEffect(() => {
@@ -28,26 +25,36 @@ const GroceryBasketComponent: FC = () => {
             result += prod.price;
         });
         setTotalPrice(result);
-    }, []);
+    }, []);    
 
     // Применение промокода (пример API-обработчика)
-    const applyPromo = async (code: string): Promise<PromoApplyResult> => {
+    const applyPromo = async (code: string, productId: UUIDTypes, orderAmount: number): Promise<PromoApplyResult> => {
         // Замените на вашу реальную логику вызова API
         try {
-            const res = await fetch('/api/apply-promo', {
+            const promoApplyRequest: PromoApplyRequest = {
+               Code: code,
+               OrderAmount: orderAmount,
+               ProductId: productId
+            }
+            console.log(promoApplyRequest)
+
+            const res = await fetch('http://localhost/api/Discounts/Apply', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code }),
+                body: JSON.stringify(promoApplyRequest),
             });
             if (!res.ok) {
                 return { success: false, message: 'Серверная ошибка' };
             }
             const data = await res.json();
+            if (data && data.success) {
+                decreaseDiscount(productId, data.appliedAmount);
+            }
             return {
                 success: data.success,
                 code: data.code,
-                discount: data.discount,
-                type: data.type,
+                appliedAmount: data.appliedAmount,
+                discountType: data.discountType,
                 message: data.message,
             };
         } catch {
@@ -55,12 +62,42 @@ const GroceryBasketComponent: FC = () => {
         }
     };
 
-    // Остальные функции корзины
+const decreaseDiscount = (productId: UUIDTypes, discount: number) => {
+    let newBasket = [...groceryBasket];
+    let discountAmount = 0;
+
+    newBasket = newBasket.map(item => {
+        if (String(item.product.id) !== String(productId)) return item;
+
+        discountAmount = discount * item.quantity;
+        const newUnitPrice = item.product.price - discount;
+        return {
+            ...item,
+            price: newUnitPrice * item.quantity,
+            product: {
+                ...item.product,
+                discount: discountAmount
+            }
+        };
+    });
+
+    setTotalPrice(totalPrice - discountAmount);
+    setGroceryBasket(newBasket);
+
+    if (refreshGroceryBasket) {
+        refreshGroceryBasket(newBasket);
+    }
+};
+
     const decreaseQuantity = (productId: UUIDTypes) => {
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId && item.quantity > 1) {
                 setTotalPrice(totalPrice - item.product.price);
-                return { ...item, quantity: item.quantity - 1, price: item.product.price * (item.quantity - 1) };
+                return { ...item, quantity: item.quantity - 1, price: item.product.price * (item.quantity - 1),
+                    product:{
+                        ...item.product,
+                        discount:0
+                    }};
             }
             return item;
         });
@@ -71,7 +108,11 @@ const GroceryBasketComponent: FC = () => {
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId) {
                 setTotalPrice(totalPrice + item.product.price);
-                return { ...item, quantity: item.quantity + 1, price: item.product.price * (item.quantity + 1) };
+                return { ...item, quantity: item.quantity + 1, price: item.product.price * (item.quantity + 1),
+                    product:{
+                        ...item.product,
+                        discount:0
+                    }};
             }
             return item;
         });
@@ -108,7 +149,10 @@ const GroceryBasketComponent: FC = () => {
                                         <div className="card_item_info">
                                             <span className='default_text'>{gb_item.product.name}</span>
                                             <span className='default_text description'>{gb_item.product.description}</span>
-                                        </div>
+                                            <div className="grocery_basket_card__price">
+                                        <span className="discount-label">{gb_item.product.discount ? `скидка ${formattedPrice(gb_item.product.discount)}` : ''}</span>
+                                    </div>
+                                        </div>                                        
                                     </div>
                                     <div className="grocery_basket_card__actions_quantity">
                                         <button className='default-button grocery_basket_actions' onClick={() => decreaseQuantity(gb_item.product.id)}>
@@ -121,7 +165,9 @@ const GroceryBasketComponent: FC = () => {
                                     </div>
                                     <div className="grocery_basket_card__price">
                                         <span className='default_text'>{formattedPrice(gb_item.price)}</span>
-                                    </div>
+                                    </div>                                    
+                                    <PromoCodePanel value={openPromoId === gb_item.product.id} onChange={(open) => setOpenPromoId(open ? gb_item.product.id.toString() : false)} onApply={(code) => applyPromo(code, gb_item.product.id, gb_item.price)}/>                                    
+                                    
                                 </div>
                             ))
                         ) : (
@@ -142,11 +188,8 @@ const GroceryBasketComponent: FC = () => {
                 </div>
 
                 {/* Правая колонка: место под промокод и итог */}
-                <div className='default_container result_grocery_basket_container'>
-                    {/* Вставляем промокод-панель прямо здесь */}
-                    <PromoCodePanel value={promoOpen} onChange={setPromoOpen} onApply={applyPromo} />
-
-                    <div className="form_registration_new_order">
+                <div className='default_container result_grocery_basket_container'>                  
+                        <div className="form_registration_new_order">
                         <div className="total_price">
                             <h1 className='default_name_chapter name_chapter'>Итого:</h1>
                             <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>

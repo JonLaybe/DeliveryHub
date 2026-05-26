@@ -3,8 +3,7 @@
     public class ApplyModel
     {
         public string Code { get; set; } = string.Empty;
-        public Guid OrderId { get; set; }
-        public int UserId { get; set; }
         public decimal OrderAmount { get; set; }
+        public Guid ProductId { get; set; }
     }
 }
