@@ -1,19 +1,18 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import type { Message } from "../../models/chat-service/Message";
 import type { ChatWindowProps } from "../../models/chat-service/ChatWindowProps";
 import { getMessagesForConversationAsync } from "../../services/chat-service/ChatService";
 import { useChatSignalR } from "../../services/chat-service/SignalRService";
-
 import "./ChatWindow.scss";
 
-const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, }) => {
+const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-
   const { connection, joinConversation, sendMessage } = useChatSignalR();
   const location = useLocation();
   
   const productName = (location.state as any)?.productName ?? "";
+  const conversationName = (location.state as any)?.conversationName ?? conversation?.name ?? "Чат";
   
   const [newMessage, setNewMessage] = useState(() => {
     return productName
@@ -21,39 +20,40 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, }) => {
       : "";
   });
 
-  const messagesRef = useRef<HTMLDivElement | null>(null);
-
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  
+  const prevMessagesLengthRef = useRef(0);
 
   const scrollToBottom = () => {
-    messagesRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
+
+  useLayoutEffect(() => {
+    if (messages.length > prevMessagesLengthRef.current) {
+      scrollToBottom();
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages]);
 
   useEffect(() => {
     if (!conversation) return;
 
     setMessages([]);
+    prevMessagesLengthRef.current = 0;
 
     const fetchMessages = async () => {
-	  try {
+      try {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
         setMessages(msgs);
-	  } catch (err) {
+      } catch (err) {
         console.error("Ошибка при получении сообщений:", err);
       }
     };
 
     fetchMessages();
   }, [conversation, currentUserId]);
-
-  useEffect(() => {
-    messagesRef.current?.scrollIntoView({
-	  behavior: "smooth",
-      block: "end",
-    });
-  }, [messages]);
 
   useEffect(() => {
     if (!conversation) return;
@@ -66,10 +66,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, }) => {
       connection.on("ReceiveMessage", (messageDto) => {
         const message: Message = {
           id: messageDto.id,
-          senderName:
-            messageDto.senderId === currentUserId
-              ? "Вы"
-              : "Собеседник",
+          senderName: messageDto.senderId === currentUserId ? "Вы" : "Собеседник",
           text: messageDto.text,
           createdAt: messageDto.createdAt,
         };
@@ -105,22 +102,39 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, }) => {
     }
   };
 
+  const formatTime = (date?: Date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <div className="chat-window">
-      <div className="messages">
-        {messages.map((m) => (
+      <div className="chat-header">
+        <div className="chat-header-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <div className="chat-header-info">
+          <h3>{conversationName}</h3>
+        </div>
+      </div>
+
+      <div className="messages" ref={messagesContainerRef}>
+        {messages.map((m, index) => (
           <div
-            key={m.id}
-            className={`message ${
-              m.senderName === "Вы"
-                ? "outgoing"
-                : "incoming"
-            }`}
+            key={m.id || index}
+            className={`message ${m.senderName === "Вы" ? "outgoing" : "incoming"}`}
           >
-            <span className="text">{m.text}</span>
+            <div className="message-bubble">
+              <div className="message-text">{m.text}</div>
+              <div className="message-time">
+                {formatTime(m.createdAt)}
+              </div>
+            </div>
           </div>
         ))}
-        <div ref={messagesRef} />
       </div>
 
       <div className="input-area">

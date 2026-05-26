@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import type { Conversation } from "../../models/chat-service/Conversation";
+import "./ChatComponent.scss";
 
 const ChatComponent = () => {
   const { conversationId } = useParams();
@@ -21,18 +22,26 @@ const ChatComponent = () => {
     : null;
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div className="chat-container">
       <ChatList userId={currentUserId} />
-
-      <div style={{ flex: 1, display: "flex" }}>
+      
+      <div className="chat-main">
         {selectedConversation ? (
           <ChatWindow
-		    key={selectedConversation.id}
+            key={selectedConversation.id}
             conversation={selectedConversation}
             currentUserId={currentUserId}
           />
         ) : (
-          <div style={{ margin: "auto" }}>Выберите чат</div>
+          <div className="chat-placeholder">
+            <div className="placeholder-content">
+              <svg className="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <h3>Выберите чат</h3>
+              <p>Вам есть, что обсудить!</p>
+            </div>
+          </div>
         )}
       </div>
     </div>
