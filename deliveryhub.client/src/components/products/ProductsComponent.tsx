@@ -1,10 +1,11 @@
-import { useEffect, useContext, type FC } from "react";
+import { useEffect, useContext, useState, type FC } from "react";
 import './ProductsComponent.scss';
 import ProductCardComponent from "../../common/product-card/ProductCardComponent";
 import { SearchContext } from "../../context/SearchContext";
 import FiltersControlComponent from "../filters/FiltersControlComponent";
 import { useNavigate } from "react-router-dom";
 import chat_icon from "../../assets/chat.svg";
+import { isAuthentication } from "../../services/auth-service/AuthService";
 
 const ProductsComponent: FC = () => {
     const { 
@@ -14,6 +15,9 @@ const ProductsComponent: FC = () => {
         setFiltersCount,
         serachProductsAndSetResults,
     } = useContext(SearchContext);
+
+    const [isAuthenticated, setIsAuthenticated] = useState(isAuthentication());
+    const navigate = useNavigate();
 
     useEffect(() => {
         clearFilters();
@@ -25,8 +29,18 @@ const ProductsComponent: FC = () => {
 
         setFiltersCount(0);
     }, []);
-	
-	const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleAuthChange = () => {
+            setIsAuthenticated(isAuthentication());
+        };
+        
+        window.addEventListener('auth:changed', handleAuthChange);
+        
+        return () => {
+            window.removeEventListener('auth:changed', handleAuthChange);
+        };
+    }, []);
 
     return (
         <>
@@ -41,9 +55,12 @@ const ProductsComponent: FC = () => {
                     }
                 </div>
             </div>
-			<div  className="chat-fab" onClick={() => navigate("/chat")} >
-				<img src={chat_icon} alt="chat" />
-			</div>
+            
+            {isAuthenticated && (
+                <div className="chat-fab" onClick={() => navigate("/chat")}>
+                    <img src={chat_icon} alt="chat" />
+                </div>
+            )}
         </>
     );
 };
