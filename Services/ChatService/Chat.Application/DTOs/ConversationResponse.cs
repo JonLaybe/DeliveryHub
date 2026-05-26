@@ -6,6 +6,7 @@
         public Guid SellerId { get; set; }
         public string SellerName { get; set; } = string.Empty;
         public string LastMessage { get; set; } = string.Empty;
+        public DateTime LastMessageAt { get; set; }
         public bool IsOnline { get; set; }
         public int UnreadMessagesCount { get; set; }
     }

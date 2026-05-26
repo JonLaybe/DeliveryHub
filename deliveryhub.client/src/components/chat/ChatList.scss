@@ -177,6 +177,7 @@
       font-weight: normal;
       color: #8899aa;
       flex-shrink: 0;
+      white-space: nowrap;
     }
   }
   
@@ -195,7 +196,7 @@
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    background: #ff4444; // Красный цвет
+    background: #ff4444;
     color: white;
     font-size: 11px;
     font-weight: 700;
