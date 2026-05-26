@@ -108,7 +108,7 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
       if (now.getTime() - date.getTime() < 7 * 24 * 60 * 60 * 1000) {
         return weekDays[date.getDay()];
       }
-	  
+      
       return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -154,9 +154,11 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
               <div className="chat-info">
                 <div className="chat-name">
                   <span>{conv.name || `Чат ${index + 1}`}</span>
-                  <span className="chat-time">
-                    {formatMessageTime(conv.lastMessageAt)}
-                  </span>
+                  {conv.lastMessage && conv.lastMessageAt && (
+                    <span className="chat-time">
+                      {formatMessageTime(conv.lastMessageAt)}
+                    </span>
+                  )}
                 </div>
                 <span className="chat-last-message">
                   {conv.lastMessage || "Нет сообщений"}

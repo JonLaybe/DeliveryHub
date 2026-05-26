@@ -112,8 +112,7 @@ namespace Chat.Application.Services
                 BuyerId = buyerId,
                 SellerId = sellerId,
                 Status = ConversationStatus.Open,
-                CreatedAt = DateTime.UtcNow,
-                LastMessageAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow
             };
         }
 
