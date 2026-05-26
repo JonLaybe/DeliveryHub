@@ -8,6 +8,10 @@ const ChatComponent = () => {
   const { conversationId } = useParams();
   const location = useLocation();
 
+  useEffect(() => { 
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+  
   const productName = (location.state as any)?.productName ?? "";
 
   const currentUserId = "c8e4a03b-960e-4874-80b0-fea30a90fc7b";

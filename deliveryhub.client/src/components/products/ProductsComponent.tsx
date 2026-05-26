@@ -3,6 +3,8 @@ import './ProductsComponent.scss';
 import ProductCardComponent from "../../common/product-card/ProductCardComponent";
 import { SearchContext } from "../../context/SearchContext";
 import FiltersControlComponent from "../filters/FiltersControlComponent";
+import { useNavigate } from "react-router-dom";
+import chat_icon from "../../assets/chat.svg";
 
 const ProductsComponent: FC = () => {
     const { 
@@ -23,6 +25,8 @@ const ProductsComponent: FC = () => {
 
         setFiltersCount(0);
     }, []);
+	
+	const navigate = useNavigate();
 
     return (
         <>
@@ -37,6 +41,9 @@ const ProductsComponent: FC = () => {
                     }
                 </div>
             </div>
+			<div  className="chat-fab" onClick={() => navigate("/chat")} >
+				<img src={chat_icon} alt="chat" />
+			</div>
         </>
     );
 };
