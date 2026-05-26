@@ -1,5 +1,5 @@
-import { FC, useEffect, useState, useRef, useLayoutEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { FC, useEffect, useState, useRef, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Message } from "../../models/chat-service/Message";
 import type { ChatWindowProps } from "../../models/chat-service/ChatWindowProps";
 import { getMessagesForConversationAsync } from "../../services/chat-service/ChatService";
@@ -10,51 +10,92 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { connection, joinConversation, sendMessage } = useChatSignalR();
   const location = useLocation();
+  const navigate = useNavigate();
   
   const productName = (location.state as any)?.productName ?? "";
   const conversationName = (location.state as any)?.conversationName ?? conversation?.name ?? "Чат";
   const isOnline = (location.state as any)?.isOnline ?? conversation?.isOnline ?? false;
   
   const [newMessage, setNewMessage] = useState(() => {
-    return productName
-      ? `Здравствуйте, меня заинтересовал ваш товар: ${productName}`
-      : "";
+    return productName ? `Здравствуйте, меня заинтересовал ваш товар: ${productName}` : "";
   });
-
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  
+  const hasSentGreetingRef = useRef(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const prevMessagesLengthRef = useRef(0);
+  const isUserScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    if (messagesContainerRef.current && !isUserScrollingRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: behavior
+      });
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+      
+      if (!isAtBottom) {
+        isUserScrollingRef.current = true;
+        
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+          isUserScrollingRef.current = false;
+        }, 3000);
+      } else {
+        isUserScrollingRef.current = false;
+      }
     }
-  };
-
-  useLayoutEffect(() => {
-    if (messages.length > prevMessagesLengthRef.current) {
-      scrollToBottom();
-    }
-    prevMessagesLengthRef.current = messages.length;
-  }, [messages]);
+  }, []);
 
   useEffect(() => {
     if (!conversation) return;
-
-    setMessages([]);
-    prevMessagesLengthRef.current = 0;
 
     const fetchMessages = async () => {
       try {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
         setMessages(msgs);
+        setTimeout(() => {
+          scrollToBottom("auto");
+        }, 100);
       } catch (err) {
         console.error("Ошибка при получении сообщений:", err);
       }
     };
 
     fetchMessages();
-  }, [conversation, currentUserId]);
+    
+    isUserScrollingRef.current = false;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+  }, [conversation, currentUserId, scrollToBottom]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom("smooth");
+    }
+  }, [messages, scrollToBottom]);
+
+  useEffect(() => {
+    if (productName && messages.length > 0 && !hasSentGreetingRef.current) {
+      const greetingMessage = `Здравствуйте, меня заинтересовал ваш товар: ${productName}`;
+      const alreadySent = messages.some(msg => msg.text === greetingMessage);
+      
+      if (alreadySent) {
+        setNewMessage("");
+        hasSentGreetingRef.current = true;
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [productName, messages, location.pathname, navigate]);
 
   useEffect(() => {
     if (!conversation) return;
@@ -62,9 +103,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     const setup = async () => {
       await joinConversation(conversation.id);
 
-      connection.off("ReceiveMessage");
-
-      connection.on("ReceiveMessage", (messageDto) => {
+      const handleReceiveMessage = (messageDto: any) => {
         const message: Message = {
           id: messageDto.id,
           senderName: messageDto.senderId === currentUserId ? "Вы" : "Собеседник",
@@ -72,41 +111,50 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
           createdAt: messageDto.createdAt,
         };
 
-        setMessages((prev) => [...prev, message]);
-      });
+        setMessages((prev) => {
+          if (prev.some(m => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+      };
+
+      connection.on("ReceiveMessage", handleReceiveMessage);
+
+      return () => {
+        connection.off("ReceiveMessage", handleReceiveMessage);
+      };
     };
 
     setup();
+  }, [conversation, currentUserId, connection, joinConversation]);
 
-    return () => {
-      connection.off("ReceiveMessage");
-    };
-  }, [conversation, currentUserId]);
-
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!newMessage.trim()) return;
 
     const textToSend = newMessage;
     setNewMessage("");
+    hasSentGreetingRef.current = true;
 
-    await sendMessage(conversation.id, currentUserId, textToSend);
+    navigate(location.pathname, { replace: true, state: {} });
 
-    setTimeout(() => {
+    try {
+      await sendMessage(conversation.id, currentUserId, textToSend);
       inputRef.current?.focus();
-    }, 0);
-  };
+    } catch (error) {
+      console.error("Ошибка при отправке:", error);
+    }
+  }, [newMessage, conversation, currentUserId, sendMessage, navigate, location.pathname]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
-  };
+  }, [handleSend]);
 
-  const formatTime = (date?: Date) => {
+  const formatTime = useCallback((date?: Date) => {
     if (!date) return "";
     return new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  };
+  }, []);
 
   return (
     <div className="chat-window">
@@ -124,7 +172,11 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
         </div>
       </div>
 
-      <div className="messages" ref={messagesContainerRef}>
+      <div 
+        className="messages" 
+        ref={messagesContainerRef}
+        onScroll={handleScroll}
+      >
         {messages.map((m, index) => (
           <div
             key={m.id || index}
@@ -149,7 +201,9 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
           onKeyDown={handleKeyDown}
           placeholder="Введите сообщение..."
         />
-        <button onClick={handleSend}>Отправить</button>
+        <button onClick={handleSend}>
+          Отправить
+        </button>
       </div>
     </div>
   );
