@@ -27,25 +27,22 @@ const ProductPageComponent = () => {
     const imgMain = product?.images?.filter(x => x.type === 0)[0].url ?? '';
     const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
 	const handleWriteSeller = async () => {
-    try {
+	  if (!product?.id) return;
 
-        const request: CreateConversationRequest = {
-		buyerId: "c8e4a03b-960e-4874-80b0-fea30a90fc7b",
-		sellerId: "91f3c293-3599-4152-a579-bcf0edf8ef8c",
-	};
+      try {
+        const conversationId = await createConversationAsync(product.id);
 
-	const conversationId = await createConversationAsync(request);
+        console.log("ConversationId:", conversationId);
 
         navigate(`/chat/${conversationId}`, {
-		  state: {
-		    productName: product?.name,
-		},
-});
-
-    } catch (err) {
-        console.error("Create conversation error:", err);
-    }
-};
+          state: {
+            productName: product?.name,
+          },
+        });
+      } catch (err) {
+          console.error("Create conversation error:", err);
+        }
+    };
 
   return (
     <div className="product-page">
