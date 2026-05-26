@@ -1,7 +1,11 @@
-﻿using Chat.Api.Hubs;
+﻿using Chat.Api.Configs;
+using Chat.Api.Hubs;
+using Chat.Application.Interfaces;
+using Chat.Application.Services;
 using Chat.Infrastructure.Persistence;
 using Chat.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
 using StackExchange.Redis;
@@ -20,6 +24,14 @@ namespace Chat.Api.Extensions
 
             services.AddChatServices();
 
+            services.Configure<ServicesConfig>(configuration.GetSection("ServicesConfig"));
+            services.AddHttpClient<ICatalogService, CatalogService>("CatalogApi", (provider, client) =>
+            {
+                var config = provider.GetRequiredService<IOptions<ServicesConfig>>().Value;
+                client.BaseAddress = new Uri(config.CatalogApi!.BaseUrl);
+            });
+
+
             var dbConnection = configuration.GetConnectionString("Postgres");
             services.AddDbContext<ChatDbContext>(options =>
                 options.UseNpgsql(dbConnection));
@@ -27,6 +39,18 @@ namespace Chat.Api.Extensions
             var redisConnection = configuration.GetConnectionString("Redis");
             services.AddSingleton<IConnectionMultiplexer>(sp =>
                 ConnectionMultiplexer.Connect(redisConnection));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
         }
 
         public static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
@@ -55,16 +79,15 @@ namespace Chat.Api.Extensions
                 });
             }
 
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
-            
-            app.MapHub<ChatHub>("/chat");
+
+            app.MapHub<ChatHub>("/hubs/chat");
             app.MapControllers();
         }
     }

@@ -5,6 +5,7 @@ import './ProductPageComponent.scss';
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
 import { useNavigate } from "react-router-dom";
+import { createConversationAsync } from "../../services/chat-service/ChatService";
 
 const ProductPageComponent = () => {
     const { id } = useParams();
@@ -25,6 +26,23 @@ const ProductPageComponent = () => {
 
     const imgMain = product?.images?.filter(x => x.type === 0)[0].url ?? '';
     const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
+	const handleWriteSeller = async () => {
+	  if (!product?.id) return;
+
+      try {
+        const conversationId = await createConversationAsync(product.id);
+
+        console.log("ConversationId:", conversationId);
+
+        navigate(`/chat/${conversationId}`, {
+          state: {
+            productName: product?.name,
+          },
+        });
+      } catch (err) {
+          console.error("Create conversation error:", err);
+        }
+    };
 
   return (
     <div className="product-page">
@@ -59,7 +77,7 @@ const ProductPageComponent = () => {
                 <div className="action-block">
                     <button className="default-button">Добавить в корзину</button>
                     <button className="default-button buy-btn">Купить сейчас</button>
-					<button className="default-button" onClick={() => navigate(`/chats?productId=${product?.id}`)}>Написать продавцу</button>
+					<button className="default-button" onClick={handleWriteSeller}>Написать продавцу</button>
                 </div>
             </div>
         </div>

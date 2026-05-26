@@ -1,4 +1,4 @@
-using Catalog.Application.Repositories;
+﻿using Catalog.Application.Repositories;
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Helpers;
 using Catalog.Infrastructure.Messaging.Consumers;
@@ -12,10 +12,17 @@ using DeliveryHub.Catalog.Infrastructure.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Services;
 using MassTransit;
 using MongoDB.Driver;
+using Serilog;
 using Shared.Web.Middlewares;
 using System.Reflection;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Подключаем Serilog и заставляем его читать конфигурацию из builder.Configuration
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext());
 
 // Add services to the container.
 
@@ -57,31 +64,31 @@ services
     .AddScoped<IProductService, ProductService>()
     .AddScoped<IImageService, ImageService>();
 
-//services.AddMassTransit(x =>
-//{
-//    x.AddConsumer<OrderCreatedMessageConsumer>();
-//
-//    x.UsingRabbitMq((context, cfg) =>
-//    {
-//        cfg.Host("localhost", "/");
-//
-//        // Auto-configure endpoints for registered consumers
-//        //cfg.ConfigureEndpoints(context);
-//
-//        cfg.ReceiveEndpoint("Product", e =>
-//        {
-//            e.UseRawJsonDeserializer(isDefault: true);
-//
-//            e.SetQueueArgument("x-dead-letter-exchange", "");
-//            e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
-//            e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
-//            e.SetQueueArgument("x-overflow", "reject-publish");
-//            e.SetQueueArgument("x-queue-type", "quorum");
-//
-//            e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
-//        });
-//    });
-//});
+services.AddMassTransit(x =>
+{
+    x.AddConsumer<OrderCreatedMessageConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/");
+
+        // Auto-configure endpoints for registered consumers
+        //cfg.ConfigureEndpoints(context);
+
+        cfg.ReceiveEndpoint("Product", e =>
+        {
+            e.UseRawJsonDeserializer(isDefault: true);
+
+            e.SetQueueArgument("x-dead-letter-exchange", "");
+            e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
+            e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
+            e.SetQueueArgument("x-overflow", "reject-publish");
+            e.SetQueueArgument("x-queue-type", "quorum");
+
+            e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
+        });
+    });
+});
 
 MongoMappings.Register();
 
@@ -102,6 +109,8 @@ services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {

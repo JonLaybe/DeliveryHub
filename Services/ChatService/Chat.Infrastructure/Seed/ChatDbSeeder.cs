@@ -21,8 +21,8 @@ namespace Chat.Infrastructure.Seed
                 BuyerId = buyerId,
                 SellerId = sellerId,
                 Status = ConversationStatus.Open,
-                CreatedAt = new DateTime(2026, 8, 15, 0, 0, 0, DateTimeKind.Utc),
-                LastMessageAt = new DateTime(2026, 8, 16, 0, 0, 0, DateTimeKind.Utc)
+                CreatedAt = new DateTime(2026, 4, 15, 0, 0, 0, DateTimeKind.Utc),
+                LastMessageAt = new DateTime(2026, 4, 16, 0, 0, 0, DateTimeKind.Utc)
             };
             var messages = CreateMessages(conversationId, buyerId, sellerId);
 
@@ -46,7 +46,7 @@ namespace Chat.Infrastructure.Seed
                     SenderId = buyerId,
                     SenderRole = SenderRole.Buyer,
                     Text = "Здравствуйте! Товар ещё доступен?",
-                    CreatedAt = new DateTime(2026, 8, 15, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2026, 4, 15, 0, 0, 0, DateTimeKind.Utc),
                     IsRead = true
                 },
                 new()
@@ -56,7 +56,7 @@ namespace Chat.Infrastructure.Seed
                     SenderId = sellerId,
                     SenderRole = SenderRole.Seller,
                     Text = "Здравствуйте! Да! В наличие еще 5 штук.",
-                    CreatedAt = new DateTime(2026, 8, 16, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2026, 4, 16, 0, 0, 0, DateTimeKind.Utc),
                     IsRead = false
                 }
             ];

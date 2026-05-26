@@ -10,4 +10,5 @@ public sealed class ServiceClientEntity
     public bool IsActive { get; set; } = true;
 
     public DateTimeOffset CreatedAt { get; set; }
+    public string AllowedScopes { get; set; } = null!;//scopes одной строкой через пробел
 }

@@ -19,68 +19,88 @@ namespace Chat.Tests
         [Fact]
         public async Task AddAndGetMessages_WorksCorrectly()
         {
-            var context = GetInMemoryContext();
-            var repo = new MessageRepository(context);
-
             var conversationId = Guid.NewGuid();
-            var message = new Message
-            {
-                Id = Guid.NewGuid(),
-                ConversationId = conversationId,
-                SenderId = Guid.NewGuid(),
-                Text = "Hello",
-                CreatedAt = DateTime.UtcNow
-            };
+            var message = CreateMessage(conversationId, Guid.NewGuid(), "Hello");
 
-            await repo.AddAsync(message);
-            await repo.SaveChangesAsync();
+            var repo = await GetRepositoryWithMessagesAsync(message);
 
-            var allMessages = await repo.GetAllAsync();
-            var convMessages = await repo.GetByConversationIdAsync(conversationId);
+            var convMessages = await repo.GetMessagesByConversationIdAsync(conversationId);
 
-            Assert.Single(allMessages);
             Assert.Single(convMessages);
             Assert.Equal("Hello", convMessages.First().Text);
         }
 
         [Fact]
-        public async Task CountUnreadMessagesAsync_ReturnsCorrectCount()
+        public async Task SetMessageIsReadTrueAsync_MarksMessagesAsRead()
         {
-            var context = GetInMemoryContext();
-            var repo = new MessageRepository(context);
-
             var conversationId = Guid.NewGuid();
             var userId = Guid.NewGuid();
             var otherUserId = Guid.NewGuid();
 
-            await repo.AddAsync(new Message { Id = Guid.NewGuid(), ConversationId = conversationId, SenderId = otherUserId, Text = "Msg1", IsRead = false, CreatedAt = DateTime.UtcNow });
-            await repo.AddAsync(new Message { Id = Guid.NewGuid(), ConversationId = conversationId, SenderId = otherUserId, Text = "Msg2", IsRead = false, CreatedAt = DateTime.UtcNow });
-            await repo.AddAsync(new Message { Id = Guid.NewGuid(), ConversationId = conversationId, SenderId = userId, Text = "MyMsg", IsRead = false, CreatedAt = DateTime.UtcNow });
-            await repo.SaveChangesAsync();
+            var messages = new[]
+            {
+                CreateMessage(conversationId, otherUserId, "Msg1"),
+                CreateMessage(conversationId, otherUserId, "Msg2")
+            };
 
-            var count = await repo.CountUnreadMessagesAsync(conversationId, userId);
+            var repo = await GetRepositoryWithMessagesAsync(messages);
 
-            Assert.Equal(2, count);
+            await repo.SetMessageIsReadTrueAsync(conversationId, userId);
+            var updatedMessages = await repo.GetMessagesByConversationIdAsync(conversationId);
+
+            Assert.All(updatedMessages.Where(m => m.SenderId == otherUserId), m => Assert.True(m.IsRead));
         }
 
         [Fact]
-        public async Task SetMessageIsReadTrueAsync_MarksMessagesAsRead()
+        public async Task GetMessagesByConversationIdAsync_ReturnsCorrectCollection()
+        {
+            var conversationId1 = Guid.NewGuid();
+            var conversationId2 = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var otherUserId = Guid.NewGuid();
+
+            var messages = new List<Message>
+            {
+                CreateMessage(conversationId1, otherUserId, "Msg1"),
+                CreateMessage(conversationId1, otherUserId, "Msg2"),
+                CreateMessage(conversationId1, userId, "MyMsg"),
+                CreateMessage(conversationId1, otherUserId, "Msg3"),
+                CreateMessage(conversationId1, otherUserId, "Msg4"),
+                CreateMessage(conversationId1, userId, "MyMsg2")
+            };
+
+            var repo = await GetRepositoryWithMessagesAsync([.. messages]);
+
+            var actualMessages = await repo.GetMessagesByConversationIdAsync([conversationId1, conversationId2]);
+
+            Assert.Equal(6, actualMessages.Count);
+        }
+
+        private static Message CreateMessage(Guid conversationId, Guid senderId, string text, bool isRead = false)
+        {
+            return new Message
+            {
+                Id = Guid.NewGuid(),
+                ConversationId = conversationId,
+                SenderId = senderId,
+                Text = text,
+                IsRead = isRead,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
+
+        private async Task<MessageRepository> GetRepositoryWithMessagesAsync(params Message[] messages)
         {
             var context = GetInMemoryContext();
             var repo = new MessageRepository(context);
 
-            var conversationId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
-            var otherUserId = Guid.NewGuid();
+            foreach (var message in messages)
+            {
+                await repo.AddAsync(message);
+            }
 
-            await repo.AddAsync(new Message { Id = Guid.NewGuid(), ConversationId = conversationId, SenderId = otherUserId, Text = "Msg1", IsRead = false, CreatedAt = DateTime.UtcNow });
-            await repo.AddAsync(new Message { Id = Guid.NewGuid(), ConversationId = conversationId, SenderId = otherUserId, Text = "Msg2", IsRead = false, CreatedAt = DateTime.UtcNow });
             await repo.SaveChangesAsync();
-
-            await repo.SetMessageIsReadTrueAsync(conversationId, userId);
-
-            var messages = await repo.GetByConversationIdAsync(conversationId);
-            Assert.All(messages.Where(m => m.SenderId == otherUserId), m => Assert.True(m.IsRead));
+            return repo;
         }
     }
 }

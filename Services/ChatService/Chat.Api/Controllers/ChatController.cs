@@ -1,6 +1,4 @@
-using Chat.Application.DTOs;
 using Chat.Application.Interfaces;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers
@@ -19,19 +17,13 @@ namespace Chat.Api.Controllers
     {
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
-        private readonly IOnlineStatusService _onlineStatusService;
-        private readonly IValidator<CreateConversationRequest> _validator;
 
         public ChatController(
             IConversationService conversationService,
-            IMessageService messageService,
-            IOnlineStatusService onlineStatusService,
-            IValidator<CreateConversationRequest> validator)
+            IMessageService messageService)
         {
             _conversationService = conversationService;
             _messageService = messageService;
-            _onlineStatusService = onlineStatusService;
-            _validator = validator;
         }
 
         /// <summary>
@@ -42,7 +34,7 @@ namespace Chat.Api.Controllers
         /// Если диалог между этими пользователями уже существует,
         /// сервис может вернуть существующий идентификатор.
         /// </remarks>
-        /// <param name="request">
+        /// <param name="productId">
         /// Данные для создания диалога:
         /// идентификатор продавца.
         /// </param>
@@ -52,16 +44,14 @@ namespace Chat.Api.Controllers
         /// <response code="200">Диалог успешно создан</response>
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
-        [HttpPost("conversation")]
-        public async Task<IActionResult> CreateConversation([FromBody] CreateConversationRequest request)
+        [HttpPost("conversation/{productId:guid}")]
+        public async Task<IActionResult> CreateConversation(Guid productId)
         {
 
-            _validator.ValidateAndThrow(request);
-            // Взять buyerId из JWT потом
-            var buyerId = Guid.Parse(request.BuyerId);
-            var sellerId = Guid.Parse(request.SellerId);
+            // заглушка
+            var buyerId = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
 
-            var conversationId = await _conversationService.CreateConversationAsync(buyerId, sellerId);
+            var conversationId = await _conversationService.CreateConversationAsync(buyerId, productId);
 
             return Ok(conversationId);
         }
@@ -100,24 +90,6 @@ namespace Chat.Api.Controllers
             var messages = await _messageService.GetMessagesAsync(conversationId);
 
             return Ok(messages);
-        }
-
-        [HttpGet("status/{userId:guid}")]
-        public async Task<IActionResult> GetOnlineStatus(Guid userId)
-        {
-            // Для тестирования потом убрать
-            await _onlineStatusService.SetOnlineAsync(userId);
-
-            var status = await _onlineStatusService.IsOnlineAsync(userId);
-
-            return Ok(status);
-        }
-
-        [HttpGet("conversation/{conversationId:guid}/unread")]
-        public async Task<IActionResult> GetUnreadMessagesCount(Guid conversationId, Guid userId)
-        {
-            var count = await _messageService.GetUnreadCountAsync(conversationId, userId);
-            return Ok(count);
         }
     }
 }

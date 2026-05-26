@@ -12,6 +12,7 @@ export const CATALOGSERVICE_PRODUCT_URL = '/api/catalog/product';
 export const CATALOGSERVICE_CATEGORY_URL = '/api/catalog/category';
 export const CATALOGSERVICE_PRODUCT_IMAGE_URL = '/api/catalog/product/image';
 
-//Discount
-export const DISCOUNT_BASE_URL = 'http://localhost:8082';
-export const DISCOUNTSERVICE_APPLY = '/api/Discounts/Apply';
+// Chat
+export const CHAT_URL = 'http://localhost:7190';
+export const CONVERSATION_URL = '/api/chat/conversation';
+export const CHAT_HUB_URL = '/hubs/chat';

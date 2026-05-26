@@ -7,6 +7,7 @@ using Npgsql;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Auth.Infrastructure.Persistence.Entities;
 
 namespace Auth.Infrastructure.Persistence;
 
@@ -69,6 +70,9 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
         _logger.LogInformation("Seeding roles...");
         await SeedRolesAsync(ct);
+
+        _logger.LogInformation("Seeding service clients...");
+        await SeedServiceClientsAsync(ct);
     }
 
     private static bool IsDbNotReady(Exception ex)
@@ -102,5 +106,75 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
         );
 
         await _db.SaveChangesAsync(ct);
+    }
+
+    private async Task SeedServiceClientsAsync(CancellationToken ct)
+    {
+        var clients = _cfg.GetSection("ServiceClients").Get<List<ServiceClientSeedOptions>>();
+
+        if (clients is null || clients.Count == 0)
+        {
+            _logger.LogInformation("No service clients configured for seed.");
+            return;
+        }
+
+        foreach (var item in clients)
+        {
+            var exists = await _db.ServiceClients
+                .AnyAsync(x => x.ClientId == item.ClientId, ct);
+
+            if (exists)
+                continue;
+
+            if (string.IsNullOrWhiteSpace(item.ClientId))
+                throw new InvalidOperationException("Service client ClientId is required.");//TODO:убрать, когда перестанет валиться
+
+            if (string.IsNullOrWhiteSpace(item.ClientSecret))
+                throw new InvalidOperationException($"ClientSecret is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+
+            if (string.IsNullOrWhiteSpace(item.AllowedScopes))
+                throw new InvalidOperationException($"AllowedScopes is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+
+            _db.ServiceClients.Add(new ServiceClientEntity
+            {
+                Id = Guid.NewGuid(),
+                ClientId = item.ClientId,
+                SecretHash = Sha256Hex(item.ClientSecret),
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                AllowedScopes = NormalizeScopes(item.AllowedScopes)
+            });
+        }
+
+        await _db.SaveChangesAsync(ct);
+    }
+
+    private static string Sha256Hex(string value)
+    {
+        return Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(
+                System.Text.Encoding.UTF8.GetBytes(value)
+            )
+        );
+    }
+
+    private static string NormalizeScopes(string? scopes)
+    {
+        if (string.IsNullOrWhiteSpace(scopes))
+            throw new InvalidOperationException("AllowedScopes is required for service client.");
+
+        return string.Join(
+            ' ',
+            scopes
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
+    }
+
+    private sealed class ServiceClientSeedOptions
+    {
+        public string? ClientId { get; set; }
+        public string? ClientSecret { get; set; }
+        public string? AllowedScopes { get; set; }
     }
 }

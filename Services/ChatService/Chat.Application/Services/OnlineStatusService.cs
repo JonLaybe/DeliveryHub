@@ -32,9 +32,17 @@ namespace Chat.Application.Services
             return await _db.KeyExistsAsync(key);
         }
 
-        public async Task SetUserAsync(string userId, string value, TimeSpan ttl)
+        public async Task<Dictionary<Guid, bool>> IsOnlineAsync(IEnumerable<Guid> userIds)
         {
-            await _db.StringSetAsync($"user:{userId}", value, ttl);
+            var tasks = userIds.Select(async userId => new
+            {
+                UserId = userId,
+                IsOnline = await IsOnlineAsync(userId)
+            });
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.ToDictionary(x => x.UserId, x => x.IsOnline);
         }
 
         private static string GetKey(Guid userId) => $"{Key}{userId}";

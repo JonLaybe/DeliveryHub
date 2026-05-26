@@ -267,6 +267,11 @@ namespace Auth.Infrastructure.Persistence.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("AllowedScopes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("allowed_scopes");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("text")
