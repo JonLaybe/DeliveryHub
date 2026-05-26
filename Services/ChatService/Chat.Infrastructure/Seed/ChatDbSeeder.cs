@@ -21,8 +21,8 @@ namespace Chat.Infrastructure.Seed
                 BuyerId = buyerId,
                 SellerId = sellerId,
                 Status = ConversationStatus.Open,
-                CreatedAt = new DateTime(2026, 4, 15, 0, 0, 0, DateTimeKind.Utc),
-                LastMessageAt = new DateTime(2026, 4, 16, 0, 0, 0, DateTimeKind.Utc)
+                CreatedAt = new DateTime(2026, 4, 15, 12, 12, 12, DateTimeKind.Utc),
+                LastMessageAt = new DateTime(2026, 4, 16, 13, 13, 13, DateTimeKind.Utc)
             };
             var messages = CreateMessages(conversationId, buyerId, sellerId);
 

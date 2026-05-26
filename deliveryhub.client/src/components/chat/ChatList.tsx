@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
-import { useChatSignalR } from "../../services/chat-service/SignalRService";
 import "./ChatList.scss";
 
 const ChatList: FC<ChatListProps> = ({ userId }) => {
@@ -12,7 +11,6 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
   const didFetchRef = useRef(false);
   const navigate = useNavigate();
   const { conversationId } = useParams();
-  const { connection } = useChatSignalR();
 
   useEffect(() => {
     if (conversationId) {
@@ -20,49 +18,35 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     }
   }, [conversationId]);
 
+  const fetchConversations = async () => {
+    if (!userId) return;
+    try {
+      const data = await getUserConversationsAsync(userId);
+      console.log("Conversations for UI:", data);
+      setConversations(data);
+    } catch (err) {
+      console.error("Ошибка при получении чатов:", err);
+    }
+  };
+
   useEffect(() => {
     if (!userId) return;
     if (didFetchRef.current) return;
-
     didFetchRef.current = true;
-
-    const fetchConversations = async () => {
-      try {
-        const data = await getUserConversationsAsync(userId);
-        console.log("Conversations for UI:", data);
-        setConversations(data);
-      } catch (err) {
-        console.error("Ошибка при получении чатов:", err);
-      }
-    };
-    
     fetchConversations();
   }, [userId]);
 
   useEffect(() => {
-    if (!connection) return;
-
-    const handleNewMessage = (messageDto: any) => {
-      console.log("New message received in ChatList:", messageDto);
-      
-      const refreshConversations = async () => {
-        try {
-          const data = await getUserConversationsAsync(userId);
-          setConversations(data);
-        } catch (err) {
-          console.error("Ошибка при обновлении чатов:", err);
-        }
-      };
-      
-      refreshConversations();
+    const handleUpdateList = () => {
+      fetchConversations();
     };
 
-    connection.on("ReceiveMessage", handleNewMessage);
+    window.addEventListener('chat:updateList', handleUpdateList);
 
     return () => {
-      connection.off("ReceiveMessage", handleNewMessage);
+      window.removeEventListener('chat:updateList', handleUpdateList);
     };
-  }, [connection, userId]);
+  }, [userId]);
 
   const handleSelect = (conv: Conversation) => {
     setSelectedId(conv.id);

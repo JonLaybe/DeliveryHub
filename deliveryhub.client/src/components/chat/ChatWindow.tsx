@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import type { Message } from "../../models/chat-service/Message";
 import type { ChatWindowProps } from "../../models/chat-service/ChatWindowProps";
 import { getMessagesForConversationAsync } from "../../services/chat-service/ChatService";
@@ -10,21 +10,19 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { connection, joinConversation, sendMessage } = useChatSignalR();
   const location = useLocation();
-  const navigate = useNavigate();
   
   const productName = (location.state as any)?.productName ?? "";
   const conversationName = (location.state as any)?.conversationName ?? conversation?.name ?? "Чат";
-  const isOnline = (location.state as any)?.isOnline ?? conversation?.isOnline ?? false;
+  const isOnline = (location.state as any)?.isOnline ?? false;
   
-  const [newMessage, setNewMessage] = useState(() => {
-    return productName ? `Здравствуйте, меня заинтересовал ваш товар: ${productName}` : "";
-  });
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
   
-  const hasSentGreetingRef = useRef(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isUserScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const hasCheckedHistoryRef = useRef(false);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     if (messagesContainerRef.current && !isUserScrollingRef.current) {
@@ -55,18 +53,43 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     }
   }, []);
 
+  // Загрузка сообщений и проверка истории
   useEffect(() => {
-    if (!conversation) return;
+    if (!conversation?.id) return;
 
     const fetchMessages = async () => {
+      setIsLoading(true);
       try {
         const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
         setMessages(msgs);
+        
+        // Проверяем, есть ли ВООБЩЕ какие-либо сообщения от текущего пользователя в этом чате
+        if (productName && !hasCheckedHistoryRef.current) {
+          // Проверяем, есть ли хотя бы одно сообщение от пользователя в этом чате
+          const hasUserMessage = msgs.some(msg => msg.senderName === "Вы");
+          
+          console.log("Has user sent any message?", hasUserMessage);
+          console.log("Total messages:", msgs.length);
+          
+          // Если пользователь еще не отправлял сообщения в этот чат, подставляем приветственное
+          if (!hasUserMessage) {
+            const greetingMessage = `Здравствуйте, меня заинтересовал ваш товар: ${productName}`;
+            console.log("Setting greeting message to input:", greetingMessage);
+            setNewMessage(greetingMessage);
+          } else {
+            console.log("User already sent messages, keeping input empty");
+            setNewMessage("");
+          }
+          hasCheckedHistoryRef.current = true;
+        }
+        
         setTimeout(() => {
           scrollToBottom("auto");
         }, 100);
       } catch (err) {
         console.error("Ошибка при получении сообщений:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -76,29 +99,17 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
-  }, [conversation, currentUserId, scrollToBottom]);
+  }, [conversation?.id, currentUserId, scrollToBottom, productName]);
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !isLoading) {
       scrollToBottom("smooth");
     }
-  }, [messages, scrollToBottom]);
+  }, [messages, scrollToBottom, isLoading]);
 
+  // Подписка на SignalR
   useEffect(() => {
-    if (productName && messages.length > 0 && !hasSentGreetingRef.current) {
-      const greetingMessage = `Здравствуйте, меня заинтересовал ваш товар: ${productName}`;
-      const alreadySent = messages.some(msg => msg.text === greetingMessage);
-      
-      if (alreadySent) {
-        setNewMessage("");
-        hasSentGreetingRef.current = true;
-        navigate(location.pathname, { replace: true, state: {} });
-      }
-    }
-  }, [productName, messages, location.pathname, navigate]);
-
-  useEffect(() => {
-    if (!conversation) return;
+    if (!conversation?.id) return;
 
     const setup = async () => {
       await joinConversation(conversation.id);
@@ -125,24 +136,24 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     };
 
     setup();
-  }, [conversation, currentUserId, connection, joinConversation]);
+  }, [conversation?.id, currentUserId, connection, joinConversation]);
 
   const handleSend = useCallback(async () => {
     if (!newMessage.trim()) return;
 
     const textToSend = newMessage;
     setNewMessage("");
-    hasSentGreetingRef.current = true;
-
-    navigate(location.pathname, { replace: true, state: {} });
 
     try {
       await sendMessage(conversation.id, currentUserId, textToSend);
+      
+      window.dispatchEvent(new CustomEvent('chat:updateList'));
+      
       inputRef.current?.focus();
     } catch (error) {
       console.error("Ошибка при отправке:", error);
     }
-  }, [newMessage, conversation, currentUserId, sendMessage, navigate, location.pathname]);
+  }, [newMessage, conversation?.id, currentUserId, sendMessage]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -155,6 +166,31 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     if (!date) return "";
     return new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="chat-window">
+        <div className="chat-header">
+          <div className="chat-header-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div className="chat-header-info">
+            <h3>{conversationName}</h3>
+          </div>
+        </div>
+        <div className="messages loading">
+          <div className="loading-message">Загрузка сообщений...</div>
+        </div>
+        <div className="input-area">
+          <input disabled placeholder="Загрузка..." value="" />
+          <button disabled>Отправить</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-window">
@@ -201,7 +237,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
           onKeyDown={handleKeyDown}
           placeholder="Введите сообщение..."
         />
-        <button onClick={handleSend}>
+        <button onClick={handleSend} disabled={!newMessage.trim()}>
           Отправить
         </button>
       </div>
