@@ -112,3 +112,21 @@ function setResultTokens(loginResponse: LoginResponseDto) {
 function notifyAuthChanged() {
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
+
+export async function getCurrentUser(): Promise<UserDto> {
+  // const res = await api.get<UserResponse[]>(`${AUTH_URL}`);
+  // const data = res.data;
+  // временно закоментировал
+  // console.log("API Response (auth):", data);
+  
+  const userData: UserDto = {
+                    id: "12345",
+                    firstName: "Иван",
+                    lastName: "Иванов",
+                    email: "ivan.ivanov@example.com",
+                    birthDate: "1990-01-01",
+                    avatarUrl: "https://i.pravatar.cc/150?img=3",
+                };
+
+  return userData;
+}
