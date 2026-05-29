@@ -1,4 +1,4 @@
-﻿using Catalog.API.Contracts;
+﻿using Catalog.API.Mapper;
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,12 +22,11 @@ namespace DeliveryHub.Catalog.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromServices]CategoryMapper mapper)
         {
             var data = await _categoryRepository.GetAllAsync(default);
 
-            // TODO: Маппинг в AutoMapper/Mapperly
-            var result = data.Select(c => new CategoryResponseDto(c.Id, c.Name, c.ParentId));
+            var result = mapper.MapToDtoList(data.ToList());
 
             return Ok(result);
         }

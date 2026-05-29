@@ -1,4 +1,7 @@
-﻿using Catalog.Application.Repositories;
+﻿using Catalog.API.Contracts;
+using Catalog.API.Mapper;
+using Catalog.API.Validators;
+using Catalog.Application.Repositories;
 using Catalog.Application.Services;
 using Catalog.Infrastructure.Helpers;
 using Catalog.Infrastructure.Messaging.Consumers;
@@ -10,6 +13,7 @@ using DeliveryHub.Catalog.Application.Services;
 using DeliveryHub.Catalog.Domain.Appliaction.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Repositories;
 using DeliveryHub.Catalog.Infrastructure.Services;
+using FluentValidation;
 using MassTransit;
 using MongoDB.Driver;
 using Serilog;
@@ -63,6 +67,11 @@ services
     .AddScoped<IProductSearchService, MongoProductSearchService>()
     .AddScoped<IProductService, ProductService>()
     .AddScoped<IImageService, ImageService>();
+
+services.AddSingleton<CategoryMapper>();
+services.AddSingleton<ProductMapper>();
+
+services.AddScoped<IValidator<ProductSearchQueryRequest>, ProductSearchQueryRequestValidator>();
 
 services.AddMassTransit(x =>
 {
