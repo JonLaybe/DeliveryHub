@@ -1,8 +1,11 @@
 ﻿using Catalog.API.Contracts;
+using Catalog.API.Mapper;
 using Catalog.Application.Models;
 using Catalog.Application.Services;
 using DeliveryHub.Catalog.Application.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Domain.Exceptions;
 
 namespace Catalog.API.Controllers
 {
@@ -13,12 +16,17 @@ namespace Catalog.API.Controllers
         private readonly ILogger<ProductController> _logger;
         private readonly IProductService _productService;
         private readonly IProductSearchService _productSearchService;
+        private readonly ProductMapper _productMapper;
 
-        public ProductController(ILogger<ProductController> logger, IProductSearchService productSearchService, IProductService productService)
+        public ProductController(ILogger<ProductController> logger, 
+            IProductSearchService productSearchService,
+            ProductMapper productMapper,
+            IProductService productService)
         {
             _logger = logger;
             _productSearchService = productSearchService;
             _productService = productService;
+            _productMapper = productMapper;
         }
 
         /// <summary>
@@ -31,8 +39,7 @@ namespace Catalog.API.Controllers
         {
             var data = await _productService.GetByIdAsync(id, default);
 
-            // TODO: Маппинг в AutoMapper/Mapperly
-            var result = new ProductResponseDto(data.Id, data.Name, data.Description, data.Price, data.AvailableQty, data.CategoryId, data.Attributes, data.Images);
+            var result = _productMapper.Map(data);
 
             return Ok(result);
         }
@@ -79,19 +86,15 @@ namespace Catalog.API.Controllers
         /// <param name="searchQueryReq">Dto запроса с параметрами поиска</param>
         /// <returns></returns>
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery]ProductSearchQueryRequest searchQueryReq)
+        public async Task<IActionResult> Search([FromQuery] ProductSearchQueryRequest searchQueryReq, [FromServices]IValidator<ProductSearchQueryRequest> validator)
         {
-            var searchQuery = new ProductSearchQuery
-            {
-                Attributes = searchQueryReq.Attributes,
-                CategoryId = searchQueryReq.CategoryId,
-                MaxPrice = searchQueryReq.MaxPrice,
-                MinPrice = searchQueryReq.MinPrice,
-                Page = searchQueryReq.Page,
-                PageSize = searchQueryReq.PageSize,
-                Sort = searchQueryReq.Sort,
-                Text = searchQueryReq.Text,
-            };
+            var validation = validator.Validate(searchQueryReq);
+
+            if (!validation.IsValid)
+                throw new BadRequestException(validation.Errors.Select(x => x.ErrorMessage).First());
+
+            var searchQuery = _productMapper.Map(searchQueryReq);
+
             var result = await _productSearchService.SearchAsync(searchQuery, default);
 
             _logger.LogInformation("Search result: {productCount} products has found by query: {@query}", result.Products.Count, searchQueryReq);
