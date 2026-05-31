@@ -1,4 +1,5 @@
 using Chat.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers
@@ -9,8 +10,8 @@ namespace Chat.Api.Controllers
     /// <remarks>
     /// Контроллер позволяет создавать новые диалоги и получать список
     /// диалогов текущего аутентифицированного пользователя.
-    /// Идентификатор пользователя извлекается из JWT-токена (claim <c>sub</c>).
     /// </remarks>
+    [Authorize]
     [ApiController]
     [Route("api/chat")]
     public class ChatController : ControllerBase
@@ -37,14 +38,11 @@ namespace Chat.Api.Controllers
         /// <param name="productId">Идентификатор товара</param>
         /// <returns>Идентификатор созданного (или существующего) диалога</returns>
         /// <response code="200">Диалог успешно создан</response>
-        /// <response code="400">Некорректные входные данные</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
         [HttpPost("conversation/{productId:guid}")]
         public async Task<IActionResult> CreateConversation(Guid productId)
         {
-
-            // заглушка
-            var currentUser = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
+            var currentUser = GetUserGuid();
 
             var conversationId = await _conversationService.CreateConversationAsync(currentUser, productId);
 
@@ -59,14 +57,15 @@ namespace Chat.Api.Controllers
         /// В список входят все диалоги, в которых пользователь является
         /// покупателем или продавцом.
         /// </remarks>
-        /// <param name="userId">Идентификатор пользователя (временно, пока не подключен JWT)</param>
         /// <returns>Коллекция диалогов пользователя</returns>
         /// <response code="200">Список диалогов успешно получен</response>
         /// <response code="401">Пользователь не аутентифицирован</response>
-        [HttpGet("conversation/{userId:guid}")]
-        public async Task<IActionResult> GetMyConversations(Guid userId)
+        [HttpGet("conversation")]
+        public async Task<IActionResult> GetMyConversations()
         {
-            var conversations = await _conversationService.GetUserConversationsAsync(userId);
+            var currentUser = GetUserGuid();
+
+            var conversations = await _conversationService.GetUserConversationsAsync(currentUser);
 
             return Ok(conversations);
         }
@@ -77,15 +76,22 @@ namespace Chat.Api.Controllers
         /// <param name="conversationId">Идентификатор диалога</param>
         /// <returns>Список сообщений для данного диалога</returns>
         /// <response code="200">Возвращает список сообщений для указанного диалога</response>
-        /// <response code="404">Диалог не найден</response>
+        /// <response code="401">Пользователь не аутентифицирован</response>
         [HttpGet("conversation/{conversationId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
-            // заглушка
-            var currentUser = new Guid("c8e4a03b-960e-4874-80b0-fea30a90fc7b");
+            var currentUser = GetUserGuid();
+
             var messages = await _messageService.GetMessagesAsync(conversationId, currentUser);
 
             return Ok(messages);
+        }
+
+        private Guid GetUserGuid()
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            var currentUser = new Guid(userId!);
+            return currentUser;
         }
     }
 }
