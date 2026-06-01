@@ -17,7 +17,7 @@
         height: 32px;
         box-sizing: border-box;
         border-radius: 7px;
-        background-color: var.$background_grocery_basket_actions;
+        background-color: var.$background_counter_actions;
         color: var.$color_text_grocery_basket_actions;
         padding: 0;
         align-self: center;
@@ -25,6 +25,6 @@
     }
 
     .counter_actions:hover {
-        background-color: var.$background_grocery_basket_actions_hover;
+        background-color: var.$background_counter_actions_hover;
     }
 }
