@@ -9,7 +9,7 @@ import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
 import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthentication } from '../../services/auth-service/AuthService';
-import ConterComponent from '../../common/counter/ConterComponent';
+import CounterComponent from '../../common/counter/CounterComponent';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
@@ -128,7 +128,7 @@ const GroceryBasketComponent: FC = () => {
                                         </div>
                                     </div>
                                     <div className="grocery_basket_card__actions_quantity">
-                                        <ConterComponent counter={gb_item.quantity}
+                                        <CounterComponent counter={gb_item.quantity}
                                             onClickMinus={() => decreaseQuantity(gb_item.product.id)}
                                             onClickPlus={() => increaseQuantity(gb_item.product.id)} />
                                     </div>

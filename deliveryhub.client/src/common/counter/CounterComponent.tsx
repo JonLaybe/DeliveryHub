@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import './ConterComponent.scss';
+import './CounterComponent.scss';
 import minus_actions from '../../assets/minus_actions.svg';
 import pluse_actions from '../../assets/pluse_actions.svg';
 
@@ -9,7 +9,7 @@ interface CounterProps {
     onClickMinus: () => void;
 }
 
-const ConterComponent: FC<CounterProps> = ({ counter, onClickPlus, onClickMinus }) => {
+const CounterComponent: FC<CounterProps> = ({ counter, onClickPlus, onClickMinus }) => {
     return (
         <div className="counter-wrapper">
             <button className='default-button counter_actions' onClick={() => onClickMinus()}>
@@ -23,4 +23,4 @@ const ConterComponent: FC<CounterProps> = ({ counter, onClickPlus, onClickMinus 
     );
 }
 
-export default ConterComponent;
+export default CounterComponent;

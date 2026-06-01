@@ -4,9 +4,9 @@ import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOGSERVICE_PRODUCT_IMAGE_URL } from "../../constants/EndpointConstants";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
 import { Link } from "react-router-dom";
-import { addGroceryBasket, decreaseGroceryBasket, getItemGroceryBasket, isProductInGroceryBasket } from "../../services/grocery-basket/GroceryBasketService";
+import { addGroceryBasket, decreaseGroceryBasket, getItemGroceryBasket } from "../../services/grocery-basket/GroceryBasketService";
 import { formattedPrice } from "../../pipe/GeneralPipe";
-import ConterComponent from "../counter/ConterComponent";
+import CounterComponent from "../counter/CounterComponent";
 import { LINK_PRODUCTS } from "../../constants/ValueTypeConstans";
 
 interface ProductProps {
@@ -50,7 +50,7 @@ const ProductCardComponent: FC<ProductProps> = (props) => {
             {
                 counter !== 0 ? (
                     <div className="product_card__actions_quantity">
-                        <ConterComponent counter={counter}
+                        <CounterComponent counter={counter}
                             onClickMinus={() => handelDecreaseQuantity()}
                             onClickPlus={() => handelIncreaseQuantity()} />
                     </div>
