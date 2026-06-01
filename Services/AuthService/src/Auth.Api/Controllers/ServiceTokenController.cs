@@ -1,6 +1,7 @@
 ﻿using Auth.Infrastructure.Persistence;
 using Auth.Infrastructure.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,15 @@ public sealed class ServiceTokenController : ControllerBase
     [HttpPost("service-token")]
     public async Task<IActionResult> Issue([FromBody] ServiceTokenRequest req)
     {
+        if (req is null)
+            return BadRequest("Request body is required.");
+
+        if (string.IsNullOrWhiteSpace(req.ClientId))
+            return BadRequest("ClientId is required.");
+
+        if (string.IsNullOrWhiteSpace(req.ClientSecret))
+            return BadRequest("ClientSecret is required.");
+
         var client = await _db.ServiceClients.FirstOrDefaultAsync(x => x.ClientId == req.ClientId);
         if (client is null || !client.IsActive) return Unauthorized();
 
@@ -41,11 +51,25 @@ public sealed class ServiceTokenController : ControllerBase
             return Unauthorized();
 
         var now = DateTimeOffset.UtcNow;
-        var scope = string.IsNullOrWhiteSpace(req.Scope) ? "service" : req.Scope.Trim();
+
+        var requestedScopes = ParseScopes(req.Scope);
+
+        if (requestedScopes.Count == 0)
+            requestedScopes.Add("service");
+
+        var allowedScopes = ParseScopes(client.AllowedScopes);
+
+        var hasForbiddenScopes = requestedScopes
+            .Any(scope => !allowedScopes.Contains(scope));
+
+        if (hasForbiddenScopes)
+            return StatusCode(StatusCodes.Status403Forbidden);
+
+        var scope = string.Join(' ', requestedScopes);
 
         var claims = new List<Claim>
         {
-            new("sub", req.ClientId),
+            new("sub", client.ClientId),
             new("typ", "service"),
             new("scope", scope)
         };
@@ -58,6 +82,16 @@ public sealed class ServiceTokenController : ControllerBase
             token_type = "Bearer",
             expires_in = _jwt.AccessTokenMinutes * 60
         });
+    }
+
+    private static HashSet<string> ParseScopes(string? scopes)
+    {
+        if (string.IsNullOrWhiteSpace(scopes))
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        return scopes
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     private static string Sha256Hex(string value) //to del

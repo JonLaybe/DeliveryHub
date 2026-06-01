@@ -35,7 +35,6 @@ namespace Chat.Infrastructure.Repositories
 
         public async Task<List<Message>> GetMessagesByConversationIdAsync(IEnumerable<Guid> conversationIds)
         {
-            // добавить в Редис
             return await _context.Messages
                 .Where(m => conversationIds.Contains(m.ConversationId))
                 .ToListAsync();

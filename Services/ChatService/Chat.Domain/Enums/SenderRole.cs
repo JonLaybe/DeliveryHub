@@ -2,8 +2,7 @@
 {
     public enum SenderRole
     {
-        Buyer,
-        Seller,
-        System
+        System,
+        User
     }
 }

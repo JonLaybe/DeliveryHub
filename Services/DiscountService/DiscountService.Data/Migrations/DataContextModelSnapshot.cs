@@ -38,7 +38,7 @@ namespace DiscountService.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 22, 11, 8, 33, 489, DateTimeKind.Utc).AddTicks(3569));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(297));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -68,7 +68,7 @@ namespace DiscountService.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 22, 11, 8, 33, 489, DateTimeKind.Utc).AddTicks(3836));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(529));
 
                     b.Property<int>("UsageCount")
                         .HasColumnType("integer");
@@ -107,19 +107,22 @@ namespace DiscountService.Data.Migrations
                     b.Property<int>("DiscountId")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("OrderTotal")
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)");
 
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("UsedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 22, 11, 8, 33, 489, DateTimeKind.Utc).AddTicks(5119));
+                        .HasDefaultValue(new DateTime(2026, 5, 25, 13, 51, 29, 995, DateTimeKind.Utc).AddTicks(1754));
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

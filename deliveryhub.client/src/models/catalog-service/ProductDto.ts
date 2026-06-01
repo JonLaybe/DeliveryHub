@@ -6,6 +6,7 @@ export interface ProductDto extends BaseEntityIdentityGuid {
     name: string;
     description: string;
     price: number;
+    discount: number | 0;
     availableQty: number;
     categoryId: UUIDTypes;
     images: ProductImageDto[] | undefined;

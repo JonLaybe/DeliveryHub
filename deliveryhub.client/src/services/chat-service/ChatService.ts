@@ -1,6 +1,5 @@
 import { CHAT_URL, CONVERSATION_URL } from "../../constants/EndpointConstants";
 import { api } from "../../http";
-import type { CreateConversationRequest } from "../../models/chat-service/CreateConversationRequest";
 import type { ConversationResponse } from "../../models/chat-service/ConversationResponse";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { Message } from "../../models/chat-service/Message";
@@ -10,17 +9,24 @@ export async function getUserConversationsAsync(userId: string): Promise<Convers
   const res = await api.get<ConversationResponse[]>(`${CHAT_URL}${CONVERSATION_URL}/${userId}`);
   const data = res.data;
 
-  console.log("API Response:", data);
+  console.log("API Response (conversations):", data);
 
   return data.map((c) => ({
     id: c.conversationId,
-    name: c.sellerName, 
+    name: c.sellerName,
     lastMessage: c.lastMessage,
+	lastMessageAt: c.lastMessageAt,
+    isOnline: c.isOnline,
+    unreadMessagesCount: c.unreadMessagesCount,
   }));
 }
 
-export async function createConversationAsync(request: CreateConversationRequest): Promise<string> {
-  const res = await api.post(`${CHAT_URL}${CONVERSATION_URL}`, request);
+export async function createConversationAsync(productId: string): Promise<string> {
+  const res = await api.post(`${CHAT_URL}${CONVERSATION_URL}/${productId}`);
+  const data = res.data;
+  
+  console.log("API Response (conversations created):", data);
+  
   return res.data;
 }
 

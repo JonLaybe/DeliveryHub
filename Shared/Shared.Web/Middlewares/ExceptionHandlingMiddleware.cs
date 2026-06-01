@@ -33,6 +33,7 @@ namespace Shared.Web.Middlewares
             context.Response.StatusCode = ex switch
             {
                 NotFoundEntityException => StatusCodes.Status404NotFound,
+                BadRequestException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
             context.Response.ContentType = "application/json";

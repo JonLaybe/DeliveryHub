@@ -1,4 +1,5 @@
 ﻿using Chat.Application.DTOs;
+using Chat.Application.Exceptions;
 using Chat.Application.Interfaces;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
@@ -11,22 +12,29 @@ namespace Chat.Application.Services
         private readonly IConversationRepository _repository;
         private readonly IMessageService _messageService;
         private readonly IOnlineStatusService _onlineStatusService;
+        private readonly ICatalogService _catalogService;
         private readonly ILogger<ConversationService> _logger;
 
         public ConversationService(
             IConversationRepository repository,
             IMessageService messageService,
             IOnlineStatusService onlineStatusService,
+            ICatalogService catalogService,
             ILogger<ConversationService> logger)
         {
             _repository = repository;
             _logger = logger;
             _messageService = messageService;
             _onlineStatusService = onlineStatusService;
+            _catalogService = catalogService;
         }
 
-        public async Task<Guid> CreateConversationAsync(Guid buyerId, Guid sellerId)
+        public async Task<Guid> CreateConversationAsync(Guid buyerId, Guid productId)
         {
+            var product = await _catalogService.GetProductByIdAsync(productId)
+                ?? throw new ProductNotFoundException(productId);
+
+            var sellerId = product.SellerId;
             if (buyerId == sellerId)
             {
                 throw new InvalidOperationException("Buyer and seller cannot be the same");
@@ -35,22 +43,18 @@ namespace Chat.Application.Services
             var existingConversation = await _repository.FindByUsers(buyerId, sellerId);
             if (IsExist(existingConversation))
             {
-                throw new InvalidOperationException("Attempt to create new Conversation with existing Buyer-Seller pair");
+                return existingConversation!.Id;
             }
 
-            var conversation = new Conversation
-            {
-                Id = Guid.NewGuid(),
-                BuyerId = buyerId,
-                SellerId = sellerId,
-                Status = ConversationStatus.Open,
-                CreatedAt = DateTime.UtcNow,
-                LastMessageAt = DateTime.UtcNow
-            };
+            var conversation = GetConversation(buyerId, sellerId);
+            await SaveConversationToDb(conversation);
 
-            await _repository.AddAsync(conversation);
-            await _repository.SaveChangesAsync();
-            _logger.LogInformation("Conversation created: {@conversation}", conversation);
+            _logger.LogInformation(
+                "Conversation created: Id={Id}, BuyerId={BuyerId}, SellerId={SellerId}, CreatedAt={CreatedAt}",
+                conversation.Id,
+                conversation.BuyerId,
+                conversation.SellerId,
+                conversation.CreatedAt);
 
             return conversation.Id;
         }
@@ -81,8 +85,9 @@ namespace Chat.Application.Services
                     ConversationId = c.Id,
                     SellerId = c.SellerId,
                     SellerName = $"Магазин {c.SellerId}",
-                    UnreadMessagesCount = stat.unreadCount,
-                    LastMessage = stat.lastMessage,
+                    UnreadMessagesCount = stat.UnreadCount,
+                    LastMessage = stat.LastMessage,
+                    LastMessageAt = c.LastMessageAt,
                     IsOnline = onlineStatuses.ContainsKey(c.SellerId) && onlineStatuses[c.SellerId]
                 };
             }).ToList();
@@ -97,6 +102,24 @@ namespace Chat.Application.Services
                 return true;
             }
             return false;
+        }
+
+        private static Conversation GetConversation(Guid buyerId, Guid sellerId)
+        {
+            return new Conversation
+            {
+                Id = Guid.NewGuid(),
+                BuyerId = buyerId,
+                SellerId = sellerId,
+                Status = ConversationStatus.Open,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
+
+        private async Task SaveConversationToDb(Conversation conversation)
+        {
+            await _repository.AddAsync(conversation);
+            await _repository.SaveChangesAsync();
         }
     }
 }
