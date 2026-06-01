@@ -18,7 +18,7 @@ const OrderComponent = () => {
                 return;
 
             setOrders(() => ({
-                orders: data,
+                orders: data.sort((a, b) => b.id - a.id),
             }));               
         });
     }, []);
