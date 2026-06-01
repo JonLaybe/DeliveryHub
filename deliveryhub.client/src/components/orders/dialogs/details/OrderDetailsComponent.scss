@@ -1,4 +1,7 @@
 .order_details_container {
-    display: flex;
-    flex-direction: column;
+    .order_details__info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 }

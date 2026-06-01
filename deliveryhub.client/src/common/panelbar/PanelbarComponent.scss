@@ -1,0 +1,33 @@
+.panelbar-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s ease-out, padding 0.5s ease-out;
+    overflow: hidden;
+
+    .panelbar-item__title {
+        height: 30px;
+        line-height: 30px;
+    }
+    
+    .panelbar-item__content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease, padding 0.3s ease;
+
+        &>* {
+            overflow: hidden;
+        }
+
+        &.hide {
+            grid-template-rows: 0fr;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        &.show {
+            grid-template-rows: 1fr;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    }
+}

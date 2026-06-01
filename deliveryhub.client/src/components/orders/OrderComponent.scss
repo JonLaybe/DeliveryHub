@@ -1,6 +1,8 @@
 @use '/src/styles/Variables' as var;
 
 .order_container {
+    background-color: var.$background-order;
+
     .shopping_cart_empy {
         $self: &;
 
@@ -10,8 +12,8 @@
         align-items: center;
 
         &__img {
-            width: 70px;
-            height: 70px;
+            width: 150px;
+            height: 150px;
 
             img {
                 width: 100%;
@@ -26,25 +28,33 @@
             color: var.$order_color_advice_message_text;
         }
 
-        &__route_root {
-            margin: 20px 0 0 0;
-        }
-
         &__main_message_text, &__advice_message_text {
             font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        &__link {
+            margin: 20px 0 0 0;
         }
     }
 
     .my_orders {
         $self: &;
+        $title-height: 38px;
+
+        height: 100%;
 
         &__name_chapter {
             margin: 0 0 10px 0;
+            min-height: #{$title-height};
         }
 
-        .order_grid {
-            display: grid;
+        .order_horizontal_multiple_containers {
             grid-template-columns: 70% 30%;
+            height: calc(100% - #{$title-height});
+
+            .order_details {
+                height: 190px;
+            }
         }
     }
 }

@@ -56,7 +56,12 @@ namespace OrderService.Core.Services.Orders
             {
                 Id = order.Id,
                 CreatedDate = order.CreatedDate,
-                Products = order.Products.Select(prd => prd.ArticleNumber).ToList()
+                Products = order.Products.Select(prd => new Shared.Domain.Entities.RabbitMq.OrderProduct()
+                {
+                    Id = prd.ArticleNumber,
+                    Price = prd.Price,
+                    Quantity = prd.Quantity,
+                }).ToList()
             });
 
             return this.mapper.Map<OrderDto>(order);

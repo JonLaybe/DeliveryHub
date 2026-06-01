@@ -1,0 +1,52 @@
+@use '/src/styles/Variables.scss' as var;
+
+.payment-wrapper {
+    &__context {
+        max-width: 400px;
+        margin: 0 auto;
+
+        .payment-container {
+            padding: 15px 25px;
+
+            .payment-controllers {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+                margin: 0 0 10px 0;
+                background-color: var.$background_payment_form;
+                border-radius: 12px;
+                padding: 24px 16px;
+
+                .input-cart-number {
+                    grid-column: 1/2 span;
+                }
+
+                .icons-payments {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    grid-column: 1/2 span;
+                }
+            }
+
+            .bottom_content {
+                margin: 0 0 20px 0;
+
+                .information-secure-lock {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    span {
+                        font-size: 12px;
+                        color: var.$color_text_muted;
+                    }
+                }
+            }
+
+            .default-button {
+                height: 50px;
+            }
+        }
+    }
+}

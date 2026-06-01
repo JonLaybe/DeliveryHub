@@ -1,3 +1,4 @@
+import type { UUIDTypes } from "uuid";
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import type { GroceryBasketItem } from "../../models/grocery-basket/GroceryBasket";
 import { mapProductToGroceryBasketItem } from "../../pipe/GroceryBasketPipe";
@@ -11,6 +12,14 @@ export function getGroceryBasket(): GroceryBasketItem[] {
         return [];
 
     return JSON.parse(productsJson);
+}
+
+export function isProductInGroceryBasket(productId: UUIDTypes): boolean {
+    return getGroceryBasket().some(x => x.product.id === productId);
+}
+
+export function getItemGroceryBasket(productId: UUIDTypes): GroceryBasketItem | undefined {
+    return getGroceryBasket().find(x => x.product.id === productId);
 }
 
 export function addGroceryBasket(product: ProductDto): void {
@@ -40,6 +49,35 @@ export function addGroceryBasket(product: ProductDto): void {
     }
 
     localStorage.setItem(nameGroceryBasket, JSON.stringify(groceryBasket));
+}
+
+export function decreaseGroceryBasket(productId: UUIDTypes): boolean {
+    let groceryBasket = getGroceryBasket();
+
+    let product = groceryBasket.find(item => item.product.id === productId);
+
+    if (!product) return false;
+
+    let refGroceryBasket;
+
+    if (product.quantity === 1) {
+        refGroceryBasket = groceryBasket.filter(item => item.product.id !== productId);
+    }
+    else if (product.quantity > 1) {
+        refGroceryBasket = groceryBasket.map(item => {
+            if (item.product.id === productId && item.quantity > 1) {
+                return { ...item, quantity: item.quantity - 1, price: item.product.price * (item.quantity - 1) };
+            }
+            return item;
+        });
+    }
+
+    if (refGroceryBasket) {
+        refreshGroceryBasket(refGroceryBasket);
+        return true;
+    }
+
+    return false;
 }
 
 export function refreshGroceryBasket(groceryBasketItem: GroceryBasketItem[]): void {

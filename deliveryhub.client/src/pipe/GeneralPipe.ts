@@ -7,3 +7,10 @@ export function formattedPrice(price: number) {
         maximumFractionDigits: hasCents ? 2 : 0,
     });
 }
+
+export const getFormattedDate = (dateString: string | Date): string => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Некорректная дата';
+
+    return date.toLocaleDateString();
+};
