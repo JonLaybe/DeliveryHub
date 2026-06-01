@@ -1,141 +1,117 @@
-import { useEffect, useState, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 import './GroceryBasketComponent.scss';
 import { getGroceryBasket, refreshGroceryBasket, resetGroceryBasket } from '../../services/grocery-basket/GroceryBasketService';
 import { CATALOG_BASE_URL } from '../../constants/EndpointConstants';
-import minus_actions from '../../assets/minus_actions.svg';
-import pluse_actions from '../../assets/pluse_actions.svg';
 import type { UUIDTypes } from 'uuid';
 import { formattedPrice } from '../../pipe/GeneralPipe';
 import { createOrderAsync } from '../../services/order-service/OrderService';
 import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
 import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
-import { Link, useNavigate } from 'react-router-dom';
-import PromoCodePanel, { type PromoApplyResult, type PromoApplyRequest } from '../discounts/PromoCodePanel';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { isAuthentication } from '../../services/auth-service/AuthService';
+import CounterComponent from '../../common/counter/CounterComponent';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
     const [totalPrice, setTotalPrice] = useState(0);
+    const location = useLocation();
     const navigate = useNavigate();
-    const [openPromoId, setOpenPromoId] = useState<string | false>(false);
+    const isProcessed = useRef(false);
 
-    // Расчет итоговой цены (оставил как есть, можно добавить зависимость к groceryBasket)
     useEffect(() => {
         let result = 0;
+
         groceryBasket.map(prod => {
             result += prod.price;
         });
+
         setTotalPrice(result);
-    }, []);    
+    }, []);
 
-    // Применение промокода (пример API-обработчика)
-    const applyPromo = async (code: string, productId: UUIDTypes, orderAmount: number): Promise<PromoApplyResult> => {
-        // Замените на вашу реальную логику вызова API
-        try {
-            const promoApplyRequest: PromoApplyRequest = {
-               Code: code,
-               OrderAmount: orderAmount,
-               ProductId: productId
-            }
-            console.log(promoApplyRequest)
+    useEffect(() => {
+        if (location.state?.paymentSuccess && !isProcessed.current) {
+            isProcessed.current = true;
+            navigate(location.pathname, { replace: true, state: {} });
+            sentGroceryBasket();
+        }
+    }, [location.state, navigate, groceryBasket]);
 
-            const res = await fetch('http://localhost/api/Discounts/Apply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(promoApplyRequest),
+    const decreaseQuantity = (productId: UUIDTypes) => {
+        let product = groceryBasket.find(item => item.product.id === productId);
+
+        if (!product) return;
+
+        let refGroceryBasket;
+
+        if (product.quantity === 1) {
+            setTotalPrice(totalPrice - product.product.price);
+            refGroceryBasket = groceryBasket.filter(item => item.product.id !== productId);
+        }
+        else if (product.quantity > 1) {
+            refGroceryBasket = groceryBasket.map(item => {
+                if (item.product.id === productId && item.quantity > 1) {
+                    setTotalPrice(totalPrice - item.product.price);
+                    return { ...item, quantity: item.quantity - 1, price: item.product.price * (item.quantity - 1) };
+                }
+                return item;
             });
-            if (!res.ok) {
-                return { success: false, message: 'Серверная ошибка' };
-            }
-            const data = await res.json();
-            if (data && data.success) {
-                decreaseDiscount(productId, data.appliedAmount);
-            }
-            return {
-                success: data.success,
-                code: data.code,
-                appliedAmount: data.appliedAmount,
-                discountType: data.discountType,
-                message: data.message,
-            };
-        } catch {
-            return { success: false, message: 'Ошибка связи с сервером' };
+        }
+
+        if (refGroceryBasket) {
+            refreshGroceryBasket(refGroceryBasket);
+            setGroceryBasket(refGroceryBasket);
         }
     };
 
-const decreaseDiscount = (productId: UUIDTypes, discount: number) => {
-    let newBasket = [...groceryBasket];
-    let discountAmount = 0;
-
-    newBasket = newBasket.map(item => {
-        if (String(item.product.id) !== String(productId)) return item;
-
-        discountAmount = discount * item.quantity;
-        const newUnitPrice = item.product.price - discount;
-        return {
-            ...item,
-            price: newUnitPrice * item.quantity,
-            product: {
-                ...item.product,
-                discount: discountAmount
-            }
-        };
-    });
-
-    setTotalPrice(totalPrice - discountAmount);
-    setGroceryBasket(newBasket);
-
-    if (refreshGroceryBasket) {
-        refreshGroceryBasket(newBasket);
-    }
-};
-
-    const decreaseQuantity = (productId: UUIDTypes) => {
-        let refGroceryBasket = groceryBasket.map(item => {
-            if (item.product.id === productId && item.quantity > 1) {
-                setTotalPrice(totalPrice - item.product.price);
-                return { ...item, quantity: item.quantity - 1, price: item.product.price * (item.quantity - 1),
-                    product:{
-                        ...item.product,
-                        discount:0
-                    }};
-            }
-            return item;
-        });
-        refreshGroceryBasket(refGroceryBasket);
-        setGroceryBasket(refGroceryBasket);
-    };
     const increaseQuantity = (productId: UUIDTypes) => {
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId) {
                 setTotalPrice(totalPrice + item.product.price);
-                return { ...item, quantity: item.quantity + 1, price: item.product.price * (item.quantity + 1),
-                    product:{
-                        ...item.product,
-                        discount:0
-                    }};
+                return { ...item, quantity: item.quantity + 1, price: item.product.price * (item.quantity + 1) };
             }
             return item;
         });
+
         refreshGroceryBasket(refGroceryBasket);
         setGroceryBasket(refGroceryBasket);
     };
+
+    const sentPayment = () => {
+        if (!checkSentGroceryBasket())
+            return;
+
+        navigate('/payment', { state: { fromBasket: true } });
+    }
+
     const sentGroceryBasket = () => {
+        if (!checkSentGroceryBasket())
+            return;
+
         let order: OrderCreateDto = {
             address: "г. Москва, ул. Пупкина, д. 5, кв. 31",
             deliveryDate: new Date((new Date).getTime() + 1),
             products: mapGroceryBasketItemsToProduct(groceryBasket),
         }
+
         createOrderAsync(order).then(data => {
             if (!data)
                 return;
+
             resetGroceryBasket();
             navigate('/orders');
         });
     }
 
+    const checkSentGroceryBasket = (): boolean => {
+        if (groceryBasket.length > 0 && isAuthentication())
+            return true;
+
+        return false;
+    }
+
     return (
-        <div>
-            <h1 className='default_name_chapter name_chapter'>Магазин</h1>
+        <div className='root_grocery_basket'>
+            <h1 className='default_name_chapter name_chapter'>Корзина</h1>
             <div className='default_horizontal_multiple_containers grocery_basket_horizontal_multiple_containers'>
                 <div className="default_container grocery_basket_container">
                     <div className="grocery_basket_items">
@@ -149,25 +125,16 @@ const decreaseDiscount = (productId: UUIDTypes, discount: number) => {
                                         <div className="card_item_info">
                                             <span className='default_text'>{gb_item.product.name}</span>
                                             <span className='default_text description'>{gb_item.product.description}</span>
-                                            <div className="grocery_basket_card__price">
-                                        <span className="discount-label">{gb_item.product.discount ? `скидка ${formattedPrice(gb_item.product.discount)}` : ''}</span>
-                                    </div>
-                                        </div>                                        
+                                        </div>
                                     </div>
                                     <div className="grocery_basket_card__actions_quantity">
-                                        <button className='default-button grocery_basket_actions' onClick={() => decreaseQuantity(gb_item.product.id)}>
-                                            <img src={minus_actions} alt="minus" />
-                                        </button>
-                                        <span className='default_text'>{gb_item.quantity}</span>
-                                        <button className='default-button grocery_basket_actions' onClick={() => increaseQuantity(gb_item.product.id)}>
-                                            <img src={pluse_actions} alt="plus" />
-                                        </button>
+                                        <CounterComponent counter={gb_item.quantity}
+                                            onClickMinus={() => decreaseQuantity(gb_item.product.id)}
+                                            onClickPlus={() => increaseQuantity(gb_item.product.id)} />
                                     </div>
                                     <div className="grocery_basket_card__price">
                                         <span className='default_text'>{formattedPrice(gb_item.price)}</span>
-                                    </div>                                    
-                                    <PromoCodePanel value={openPromoId === gb_item.product.id} onChange={(open) => setOpenPromoId(open ? gb_item.product.id.toString() : false)} onApply={(code) => applyPromo(code, gb_item.product.id, gb_item.price)}/>                                    
-                                    
+                                    </div>
                                 </div>
                             ))
                         ) : (
@@ -186,16 +153,14 @@ const decreaseDiscount = (productId: UUIDTypes, discount: number) => {
                         )}
                     </div>
                 </div>
-
-                {/* Правая колонка: место под промокод и итог */}
-                <div className='default_container result_grocery_basket_container'>                  
-                        <div className="form_registration_new_order">
+                <div className='default_container result_grocery_basket_container'>
+                    <div className="form_registration_new_order">
                         <div className="total_price">
                             <h1 className='default_name_chapter name_chapter'>Итого:</h1>
                             <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>
                         </div>
                         <div className="registration_new_order">
-                            <button className='default-button' onClick={() => sentGroceryBasket()}>Оформить заказ</button>
+                            <button className='default-button' onClick={() => sentPayment()} disabled={!checkSentGroceryBasket()}>Оформить заказ</button>
                         </div>
                     </div>
                 </div>
@@ -203,4 +168,5 @@ const decreaseDiscount = (productId: UUIDTypes, discount: number) => {
         </div>
     )
 }
+
 export default GroceryBasketComponent;

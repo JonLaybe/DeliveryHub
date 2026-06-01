@@ -1,0 +1,30 @@
+@use '/src/styles/Variables' as var;
+
+.counter-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    background-color: gray;
+    padding: 3px;
+    border-radius: 10px;
+    background-color: var.$background_input_actions_quantity;
+    width: 100%;
+
+    .counter_actions {
+        width: 32px;
+        height: 32px;
+        box-sizing: border-box;
+        border-radius: 7px;
+        background-color: var.$background_counter_actions;
+        color: var.$color_text_grocery_basket_actions;
+        padding: 0;
+        align-self: center;
+        justify-self: center;
+    }
+
+    .counter_actions:hover {
+        background-color: var.$background_counter_actions_hover;
+    }
+}

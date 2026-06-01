@@ -19,7 +19,7 @@ namespace Catalog.Infrastructure.Messaging.Consumers
             var order = context.Message;
 
             var productsOnStock = await _stockRepository.GetAll()
-                .Where(x => order.Products.Contains(x.ProductId))
+                .Where(x => order.Products.Select(prd => prd.Id).Contains(x.ProductId))
                 .ToListAsync();
 
             foreach (var item in productsOnStock)

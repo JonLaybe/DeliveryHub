@@ -1,16 +1,23 @@
 // Default
 $background_default_container: #FFFFFF;
 $background_default_button: #007aff;
+$background_default_button_disabled: #cccccc;
 $background_default_button_hover: #A73AFD;
 $color_text_default_button: #FDF7FF;
+$color_text_default_button_disabled: #757575;
+$color_border_default_input_filed_fill: rgb(239, 235, 235);
+$color_border_default_input_filed_fill_focus: #005BFF;
+$color_text_muted: rgba(0,26,52,.6);
+$background_default_input_submit: #005BFF;
+$background-body: #F6F6F9;
 
 // Order value
-$background-body: #F6F6F9;
-$background-order: #FFFFFF;
+$background-order: #F6F6F9;
 $color-text-price-product-card: #18C652;
 $order_color_advice_message_text: #868695;
 $color_text_in_order_id: #0d00ff;
-$background_order_card: #EFEFF4;
+$background_order_card: #FFFFFF;
+$background_order_card_hover: #edf2f7aa;
 $background_header_order_card: linear-gradient(#F4F4F4, #e2dfdf);
 $color_clue_message:rgba(0, 0, 0, 0.282);
 $background_details_order: #eae6e6;
@@ -21,14 +28,19 @@ $background_product_card_description: #99A3AE;
 
 // Grocery Basket
 $background_image_block: #ECECEC;
-$background_input_actions_quantity: #F5F7FA; 
-$background_grocery_basket_actions: #F5F7FA;
-$background_grocery_basket_actions_hover: #DCE1E6;
 $color_text_grocery_basket_actions: #001A34;
+
+// Counter
+$background_input_actions_quantity: #F5F7FA;
+$background_counter_actions: #F5F7FA;
+$background_counter_actions_hover: #DCE1E6;
 
 // Auth
 $background_color_auth_form_model: #ffffffd1;
 $color_logo_auth_form_model: #005CFF;
+
+// Payment
+$background_payment_form: #F5F7FA;
 
 // layout
 $color_text_hover:#0d00ff;

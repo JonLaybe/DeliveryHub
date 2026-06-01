@@ -1,181 +1,159 @@
 @use '/src/styles/Variables' as var;
 
-.grocery_basket_horizontal_multiple_containers {
-    grid-template-columns: 70% 30%;
-    grid-template-rows: 30% 70%;
+$title-height: 38px;
 
-    .grocery_basket_container {
-        $self: &;
+.root_grocery_basket {
+    height: 100%;
 
-        grid-column: 1;
-        grid-row: span 2;
+    .name_chapter {
+        min-height: #{$title-height};
+    }
 
-        &__name_chapter {
-            margin: 0 0 10px 0;
-        }
+    .grocery_basket_horizontal_multiple_containers {
+        grid-template-columns: 70% 30%;
+        grid-template-rows: 30% 70%;
+        height: calc(100% - #{$title-height});
 
-        .grocery_basket_items {
-            padding: 0 10px 0 0;
+        .grocery_basket_container {
+            $self: &;
 
-            .grocery_basket_card:not(:first-child) {
-                margin: 10px 0 0 0;
+            grid-column: 1;
+            grid-row: span 2;
+            height: unset;
+
+            &__name_chapter {
+                margin: 0 0 10px 0;
             }
 
-            .grocery_basket_card {
-                $self: &;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            .grocery_basket_items {
+                padding: 0 10px 0 0;
+                height: 100%;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
 
-                &__info {
+                .grocery_basket_card:not(:first-child) {
+                    margin: 10px 0 0 0;
+                }
+
+                .grocery_basket_card {
+                    $self: &;
                     display: flex;
-                    flex-direction: row;
-                    width: calc(100% - 401px);
+                    justify-content: space-between;
+                    align-items: center;
 
-                    .card_preview {
-                        width: 96px;
-                        height: 128px;
-                        border-radius: 10px;
-                        background-color: var.$background_image_block;
-                        margin: 0 10px 0 0;
+                    &__info {
+                        display: flex;
+                        flex-direction: row;
+                        width: calc(100% - 401px);
+
+                        .card_preview {
+                            width: 96px;
+                            height: 128px;
+                            border-radius: 10px;
+                            background-color: var.$background_image_block;
+                            margin: 0 10px 0 0;
+
+                            img {
+                                width: 100%;
+                                object-fit: contain;
+                                border-radius: 10px;
+                            }
+                        }
+
+                        .card_item_info {
+                            display: flex;
+                            flex-direction: column;
+                            width: calc(100% - 116px);
+
+                            .description {
+                                font-size: 12px;
+                                color: var.$background_product_card_description;
+                            }
+                        }
+                    }
+
+                    &__actions_quantity {
+                        width: 130px;
+                    }
+
+                    &__price {
+                        color: var.$color-text-price-product-card;
+                        font-weight: bold;
+                        width: 100px;
+                        text-align: center;
+                    }
+                }
+
+                .shopping_cart_empy {
+                    $self: &;
+
+                    display: flex;
+                    flex-direction: column;
+                    gap: 3px;
+                    align-items: center;
+
+                    &__img {
+                        width: 70px;
+                        height: 70px;
 
                         img {
                             width: 100%;
-                            object-fit: contain;
-                            border-radius: 10px;
                         }
                     }
 
-                    .card_item_info {
-                        display: flex;
-                        flex-direction: column;
-                        width: calc(100% - 116px);
-
-                        .description {
-                            font-size: 12px;
-                            color: var.$background_product_card_description;
-                        }
+                    &__main_message_text {
+                        font-size: 20px;
                     }
 
-                    .discount-label{
-                        word-wrap: break-word;
-                        overflow-wrap: break-word;
-                        white-space: normal;
-                        max-width: 100%; 
-                    }
-                }
-
-                &__actions_quantity {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 5px;
-                    background-color: gray;
-                    padding: 3px;
-                    border-radius: 10px;
-                    background-color: var.$background_input_actions_quantity;
-                    width: 130px;
-
-                    .grocery_basket_actions {
-                        width: 32px;
-                        height: 32px;
-                        box-sizing: border-box;
-                        border-radius: 7px;
-                        background-color: var.$background_grocery_basket_actions;
-                        color: var.$color_text_grocery_basket_actions;
-                        padding: 0;
-                        align-self: center;
-                        justify-self: center;
+                    &__advice_message_text {
+                        color: var.$order_color_advice_message_text;
                     }
 
-                    input {
-                        text-align: center;
-                        width: 30px;
+                    &__route_root {
+                        margin: 20px 0 0 0;
                     }
 
-                    .grocery_basket_actions:hover {
-                        background-color: var.$background_grocery_basket_actions_hover;
+                    &__main_message_text,
+                    &__advice_message_text {
+                        font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
                     }
-                }
-
-                &__price {
-                    color: var.$color-text-price-product-card;
-                    font-weight: bold;
-                    width: 100px;
-                    text-align: center;
-                }
-            }
-
-            .shopping_cart_empy {
-                $self: &;
-
-                display: flex;
-                flex-direction: column;
-                gap: 3px;
-                align-items: center;
-
-                &__img {
-                    width: 70px;
-                    height: 70px;
-
-                    img {
-                        width: 100%;
-                    }
-                }
-
-                &__main_message_text {
-                    font-size: 20px;
-                }
-
-                &__advice_message_text {
-                    color: var.$order_color_advice_message_text;
-                }
-
-                &__route_root {
-                    margin: 20px 0 0 0;
-                }
-
-                &__main_message_text,
-                &__advice_message_text {
-                    font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
                 }
             }
         }
-    }
 
-    .result_grocery_basket_container {
-        grid-column: 2;
-        grid-row: 1;
-        min-height: 150px;
-        max-height: 50%;
-        padding: 20px;
+        .result_grocery_basket_container {
+            grid-column: 2;
+            grid-row: 1;
+            min-height: 150px;
+            max-height: 50%;
+            padding: 20px;
 
-        .form_registration_new_order {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-
-            .total_price {
+            .form_registration_new_order {
                 display: flex;
-                flex-direction: row;
-                align-items: center;
+                flex-direction: column;
                 justify-content: space-between;
-
-                .name_chapter,
-                .total_price {
-                    font-weight: bold;
-                }
-
-                .total_price {
-                    font-size: 24px;
-                }
-            }
-
-            .registration_new_order button {
-                width: 100%;
                 height: 100%;
+
+                .total_price {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    .name_chapter,
+                    .total_price {
+                        font-weight: bold;
+                    }
+
+                    .total_price {
+                        font-size: 24px;
+                    }
+                }
+
+                .registration_new_order button {
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
     }

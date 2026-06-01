@@ -10,7 +10,12 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  height: 100vh;
   background-color: variables.$background-body;
+}
+
+#root {
+  height: 100%;
 }
 
 input:focus,

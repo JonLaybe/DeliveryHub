@@ -13,8 +13,8 @@
         public DateTime CreatedDate { get; set; }
 
         /// <summary>
-        /// Идентификатор продуктов, которые оформили в заказ.
+        /// Товары.
         /// </summary>
-        public IReadOnlyCollection<Guid> Products { get; set; }
+        public IReadOnlyCollection<OrderProduct> Products { get; set; }
     }
 }

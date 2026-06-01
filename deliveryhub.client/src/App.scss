@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 .wrapper {
-  $self: &;
   width: 70%;
+  height: 85%;
   max-width: 1700px;
   margin: 25px auto;
 }
@@ -19,12 +19,22 @@
 }
 
 .default-button:hover {
+  cursor: pointer;
   background-color: var.$background_default_button_hover;
+}
+
+.default-button:disabled {
+    background-color: var.$background_default_button_disabled !important;
+    color: var.$color_text_default_button_disabled !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: 0.6;
 }
 
 .default-link-button {
   cursor: pointer;
   text-decoration: none;
+  text-align: center;
   background-color: var.$background_default_button;
   color: var.$color_text_default_button;
   font-size: 17px;
@@ -37,6 +47,7 @@
 .default_container {
   padding: 10px;
   border-radius: 10px;
+  height: 100%;
   background-color: var.$background_default_container;
 }
 
@@ -44,6 +55,7 @@
   display: grid;
   grid-template-columns: 50% 50%;
   gap: 20px;
+  height: 100%;
   margin: 10px 0 0 0;
 }
 
@@ -58,12 +70,17 @@
 
 .clue_message {
   color: var.$color_clue_message;
+  text-decoration: none;
   font-weight: 100;
 }
 
-.text_hover:hover {
+.default_text_hover:hover {
   cursor: pointer;
   color: var.$color_text_hover;
+}
+
+.text_pointer:hover {
+  cursor: pointer;
   text-decoration: underline;
 }
 
@@ -73,4 +90,15 @@
 
 .w-100 {
   width: 100%;
+}
+
+input.default_input_filed_fill {
+  border: 1.5px solid var.$color_border_default_input_filed_fill;
+  border-radius: 12px;
+  height: 50px;
+  padding: 0 10px;
+}
+
+input.default_input_filed_fill:focus {
+  border: 2.7px solid var.$color_border_default_input_filed_fill_focus;
 }

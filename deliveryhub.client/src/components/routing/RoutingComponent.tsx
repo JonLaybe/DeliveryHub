@@ -6,6 +6,7 @@ import GroceryBasketComponent from "../grocery_basket/GroceryBasketComponent";
 import ProfileComponent from "../auth/profile/ProfileComponent";
 import PrivateRoute from "./PrivateRoute";
 import ChatComponent from "../chat/ChatComponent";
+import PaymentComponent from "../payments/PaymentComponent";
 
 export default function RoutingComponent() {
     const location = useLocation();
@@ -17,6 +18,11 @@ export default function RoutingComponent() {
             <Route path="/orders" element={
                 <PrivateRoute>
                     <OrderComponent />
+                </PrivateRoute>
+            } />
+            <Route path="/payment" element={
+                <PrivateRoute>
+                    <PaymentComponent />
                 </PrivateRoute>
             } />
             <Route path="/profile" element={
