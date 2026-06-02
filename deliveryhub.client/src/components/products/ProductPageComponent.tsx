@@ -12,7 +12,6 @@ const ProductPageComponent = () => {
     const [product, setProduct] = useState<ProductDto | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const navigate = useNavigate();
-    const currentUserId = "c8e4a03b-960e-4874-80b0-fea30a90fc7b";
 
     useEffect(() => {
         if (!id) return;
@@ -36,7 +35,7 @@ const ProductPageComponent = () => {
         try {
             const conversationId = await createConversationAsync(product.id);
             
-            const conversations = await getUserConversationsAsync(currentUserId);
+            const conversations = await getUserConversationsAsync();
             const newConversation = conversations.find(c => c.id === conversationId);
             
             navigate(`/chat/${conversationId}`, {
