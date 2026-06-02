@@ -5,6 +5,7 @@ import type { LoginRequestDto } from "../../models/auth-service/LoginRequestDto"
 import type { LoginResponseDto } from "../../models/auth-service/LoginResponseDto";
 import type { RegisterRequestDto } from "../../models/auth-service/RegisterRequestDto";
 import type { RefreshTokenRequestDto } from "../../models/auth-service/RefreshTokenRequestDto";
+import type { UserDto } from "../../models/auth-service/UserDto";
 
 const TOKEN_STORAGE_KEY = "token";
 const AUTH_CHANGED_EVENT = "auth:changed";
@@ -114,19 +115,27 @@ function notifyAuthChanged() {
 }
 
 export async function getCurrentUser(): Promise<UserDto> {
-  // const res = await api.get<UserResponse[]>(`${AUTH_URL}`);
-  // const data = res.data;
-  // временно закоментировал
-  // console.log("API Response (auth):", data);
+  // ВРЕМЕННО: берём ID из токена
+  const token = getAccessToken();
+  let realId = "12345";
+  
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      realId = payload.uid || payload.nameid || "12345";
+    } catch (e) {
+      console.error("Failed to parse token", e);
+    }
+  }
   
   const userData: UserDto = {
-                    id: "12345",
-                    firstName: "Иван",
-                    lastName: "Иванов",
-                    email: "ivan.ivanov@example.com",
-                    birthDate: "1990-01-01",
-                    avatarUrl: "https://i.pravatar.cc/150?img=3",
-                };
+    id: realId,
+    firstName: "Иван",
+    lastName: "Иванов",
+    email: "ivan.ivanov@example.com",
+    birthDate: "1990-01-01",
+    avatarUrl: "https://i.pravatar.cc/150?img=3",
+  };
 
   return userData;
 }

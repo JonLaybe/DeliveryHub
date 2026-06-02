@@ -1,11 +1,10 @@
 import { FC, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Conversation } from "../../models/chat-service/Conversation";
-import type { ChatListProps } from "../../models/chat-service/ChatListProps";
 import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
 import "./ChatList.scss";
 
-const ChatList: FC<ChatListProps> = ({ userId }) => {
+const ChatList = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const didFetchRef = useRef(false);
@@ -19,9 +18,8 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
   }, [conversationId]);
 
   const fetchConversations = async () => {
-    if (!userId) return;
     try {
-      const data = await getUserConversationsAsync(userId);
+      const data = await getUserConversationsAsync();
       console.log("Conversations for UI:", data);
       setConversations(data);
     } catch (err) {
@@ -30,11 +28,10 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
   };
 
   useEffect(() => {
-    if (!userId) return;
     if (didFetchRef.current) return;
     didFetchRef.current = true;
     fetchConversations();
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     const handleUpdateList = () => {
@@ -46,7 +43,7 @@ const ChatList: FC<ChatListProps> = ({ userId }) => {
     return () => {
       window.removeEventListener('chat:updateList', handleUpdateList);
     };
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     const handleResetUnread = (event: CustomEvent) => {

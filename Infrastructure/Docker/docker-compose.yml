@@ -124,6 +124,7 @@ services:
       ConnectionStrings__Postgres: "Host=general-postgres;Port=5432;Database=DeliveryHubChatDb;Username=postgres;Password=postgres"
       ConnectionStrings__Redis: "redis:6379,abortConnect=false"
       ServicesConfig__CatalogApi__BaseUrl: "http://catalog-api:8080"
+      JWTSettings__jwksUrl: "http://auth-service:8080/.well-known/jwks.json"
     depends_on:
       redis:
         condition: service_healthy

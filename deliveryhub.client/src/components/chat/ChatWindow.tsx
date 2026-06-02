@@ -70,7 +70,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     const fetchMessages = async () => {
       setIsLoading(true);
       try {
-        const msgs = await getMessagesForConversationAsync(conversation.id, currentUserId);
+        const msgs = await getMessagesForConversationAsync(conversation.id);
         setMessages(msgs);
         
         if (productName && !hasCheckedHistoryRef.current) {
@@ -146,7 +146,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     setNewMessage("");
 
     try {
-      await sendMessage(conversation.id, currentUserId, textToSend);
+      await sendMessage(conversation.id, textToSend);
       
       window.dispatchEvent(new CustomEvent('chat:updateList'));
       

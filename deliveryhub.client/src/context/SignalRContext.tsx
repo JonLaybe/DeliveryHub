@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, } from "react";
 import * as signalR from "@microsoft/signalr";
 import { CHAT_URL, CHAT_HUB_URL } from "../constants/EndpointConstants";
+import { getAccessToken } from "../services/auth-service/AuthService";
 
 type SignalRContextType = {
   connection: signalR.HubConnection;
@@ -22,7 +23,9 @@ export const SignalRProvider = ({
 }) => {
   const connectionRef = useRef(
     new signalR.HubConnectionBuilder()
-      .withUrl(`${CHAT_URL}${CHAT_HUB_URL}`)
+      .withUrl(`${CHAT_URL}${CHAT_HUB_URL}`, {
+        accessTokenFactory: () => getAccessToken() || ""
+      })
       .withAutomaticReconnect()
       .build()
   );
@@ -36,11 +39,16 @@ export const SignalRProvider = ({
       return;
     }
 	
-    if (!startPromise) {
-      startPromise = connection.start();
-    }
-
-    await startPromise;
+	try {
+      if (!startPromise) {
+        startPromise = connection.start();
+      }
+      await startPromise;
+	} catch (error) {
+        console.error("SignalR connection failed:", error);
+        startPromise = null;
+        throw error;
+	  }
   };
 
   useEffect(() => {
@@ -48,6 +56,7 @@ export const SignalRProvider = ({
 
     connection.onclose(() => {
       console.log("SignalR disconnected");
+	  startPromise = null;
     });
 
     connection.onreconnecting(() => {
