@@ -8,9 +8,9 @@ export function useChatSignalR() {
     await connection.invoke("JoinConversation", conversationId);
   };
 
-  const sendMessage = async (conversationId: string, senderId: string, text: string) => {
+	const sendMessage = async (conversationId: string, text: string) => {
     await ensureConnected();
-    await connection.invoke("SendMessage", conversationId, senderId, text);
+    await connection.invoke("SendMessage", conversationId, text);
   };
 
   return {

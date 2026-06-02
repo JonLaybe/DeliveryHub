@@ -3,27 +3,43 @@ import { useParams, useLocation } from "react-router-dom";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import type { Conversation } from "../../models/chat-service/Conversation";
+import { getCurrentUser } from "../../services/auth-service/AuthService";
 import "./ChatComponent.scss";
 
 const ChatComponent = () => {
   const { conversationId } = useParams();
   const location = useLocation();
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => { 
     window.scrollTo(0, 0);
   }, [location.pathname]);
   
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setCurrentUserId(user.id);
+      } catch (error) {
+        console.error("Failed to load current user:", error);
+      }
+    };
+    loadUser();
+  }, []);
+  
   const productName = (location.state as any)?.productName ?? "";
-
-  const currentUserId = "c8e4a03b-960e-4874-80b0-fea30a90fc7b";
 
   const selectedConversation = conversationId
     ? ({ id: conversationId } as Conversation)
     : null;
+	
+  if (!currentUserId) {
+    return <div className="chat-container">Загрузка пользователя...</div>;
+  }
 
   return (
     <div className="chat-container">
-      <ChatList userId={currentUserId} />
+      <ChatList/>
       
       <div className="chat-main">
         {selectedConversation ? (

@@ -40,16 +40,33 @@ namespace Chat.Api.Extensions
 
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.Name,
-                    IssuerSigningKeyResolver =
-                        (token, securityToken, kid, validationParameters) =>
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/chat"))
                         {
-                            using var client = new HttpClient();
-                            var jwksJson = client.GetStringAsync("http://localhost:7119/.well-known/jwks.json")
-                                .GetAwaiter().GetResult();
-                            var jwks = new JsonWebKeySet(jwksJson);
-                            var key = jwks.Keys.FirstOrDefault(k => k.Kid == kid);
-                            return key != null ? [key] : jwks.Keys;
+                            context.Token = accessToken;
                         }
+
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var jwksManager = serviceProvider.GetRequiredService<IJwksManager>();
+
+                options.TokenValidationParameters.IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
+                {
+                    return jwksManager.GetKeys(kid);
                 };
             });
 
