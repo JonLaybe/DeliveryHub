@@ -251,25 +251,53 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             {
                 Id = SellerElectronicsId,
                 Email = "seller.electronics@deliveryhub.local",
-                UserName = "seller.electronics@deliveryhub.local"
+                UserName = "seller.electronics@deliveryhub.local",
+                FirstName = "Bill",
+                LastName = "Gates",
+                PhotoUrl = "https://i.pravatar.cc/300?u=seller.electronics@deliveryhub.local",
+                BirthDate = new DateOnly(1990, 1, 10),
+                PhoneNumber = "+70000000001",
+                Country = "Russia",
+                City = "Moscow"
             },
             new
             {
                 Id = SellerClothesId,
                 Email = "seller.clothes@deliveryhub.local",
-                UserName = "seller.clothes@deliveryhub.local"
+                UserName = "seller.clothes@deliveryhub.local",
+                FirstName = "Garavani",
+                LastName = "Valentino",
+                PhotoUrl = "https://i.pravatar.cc/300?u=seller.clothes@deliveryhub.local",
+                BirthDate = new DateOnly(1991, 2, 15),
+                PhoneNumber = "+70000000002",
+                Country = "Russia",
+                City = "Moscow"
             },
             new
             {
                 Id = SellerFoodId,
                 Email = "seller.food@deliveryhub.local",
-                UserName = "seller.food@deliveryhub.local"
+                UserName = "seller.food@deliveryhub.local",
+                FirstName = "Colonel",
+                LastName = "Sanders",
+                PhotoUrl = "https://i.pravatar.cc/300?u=seller.food@deliveryhub.local",
+                BirthDate = new DateOnly(1992, 3, 20),
+                PhoneNumber = "+70000000003",
+                Country = "Russia",
+                City = "Moscow"
             },
             new
             {
                 Id = SellerBooksId,
                 Email = "seller.books@deliveryhub.local",
-                UserName = "seller.books@deliveryhub.local"
+                UserName = "seller.books@deliveryhub.local",
+                FirstName = "Jeffrey",
+                LastName = "Bezos",
+                PhotoUrl = "https://i.pravatar.cc/300?u=seller.books@deliveryhub.local",
+                BirthDate = new DateOnly(1993, 4, 25),
+                PhoneNumber = "+70000000004",
+                Country = "Russia",
+                City = "Moscow"
             }
         };
 
@@ -289,8 +317,15 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                     Id = seller.Id,
                     Email = seller.Email,
                     UserName = seller.UserName,
+                    FirstName = seller.FirstName,
+                    LastName = seller.LastName,
+                    PhotoUrl = seller.PhotoUrl,
+                    BirthDate = seller.BirthDate,
+                    PhoneNumber = seller.PhoneNumber,
+                    Country = seller.Country,
+                    City = seller.City,
                     EmailConfirmed = true,
-                    PhoneNumberConfirmed = false,
+                    PhoneNumberConfirmed = true,
                     Status = UserStatus.Active,
                     CreatedAt = now,
                     UpdatedAt = now
@@ -309,6 +344,67 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                 }
 
                 existingUser = user;
+            }
+
+            var profileWasChanged = false;
+
+            if (existingUser.FirstName != seller.FirstName)
+            {
+                existingUser.FirstName = seller.FirstName;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.LastName != seller.LastName)
+            {
+                existingUser.LastName = seller.LastName;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.PhotoUrl != seller.PhotoUrl)
+            {
+                existingUser.PhotoUrl = seller.PhotoUrl;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.BirthDate != seller.BirthDate)
+            {
+                existingUser.BirthDate = seller.BirthDate;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.PhoneNumber != seller.PhoneNumber)
+            {
+                existingUser.PhoneNumber = seller.PhoneNumber;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.Country != seller.Country)
+            {
+                existingUser.Country = seller.Country;
+                profileWasChanged = true;
+            }
+
+            if (existingUser.City != seller.City)
+            {
+                existingUser.City = seller.City;
+                profileWasChanged = true;
+            }
+
+            if (profileWasChanged)
+            {
+                existingUser.UpdatedAt = now;
+
+                var updateResult = await _userManager.UpdateAsync(existingUser);
+
+                if (!updateResult.Succeeded)
+                {
+                    var errors = string.Join(
+                        "; ",
+                        updateResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+
+                    throw new InvalidOperationException(
+                        $"Failed to update default seller profile '{seller.Email}'. Errors: {errors}");
+                }
             }
 
             var isInSellerRole = await _userManager.IsInRoleAsync(existingUser, "Seller");
