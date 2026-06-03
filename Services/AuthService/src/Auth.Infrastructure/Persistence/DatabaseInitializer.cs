@@ -1,4 +1,5 @@
 ﻿using Auth.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -21,12 +22,42 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
     private readonly AuthDbContext _db;
     private readonly IConfiguration _cfg;
     private readonly ILogger<DatabaseInitializer> _logger;
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<Role> _roleManager;
 
-    public DatabaseInitializer(AuthDbContext db, IConfiguration cfg, ILogger<DatabaseInitializer> logger)
+    private static readonly Guid AdminRoleId =
+    Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private static readonly Guid CustomerRoleId =
+        Guid.Parse("00000000-0000-0000-0000-000000000002");
+
+    private static readonly Guid SellerRoleId =
+        Guid.Parse("00000000-0000-0000-0000-000000000003");
+
+    private static readonly Guid SellerElectronicsId =
+        Guid.Parse("10000000-0000-0000-0000-000000000001");
+
+    private static readonly Guid SellerClothesId =
+        Guid.Parse("10000000-0000-0000-0000-000000000002");
+
+    private static readonly Guid SellerFoodId =
+        Guid.Parse("10000000-0000-0000-0000-000000000003");
+
+    private static readonly Guid SellerBooksId =
+        Guid.Parse("10000000-0000-0000-0000-000000000004");
+
+    public DatabaseInitializer(
+        AuthDbContext db,
+        IConfiguration cfg,
+        ILogger<DatabaseInitializer> logger,
+        UserManager<User> userManager,
+        RoleManager<Role> roleManager)
     {
         _db = db;
         _cfg = cfg;
         _logger = logger;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task InitializeAsync(IHostEnvironment env, CancellationToken ct = default)
@@ -71,6 +102,9 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
         _logger.LogInformation("Seeding roles...");
         await SeedRolesAsync(ct);
 
+        _logger.LogInformation("Seeding default sellers...");
+        await SeedDefaultSellersAsync(ct);
+
         _logger.LogInformation("Seeding service clients...");
         await SeedServiceClientsAsync(ct);
     }
@@ -97,13 +131,47 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
     private async Task SeedRolesAsync(CancellationToken ct)
     {
-        if (await _db.Roles.AnyAsync(ct))
-            return;
+        var now = DateTimeOffset.UtcNow;
 
-        _db.Roles.AddRange(
-            new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN", Description = "System administrator" },
-            new Role { Id = Guid.NewGuid(), Name = "Customer", NormalizedName = "CUSTOMER", Description = "Customer role" }
-        );
+        var roles = new[]
+        {
+            new Role
+            {
+                Id = AdminRoleId,
+                Name = "Admin",
+                NormalizedName = "ADMIN",
+                Description = "System administrator",
+                ConcurrencyStamp = AdminRoleId.ToString(),
+                CreatedAt = now
+            },
+            new Role
+            {
+                Id = CustomerRoleId,
+                Name = "Customer",
+                NormalizedName = "CUSTOMER",
+                Description = "Customer role",
+                ConcurrencyStamp = CustomerRoleId.ToString(),
+                CreatedAt = now
+            },
+            new Role
+            {
+                Id = SellerRoleId,
+                Name = "Seller",
+                NormalizedName = "SELLER",
+                Description = "Seller role",
+                ConcurrencyStamp = SellerRoleId.ToString(),
+                CreatedAt = now
+            }
+        };
+
+        foreach (var role in roles)
+        {
+            var exists = await _db.Roles
+                .AnyAsync(x => x.NormalizedName == role.NormalizedName, ct);
+
+            if (!exists)
+                _db.Roles.Add(role);
+        }
 
         await _db.SaveChangesAsync(ct);
     }
@@ -169,6 +237,97 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
         );
+    }
+
+    private async Task SeedDefaultSellersAsync(CancellationToken ct)
+    {
+        const string defaultPassword = "Seller123!"; //для всех одинаковый
+
+        var now = DateTimeOffset.UtcNow;
+
+        var sellers = new[]
+        {
+            new
+            {
+                Id = SellerElectronicsId,
+                Email = "seller.electronics@deliveryhub.local",
+                UserName = "seller.electronics@deliveryhub.local"
+            },
+            new
+            {
+                Id = SellerClothesId,
+                Email = "seller.clothes@deliveryhub.local",
+                UserName = "seller.clothes@deliveryhub.local"
+            },
+            new
+            {
+                Id = SellerFoodId,
+                Email = "seller.food@deliveryhub.local",
+                UserName = "seller.food@deliveryhub.local"
+            },
+            new
+            {
+                Id = SellerBooksId,
+                Email = "seller.books@deliveryhub.local",
+                UserName = "seller.books@deliveryhub.local"
+            }
+        };
+
+        foreach (var seller in sellers)
+        {
+            var existingUser = await _userManager.FindByIdAsync(seller.Id.ToString());
+
+            if (existingUser is null)
+            {
+                existingUser = await _userManager.FindByEmailAsync(seller.Email);
+            }
+
+            if (existingUser is null)
+            {
+                var user = new User
+                {
+                    Id = seller.Id,
+                    Email = seller.Email,
+                    UserName = seller.UserName,
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = false,
+                    Status = UserStatus.Active,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                };
+
+                var createResult = await _userManager.CreateAsync(user, defaultPassword);
+
+                if (!createResult.Succeeded)
+                {
+                    var errors = string.Join(
+                        "; ",
+                        createResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+
+                    throw new InvalidOperationException(
+                        $"Failed to create default seller '{seller.Email}'. Errors: {errors}");
+                }
+
+                existingUser = user;
+            }
+
+            var isInSellerRole = await _userManager.IsInRoleAsync(existingUser, "Seller");
+
+            if (!isInSellerRole)
+            {
+                var addRoleResult = await _userManager.AddToRoleAsync(existingUser, "Seller");
+
+                if (!addRoleResult.Succeeded)
+                {
+                    var errors = string.Join(
+                        "; ",
+                        addRoleResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+
+                    throw new InvalidOperationException(
+                        $"Failed to add role Seller to user '{seller.Email}'. Errors: {errors}");
+                }
+            }
+        }
     }
 
     private sealed class ServiceClientSeedOptions
