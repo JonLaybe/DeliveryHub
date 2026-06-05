@@ -8,6 +8,7 @@
         public decimal Price { get; init; }
         public int AvailableQty { get; init; }
         public Guid CategoryId { get; init; }
+        public Guid SellerId { get; set; }
         public required IReadOnlyDictionary<string, string> Attributes { get; init; }
         public required IReadOnlyList<ProductImageDto> Images { get; init; }
     }

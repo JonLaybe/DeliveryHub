@@ -1,5 +1,5 @@
 import './FiltersComponent.scss';
-import { useContext, useEffect, useRef, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import { filterNamesMapping } from "../../constants/FilterNameValueMap";
 import type { ProductSearchQueryRequest } from '../../models/catalog-service/ProductSearchQueryRequest';
@@ -41,6 +41,8 @@ const FiltersComponent = (props: { selectedSort: string, selectedCategoryId: UUI
     const clearFilters = () => {
         setSelectedFilters({});
         setFiltersCount(0);
+        if (minPrice.current) minPrice.current.value = '';
+        if (maxPrice.current) maxPrice.current.value = '';
     }
 
     const applyFilters = (request: ProductSearchQueryRequest) => {
@@ -53,8 +55,29 @@ const FiltersComponent = (props: { selectedSort: string, selectedCategoryId: UUI
         request.sort = selectedSort;
         request.categoryId = selectedCategoryId;
 
+        if (request.minPrice || request.maxPrice) {
+            if (!selectedFilters['minPrice']?.length && !selectedFilters['maxPrice']?.length) {
+                setFiltersCount(filtersCount + 1);
+            }
+        }
+        else {
+            if (selectedFilters['minPrice']?.length > 0 || selectedFilters['maxPrice']?.length > 0) {
+                setFiltersCount(filtersCount - 1);
+            }
+        }
+
+        selectedFilters['minPrice'] = request.minPrice ? [request.minPrice.toString()] : [];
+        selectedFilters['maxPrice'] = request.maxPrice ? [request.maxPrice.toString()] : []; 
+
         serachProductsAndSetResults(request);
     }
+
+    useEffect(() => {
+        if (filtersIsShown) {
+            minPrice.current!.value = selectedFilters['minPrice'] ? selectedFilters['minPrice'][0] : '';
+            maxPrice.current!.value = selectedFilters['maxPrice'] ? selectedFilters['maxPrice'][0] : '';
+        }
+    }, [filtersIsShown]);
 
     useEffect(() => {
         applyFilters({});

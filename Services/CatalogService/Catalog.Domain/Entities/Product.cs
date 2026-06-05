@@ -10,6 +10,8 @@ namespace DeliveryHub.Catalog.Domain.Entities
 
         public Guid CategoryId { get; set; }
 
+        public Guid SellerId { get; set; }
+
         // Динамические характеристики
         public Dictionary<string, string> Attributes { get; set; } = [];
 

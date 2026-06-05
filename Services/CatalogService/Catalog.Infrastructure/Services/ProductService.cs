@@ -119,6 +119,7 @@ namespace DeliveryHub.Catalog.Infrastructure.Services
                 Description = product.Description,
                 Id = product.Id,
                 CategoryId = product.CategoryId,
+                SellerId = product.SellerId,
                 Name = product.Name,
                 Price = product.Price,
                 AvailableQty = stock?.AvailableQty ?? 0,

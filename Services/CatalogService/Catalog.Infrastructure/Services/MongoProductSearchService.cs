@@ -98,7 +98,7 @@ namespace Catalog.Infrastructure.Services
 
             if (searchQuery.Attributes is not null)
             {
-                foreach (var (key, values) in searchQuery.Attributes)
+                foreach (var (key, values) in searchQuery.Attributes.Where(w => w.Key != "minPrice" && w.Key != "maxPrice"))
                 {
                     filter &= Builders<Product>.Filter.In($"Attributes.{key}", values);
                 }
