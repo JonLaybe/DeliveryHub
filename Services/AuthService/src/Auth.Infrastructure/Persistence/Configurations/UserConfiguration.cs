@@ -40,6 +40,29 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("phone")
             .HasMaxLength(32);
 
+        b.Property(x => x.FirstName)
+            .HasColumnName("first_name")
+            .HasMaxLength(100);
+
+        b.Property(x => x.LastName)
+            .HasColumnName("last_name")
+            .HasMaxLength(100);
+
+        b.Property(x => x.PhotoUrl)
+            .HasColumnName("photo_url")
+            .HasMaxLength(1000);
+
+        b.Property(x => x.BirthDate)
+            .HasColumnName("birth_date");
+
+        b.Property(x => x.Country)
+            .HasColumnName("country")
+            .HasMaxLength(100);
+
+        b.Property(x => x.City)
+            .HasColumnName("city")
+            .HasMaxLength(100);
+
         b.Property(x => x.PasswordHash)
             .HasColumnName("password_hash")
             .IsRequired();

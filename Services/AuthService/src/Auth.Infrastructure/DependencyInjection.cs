@@ -7,6 +7,9 @@ using Auth.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace Auth.Infrastructure;
 
@@ -47,6 +50,48 @@ public static class DependencyInjection
         services.AddSingleton(jwt);
         services.AddSingleton<IRsaKeyProvider, RsaKeyProvider>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.MapInboundClaims = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwt.Issuer,
+
+                    ValidateAudience = false,
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+
+                    IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
+                    {
+                        var keyProvider = services
+                            .BuildServiceProvider()
+                            .GetRequiredService<IRsaKeyProvider>();
+
+                        return new[]
+                        {
+                    new RsaSecurityKey(keyProvider.Public)
+                    {
+                        KeyId = jwt.KeyId
+                    }
+                        };
+                    },
+
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                    RoleClaimType = ClaimTypes.Role,
+
+                    ClockSkew = TimeSpan.FromMinutes(1)
+                };
+            });
+
+        services.AddAuthorization();
 
         return services;
     }
