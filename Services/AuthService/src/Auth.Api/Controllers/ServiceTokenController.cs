@@ -1,13 +1,15 @@
 ﻿using Auth.Infrastructure.Persistence;
 using Auth.Infrastructure.Security;
-using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Auth.Api.Controllers;
@@ -30,18 +32,28 @@ public sealed class ServiceTokenController : ControllerBase
     public record ServiceTokenRequest(string ClientId, string ClientSecret, string? Scope);
 
     [HttpPost("service-token")]
-    public async Task<IActionResult> Issue([FromBody] ServiceTokenRequest req)
+    public async Task<IActionResult> Issue(
+    [FromBody] ServiceTokenRequest req,
+    [FromServices] IValidator<ServiceTokenRequest> validator,
+    CancellationToken ct)
     {
         if (req is null)
             return BadRequest("Request body is required.");
 
-        if (string.IsNullOrWhiteSpace(req.ClientId))
-            return BadRequest("ClientId is required.");
+        var validationResult = await validator.ValidateAsync(req, ct);
 
-        if (string.IsNullOrWhiteSpace(req.ClientSecret))
-            return BadRequest("ClientSecret is required.");
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors.Select(error => new
+            {
+                field = error.PropertyName,
+                message = error.ErrorMessage
+            }));
+        }
 
-        var client = await _db.ServiceClients.FirstOrDefaultAsync(x => x.ClientId == req.ClientId);
+        var client = await _db.ServiceClients.FirstOrDefaultAsync(
+            x => x.ClientId == req.ClientId,
+            ct);
         if (client is null || !client.IsActive) return Unauthorized();
 
         var incomingBytes = SHA256.HashData(Encoding.UTF8.GetBytes(req.ClientSecret));

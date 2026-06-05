@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Auth.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Auth.Api.Validation;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,7 @@ builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssemblyContaining<ServiceTokenRequestValidator>();
 builder.Services.AddAuthApplication();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/var/dpkeys"))
