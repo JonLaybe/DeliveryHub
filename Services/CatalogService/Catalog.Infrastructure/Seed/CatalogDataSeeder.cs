@@ -13,6 +13,10 @@ namespace Catalog.Infrastructure.Seed
 {
     public static class CatalogDataSeeder
     {
+        private static readonly Guid SellerElectronicsId = Guid.Parse("10000000-0000-0000-0000-000000000001");
+
+        private static readonly Guid SellerClothesId = Guid.Parse("10000000-0000-0000-0000-000000000002");
+
         public static async Task SeedAsync(IServiceProvider services)
         {
             using var scope = services.CreateScope();
@@ -187,7 +191,7 @@ namespace Catalog.Infrastructure.Seed
         {
             var existing = (await productRepository.GetAllAsync(default)).ToList();
 
-            Guid EnsureOrCreateProduct(string name, string description, decimal price, Guid categoryId, Dictionary<string, string>? attributes = null, Guid? fixedId = null)
+            Guid EnsureOrCreateProduct(string name, string description, decimal price, Guid categoryId, Guid sellerId, Dictionary<string, string>? attributes = null, Guid? fixedId = null)
             {
                 var found = existing.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)
                                                         && p.CategoryId == categoryId);
@@ -204,6 +208,7 @@ namespace Catalog.Infrastructure.Seed
                     CategoryId = categoryId,
                     Attributes = attributes != null ? new Dictionary<string, string>(attributes) : new Dictionary<string, string>(),
                     SearchTokens = name.GenerateSearchTokens(),
+                    SellerId = sellerId
                 };
 
                 productRepository.CreateAsync(product, default).GetAwaiter().GetResult();
@@ -214,43 +219,43 @@ namespace Catalog.Infrastructure.Seed
             var createdIds = new List<Guid>();
 
             // Mobile devices (3)
-            createdIds.Add(EnsureOrCreateProduct("iPhone 15", "Apple iPhone 15, 128GB, Pink", 62600.00m, categories["Мобильные устройства"],
+            createdIds.Add(EnsureOrCreateProduct("iPhone 15", "Apple iPhone 15, 128GB, Pink", 62600.00m, categories["Мобильные устройства"], SellerElectronicsId,
                 new() { ["Color"] = "Pink", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000001")));
 
-            createdIds.Add(EnsureOrCreateProduct("Samsung Galaxy S21", "Samsung Galaxy S21, 128GB, Phantom Gray", 32000.00m, categories["Мобильные устройства"],
+            createdIds.Add(EnsureOrCreateProduct("Samsung Galaxy S21", "Samsung Galaxy S21, 128GB, Phantom Gray", 32000.00m, categories["Мобильные устройства"], SellerElectronicsId,
                 new() { ["Color"] = "Phantom Gray", ["Storage"] = "128GB" }, new Guid("10000000-0000-0000-0000-000000000002")));
 
-            createdIds.Add(EnsureOrCreateProduct("Xiaomi Redmi Note 14", "Xiaomi Redmi Note 14, 64GB", 30000.00m, categories["Мобильные устройства"],
+            createdIds.Add(EnsureOrCreateProduct("Xiaomi Redmi Note 14", "Xiaomi Redmi Note 14, 64GB", 30000.00m, categories["Мобильные устройства"], SellerElectronicsId,
                 new() { ["Color"] = "Blue", ["Storage"] = "64GB" }, new Guid("10000000-0000-0000-0000-000000000003")));
 
             // TVs (3)
-            createdIds.Add(EnsureOrCreateProduct("LG OLED55", "LG OLED 55\" 4K", 55000.00m, categories["Телевизоры"],
+            createdIds.Add(EnsureOrCreateProduct("LG OLED55", "LG OLED 55\" 4K", 55000.00m, categories["Телевизоры"], SellerElectronicsId,
                 new() { ["Size"] = "55\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000101")));
 
-            createdIds.Add(EnsureOrCreateProduct("Samsung QLED 50", "Samsung QLED 50\" 4K", 50999.00m, categories["Телевизоры"],
+            createdIds.Add(EnsureOrCreateProduct("Samsung QLED 50", "Samsung QLED 50\" 4K", 50999.00m, categories["Телевизоры"], SellerElectronicsId,
                 new() { ["Size"] = "50\"", ["Resolution"] = "4K" }, new Guid("10000000-0000-0000-0000-000000000102")));
 
-            createdIds.Add(EnsureOrCreateProduct("Sony Bravia 43", "Sony Bravia 43\" Full HD", 40199.00m, categories["Телевизоры"],
+            createdIds.Add(EnsureOrCreateProduct("Sony Bravia 43", "Sony Bravia 43\" Full HD", 40199.00m, categories["Телевизоры"], SellerElectronicsId,
                 new() { ["Size"] = "43\"", ["Resolution"] = "Full HD" }, new Guid("10000000-0000-0000-0000-000000000103")));
 
             // Women's shoes (3)
-            createdIds.Add(EnsureOrCreateProduct("Женские туфли-лодочки", "Женские туфли-лодочки, кожа", 2100.00m, categories["Женская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Женские туфли-лодочки", "Женские туфли-лодочки, кожа", 2100.00m, categories["Женская обувь"], SellerClothesId,
                 new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000001")));
 
-            createdIds.Add(EnsureOrCreateProduct("Кроссовки женские", "Кроссовки женские, текстиль", 3500.00m, categories["Женская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Кроссовки женские", "Кроссовки женские, текстиль", 3500.00m, categories["Женская обувь"], SellerClothesId,
                 new() { ["Color"] = "White", ["SizeRange"] = "36-41" }, new Guid("20000000-0000-0000-0000-000000000002")));
 
-            createdIds.Add(EnsureOrCreateProduct("Ботинки женские", "Ботинки женские, замша", 3119.00m, categories["Женская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Ботинки женские", "Ботинки женские, замша", 3119.00m, categories["Женская обувь"], SellerClothesId,
                 new() { ["Color"] = "Brown", ["Material"] = "Suede" }, new Guid("20000000-0000-0000-0000-000000000003")));
 
             // Men's shoes (3)
-            createdIds.Add(EnsureOrCreateProduct("Мужские ботинки", "Мужские кожаные ботинки", 3120.00m, categories["Мужская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Мужские ботинки", "Мужские кожаные ботинки", 3120.00m, categories["Мужская обувь"], SellerClothesId,
                 new() { ["Color"] = "Brown", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000101")));
 
-            createdIds.Add(EnsureOrCreateProduct("Кроссовки мужские", "Кроссовки мужские, сетка", 5900.00m, categories["Мужская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Кроссовки мужские", "Кроссовки мужские, сетка", 5900.00m, categories["Мужская обувь"], SellerClothesId,
                 new() { ["Color"] = "Gray", ["SizeRange"] = "40-46" }, new Guid("20000000-0000-0000-0000-000000000102")));
 
-            createdIds.Add(EnsureOrCreateProduct("Лоферы мужские", "Лоферы мужские, кожа", 890.00m, categories["Мужская обувь"],
+            createdIds.Add(EnsureOrCreateProduct("Лоферы мужские", "Лоферы мужские, кожа", 890.00m, categories["Мужская обувь"], SellerClothesId,
                 new() { ["Color"] = "Black", ["Material"] = "Leather" }, new Guid("20000000-0000-0000-0000-000000000103")));
 
             return createdIds;
