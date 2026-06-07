@@ -5,6 +5,8 @@ export const ORDER_URL = 'api/order';
 
 //Auth
 export const AUTH_URL = 'api/v1/auth';
+export const AUTH_BASE_URL = 'http://localhost:7119';
+export const AUTH_PROFILE_URL = '/api/v1/profile/me';
 
 // Product
 export const CATALOG_BASE_URL = 'http://localhost:5000';

@@ -1,6 +1,6 @@
-import { AUTH_URL } from "../../constants/EndpointConstants";
+import { AUTH_URL, AUTH_PROFILE_URL } from "../../constants/EndpointConstants";
 import { AuthenticationError } from "../../errors/AuthenticationError";
-import { api } from "../../http";
+import { api, api_authorized, auth_api_authorized  } from "../../http";
 import type { LoginRequestDto } from "../../models/auth-service/LoginRequestDto";
 import type { LoginResponseDto } from "../../models/auth-service/LoginResponseDto";
 import type { RegisterRequestDto } from "../../models/auth-service/RegisterRequestDto";
@@ -9,7 +9,9 @@ import type { UserDto } from "../../models/auth-service/UserDto";
 
 const TOKEN_STORAGE_KEY = "token";
 const AUTH_CHANGED_EVENT = "auth:changed";
-
+let _cachedUser: UserDto | null = null;
+let _cacheTimestamp: number = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 минут
 
 export async function loginAsync(loginRequest: LoginRequestDto) {
     const res = await api.post(`${AUTH_URL}/login`, loginRequest);
@@ -23,7 +25,6 @@ export async function loginAsync(loginRequest: LoginRequestDto) {
 export async function refreshAsync() {
     const refreshToken = getRefreshToken();
 
-    // если refresh-token отсутствует — это именно НЕ-аутентифицированный юзер
     if (!refreshToken) {
         throw new AuthenticationError();
     }
@@ -39,7 +40,6 @@ export async function refreshAsync() {
 
         setResultTokens(res.data as LoginResponseDto);
     } catch (e) {
-        // если refresh упал (401/500/сеть) — считаем, что сессии больше нет
         clearTokens();
         throw new AuthenticationError(e);
     }
@@ -54,7 +54,6 @@ export async function registerAsync(registerRequest: RegisterRequestDto) {
 }
 
 export async function logoutAsync() {
-    // logout для JWT: отзываем refresh_token, access сам протухнет
     const refreshToken = getRefreshToken();
 
     try {
@@ -64,6 +63,27 @@ export async function logoutAsync() {
         }
     } finally {
         clearTokens();
+        _cachedUser = null;
+        _cacheTimestamp = 0;
+    }
+}
+
+export async function getCurrentUser(forceRefresh: boolean = false): Promise<UserDto> {
+    if (!forceRefresh && _cachedUser && (Date.now() - _cacheTimestamp) < CACHE_TTL) {
+        return _cachedUser;
+    }
+    
+    try {
+        const response = await auth_api_authorized.get<UserDto>(AUTH_PROFILE_URL);
+        _cachedUser = response.data;
+        _cacheTimestamp = Date.now();
+        return response.data;
+    } catch (error) {
+        if (_cachedUser) {
+            console.warn("Using cached user data due to API error", error);
+            return _cachedUser;
+        }
+        throw error;
     }
 }
 
@@ -74,7 +94,6 @@ export function getTokens(): LoginResponseDto | null {
     try {
         return JSON.parse(raw) as LoginResponseDto;
     } catch {
-        // если кто-то случайно руками или кодом положил мусор — нужно почистить
         localStorage.removeItem(TOKEN_STORAGE_KEY);
         return null;
     }
@@ -90,9 +109,8 @@ export function getRefreshToken(): string | null {
     return t?.refresh_token ?? null;
 }
 
-// TODO сделать проверку по времени токена
 export function isAuthentication(): boolean {
-    return getAccessToken() == null ? false : true;
+    return getAccessToken() !== null;
 }
 
 export function clearTokens() {
@@ -107,35 +125,11 @@ export function onAuthChanged(handler: () => void) {
 
 function setResultTokens(loginResponse: LoginResponseDto) {
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(loginResponse));
+    _cachedUser = null;
+    _cacheTimestamp = 0;
     notifyAuthChanged();
 }
 
 function notifyAuthChanged() {
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-}
-
-export async function getCurrentUser(): Promise<UserDto> {
-  // ВРЕМЕННО: берём ID из токена
-  const token = getAccessToken();
-  let realId = "12345";
-  
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      realId = payload.uid || payload.nameid || "12345";
-    } catch (e) {
-      console.error("Failed to parse token", e);
-    }
-  }
-  
-  const userData: UserDto = {
-    id: realId,
-    firstName: "Иван",
-    lastName: "Иванов",
-    email: "ivan.ivanov@example.com",
-    birthDate: "1990-01-01",
-    avatarUrl: "https://i.pravatar.cc/150?img=3",
-  };
-
-  return userData;
 }

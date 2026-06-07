@@ -4,7 +4,7 @@ import type { ConversationResponse } from "../../models/chat-service/Conversatio
 import type { Conversation } from "../../models/chat-service/Conversation";
 import type { Message } from "../../models/chat-service/Message";
 import type { MessageResponse } from "../../models/chat-service/MessageResponse";
-import { getAccessToken } from "../../services/auth-service/AuthService";
+import { getCurrentUser } from "../auth-service/AuthService";
 
 export async function getUserConversationsAsync(): Promise<Conversation[]> {
   const res = await api_authorized.get<ConversationResponse[]>(`${CHAT_URL}${CONVERSATION_URL}`);
@@ -32,30 +32,18 @@ export async function createConversationAsync(productId: string): Promise<string
 }
 
 export async function getMessagesForConversationAsync(conversationId: string): Promise<Message[]> {
-  const res = await api_authorized.get<MessageResponse[]>(`${CHAT_URL}${CONVERSATION_URL}/${conversationId}/messages`);
-  const data = res.data;
-  
-  console.log("API Response (messages):", data);
-  
-  const currentUserId = getCurrentUserIdFromToken();
-  
-  return data.map((m) => ({
-    id: m.messageId,
-    senderName: m.senderId === currentUserId ? "Вы" : "Собеседник",
-    text: m.text,
-    createdAt: m.createdAt,
-  }));
-}
-
-function getCurrentUserIdFromToken(): string | null {
-  const token = getAccessToken();
-  if (!token) return null;
-  
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.uid || payload.userId || payload.nameid || null;
-  } catch (error) {
-    console.error("Failed to parse token:", error);
-    return null;
-  }
+    const res = await api_authorized.get<MessageResponse[]>(`${CHAT_URL}${CONVERSATION_URL}/${conversationId}/messages`);
+    const data = res.data;
+    
+    console.log("API Response (messages):", data);
+    
+    const currentUser = await getCurrentUser();
+    const currentUserId = currentUser.id;
+    
+    return data.map((m) => ({
+        id: m.messageId,
+        senderName: m.senderId?.toString() === currentUserId?.toString() ? "Вы" : "Собеседник",
+        text: m.text,
+        createdAt: m.createdAt,
+    }));
 }
