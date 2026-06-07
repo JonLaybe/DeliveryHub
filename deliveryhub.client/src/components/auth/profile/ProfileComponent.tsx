@@ -17,6 +17,7 @@ const ProfileComponent: FC = () => {
                 setLoading(true);
                 const userData = await getCurrentUser();
                 setUser(userData);
+                console.log("User data:", userData);
             } catch (err) {
                 console.error(err);
                 setError("Не удалось загрузить данные");
@@ -35,6 +36,38 @@ const ProfileComponent: FC = () => {
     const formatDate = (dateString?: string) => {
         if (!dateString) return "Не указана";
         return new Date(dateString).toLocaleDateString("ru-RU");
+    };
+
+    const getDisplayName = () => {
+        const firstName = user?.firstName?.trim();
+        const lastName = user?.lastName?.trim();
+        
+        if (firstName && lastName) {
+            return `${firstName} ${lastName}`;
+        }
+        if (firstName) {
+            return firstName;
+        }
+        if (lastName) {
+            return lastName;
+        }
+        return "Пользователь";
+    };
+
+    const getInitials = () => {
+        const firstName = user?.firstName?.trim();
+        const lastName = user?.lastName?.trim();
+        
+        if (firstName && lastName) {
+            return `${firstName[0]}${lastName[0]}`;
+        }
+        if (firstName) {
+            return firstName[0];
+        }
+        if (lastName) {
+            return lastName[0];
+        }
+        return "П";
     };
 
     if (loading) {
@@ -66,21 +99,33 @@ const ProfileComponent: FC = () => {
             <div className="profile_card">
                 <div className="profile_header">
                     <div className="avatar">
-                        {user.avatarUrl ? (
-                            <img src={user.avatarUrl} alt={user.firstName} />
+                        {user.photoUrl ? (
+                            <img src={user.photoUrl} alt={getDisplayName()} />
                         ) : (
                             <div className="avatar_placeholder">
-                                {user.firstName[0]}{user.lastName[0]}
+                                {getInitials()}
                             </div>
                         )}
                     </div>
                     <div className="profile_title">
-                        <h1>{user.firstName} {user.lastName}</h1>
-                        <p className="email">{user.email}</p>
+                        <h1>{getDisplayName()}</h1>
+                        <p className="email">{user.email || "Email не указан"}</p>
                     </div>
                 </div>
 
                 <div className="profile_info">
+                    <div className="info_row">
+                        <span className="label">Телефон:</span>
+                        <span className="value">{user.phoneNumber || "Не указан"}</span>
+                    </div>
+                    <div className="info_row">
+                        <span className="label">Страна:</span>
+                        <span className="value">{user.country || "Не указана"}</span>
+                    </div>
+                    <div className="info_row">
+                        <span className="label">Город:</span>
+                        <span className="value">{user.city || "Не указан"}</span>
+                    </div>
                     <div className="info_row">
                         <span className="label">Дата рождения:</span>
                         <span className="value">{formatDate(user.birthDate)}</span>
