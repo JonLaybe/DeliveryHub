@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Auth.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Auth.Api.GrpcServices;
 using Auth.Api.Validation;
 using FluentValidation;
 
@@ -22,6 +23,7 @@ builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.AddValidatorsFromAssemblyContaining<ServiceTokenRequestValidator>();
 builder.Services.AddAuthApplication();
 builder.Services.AddDataProtection()
@@ -53,6 +55,7 @@ app.MapGet("/", () => Results.Ok("AuthService is running"));
 app.MapHealthChecks("/health");
 
 app.MapControllers();
+app.MapGrpcService<UserProfileGrpcService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
