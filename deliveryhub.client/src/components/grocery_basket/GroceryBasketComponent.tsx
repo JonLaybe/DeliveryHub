@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState, type FC } from 'react';
 import './GroceryBasketComponent.scss';
-import { getGroceryBasket, refreshGroceryBasket, resetGroceryBasket } from '../../services/grocery-basket/GroceryBasketService';
+import { getGroceryBasket, popPaymentData, refreshGroceryBasket, resetGroceryBasket, setPaymentData } from '../../services/grocery-basket/GroceryBasketService';
 import { CATALOG_BASE_URL } from '../../constants/EndpointConstants';
 import type { UUIDTypes } from 'uuid';
-import { formattedPrice } from '../../pipe/GeneralPipe';
+import { formattedPrice, getFormattedDateYMD } from '../../pipe/GeneralPipe';
 import { createOrderAsync } from '../../services/order-service/OrderService';
 import type { OrderCreateDto } from '../../models/order-service/OrderCreateDto';
 import { mapGroceryBasketItemsToProduct } from '../../pipe/GroceryBasketPipe';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthentication } from '../../services/auth-service/AuthService';
 import CounterComponent from '../../common/counter/CounterComponent';
+import { Controller, useForm } from 'react-hook-form';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
@@ -17,6 +18,20 @@ const GroceryBasketComponent: FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isProcessed = useRef(false);
+
+    const {
+        control,
+        register,
+        reset,
+        handleSubmit,
+        formState: { isValid, isSubmitting, isSubmitSuccessful }
+    } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+            deliveryAddress: '',
+            deliveryDate: ''
+        }
+    });
 
     useEffect(() => {
         let result = 0;
@@ -76,20 +91,26 @@ const GroceryBasketComponent: FC = () => {
         setGroceryBasket(refGroceryBasket);
     };
 
-    const sentPayment = () => {
+    const sentPayment = (data: any) => {
         if (!checkSentGroceryBasket())
             return;
-
+        
+        setPaymentData(data);
         navigate('/payment', { state: { fromBasket: true } });
-    }
+    };
 
     const sentGroceryBasket = () => {
         if (!checkSentGroceryBasket())
             return;
 
+        let paymentData = popPaymentData();
+
+        if (!paymentData)
+            return;
+
         let order: OrderCreateDto = {
-            address: "г. Москва, ул. Пупкина, д. 5, кв. 31",
-            deliveryDate: new Date((new Date).getTime() + 1),
+            address: paymentData.deliveryAddress,
+            deliveryDate: new Date(paymentData.deliveryDate),
             products: mapGroceryBasketItemsToProduct(groceryBasket),
         }
 
@@ -100,14 +121,30 @@ const GroceryBasketComponent: FC = () => {
             resetGroceryBasket();
             navigate('/orders');
         });
-    }
+    };
 
     const checkSentGroceryBasket = (): boolean => {
         if (groceryBasket.length > 0 && isAuthentication())
             return true;
 
         return false;
-    }
+    };
+
+    const minDeliveryDate = (): Date => {
+        const moscowString = new Date().toLocaleDateString('en-US', { timeZone: 'Europe/Moscow' });
+        const minDate = new Date(moscowString);
+        minDate.setDate(minDate.getDate() + 3);
+
+        return minDate;
+    };
+
+    const maxDeliveryDate = (): Date => {
+        const moscowString = new Date().toLocaleDateString('en-US', { timeZone: 'Europe/Moscow' });
+        const maxDate = new Date(moscowString);
+        maxDate.setMonth(maxDate.getMonth() + 1);
+
+        return maxDate;
+    };
 
     return (
         <div className='root_grocery_basket'>
@@ -157,10 +194,41 @@ const GroceryBasketComponent: FC = () => {
                     <div className="form_registration_new_order">
                         <div className="total_price">
                             <h1 className='default_name_chapter name_chapter'>Итого:</h1>
-                            <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>
+                            <span className='default_text amount_price'>{formattedPrice(totalPrice)}</span>
                         </div>
                         <div className="registration_new_order">
-                            <button className='default-button' onClick={() => sentPayment()} disabled={!checkSentGroceryBasket()}>Оформить заказ</button>
+                            <form onSubmit={handleSubmit(sentPayment)}>
+                                <div className="new_order_controllers">
+                                    <div className="new_order_controllers__field">
+                                        <label className='clue_message'>Адрес доставки:</label>
+                                        <Controller name='deliveryAddress'
+                                            control={control}
+                                            rules={{ required: true }} 
+                                            render={({ field }) => (
+                                                <input {...field} type="text"
+                                                    placeholder='г. Москава, ул. Тверская'
+                                                    maxLength={50}
+                                                    className="default_input_filed_fill" />
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="new_order_controllers__field">
+                                        <label className='clue_message'>Время доставки:</label>
+                                        <Controller name='deliveryDate'
+                                            control={control}
+                                            rules={{ required: true }} 
+                                            render={({ field }) => (
+                                                <input {...field} type='date'
+                                                    min={getFormattedDateYMD(minDeliveryDate())}
+                                                    max={getFormattedDateYMD(maxDeliveryDate())}
+                                                />
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                                <input className='default-button'
+                                    type="submit" disabled={!checkSentGroceryBasket() || !isValid || isSubmitSuccessful} value="Оформить заказ" />
+                            </form>
                         </div>
                     </div>
                 </div>

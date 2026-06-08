@@ -64,7 +64,7 @@ const PaymentComponent = () => {
         return value;
     }
 
-    const onCangeCartNumber = (onChange: any, e: any) => {
+    const onChangeCartNumber = (onChange: any, e: any) => {
         const inputValue = e.target.value;
         const isDelete = (e.nativeEvent as InputEvent).inputType === 'deleteContentBackward';
 
@@ -100,7 +100,7 @@ const PaymentComponent = () => {
                                         className="default_input_filed_fill input-cart-number" type="text"
                                         placeholder='Номер карты'
                                         maxLength={16}
-                                        onChange={(e) => onCangeCartNumber(onChange, e)}
+                                        onChange={(e) => onChangeCartNumber(onChange, e)}
                                     />
                                 )}
                             />

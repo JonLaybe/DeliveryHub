@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Shared.RabbitMq\Shared.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\CatalogService\Catalog.Domain\Catalog.Domain.csproj" />
     <ProjectReference Include="..\Order.Domain\OrderService.Domain.csproj" />
   </ItemGroup>
 

@@ -19,6 +19,8 @@ namespace OrderService.Domain.Entities.Products
         /// </summary>
         public decimal Price { get; set; } = 0;
 
+        public decimal? Discount { get; set; }
+
         /// <summary>
         ///  Link Order.
         /// </summary>

@@ -14,3 +14,14 @@ export const getFormattedDate = (dateString: string | Date): string => {
 
     return date.toLocaleDateString();
 };
+
+// Получение даты в формате ГГГГ-ММ-ДД
+export const getFormattedDateYMD = (date: Date): string => {
+    if (isNaN(date.getTime())) return 'Некорректная дата';
+
+    return new Intl.DateTimeFormat('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).format(date);
+};
