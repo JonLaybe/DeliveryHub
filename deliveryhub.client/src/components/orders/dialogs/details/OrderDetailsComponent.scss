@@ -3,5 +3,21 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
+
+        .total_price {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            .name_chapter,
+            .total_price {
+                font-weight: bold;
+            }
+
+            .amount_price {
+                font-size: 24px;
+            }
+        }
     }
 }

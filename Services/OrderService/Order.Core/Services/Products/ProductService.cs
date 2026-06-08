@@ -23,17 +23,14 @@ namespace OrderService.Core.Services.Products
             if (entity == null)
                 throw new ArgumentNullException();
 
-            var newProduct = await this.productRepository.CreateAsync(new Domain.Entities.Products.Product
-            {
-                OrderId = orderId,
-                ArticleNumber = entity.ArticleNumber,
-                Price = entity.Price,
-                Quantity = entity.Quantity,
-            });
+            var newProduct = this.mapper.Map<Domain.Entities.Products.Product>(entity);
+            newProduct.OrderId = orderId;
+
+            var product = await this.productRepository.CreateAsync(newProduct, cancellationToken);
 
             await this.productRepository.SaveChangesAsync(cancellationToken);
 
-            return this.mapper.Map<ProductDto>(newProduct);
+            return this.mapper.Map<ProductDto>(product);
         }
     }
 }

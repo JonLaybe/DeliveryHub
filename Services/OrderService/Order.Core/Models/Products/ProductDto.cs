@@ -21,5 +21,7 @@ namespace OrderService.Core.Models.Products
         ///  Price product.
         /// </summary>
         public decimal Price { get; set; } = 0;
+
+        public decimal? Discount { get; set; }
     }
 }

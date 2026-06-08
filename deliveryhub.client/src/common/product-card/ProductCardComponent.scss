@@ -33,3 +33,9 @@
         font-family: Roboto, system-ui, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
     }
 }
+
+.product_card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}

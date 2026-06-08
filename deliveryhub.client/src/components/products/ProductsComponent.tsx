@@ -6,8 +6,6 @@ import FiltersControlComponent from "../filters/FiltersControlComponent";
 import { useNavigate } from "react-router-dom";
 import chat_icon from "../../assets/chat.svg";
 import { isAuthentication } from "../../services/auth-service/AuthService";
-import { getGroceryBasket } from "../../services/grocery-basket/GroceryBasketService";
-import { mapProductToGroceryBasketItem } from "../../pipe/GroceryBasketPipe";
 
 const ProductsComponent: FC = () => {
     const {
@@ -20,8 +18,6 @@ const ProductsComponent: FC = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(isAuthentication());
     const navigate = useNavigate();
-
-    const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
 
     useEffect(() => {
         clearFilters();

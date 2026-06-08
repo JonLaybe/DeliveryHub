@@ -2,8 +2,10 @@ import type { UUIDTypes } from "uuid";
 import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import type { GroceryBasketItem } from "../../models/grocery-basket/GroceryBasket";
 import { mapProductToGroceryBasketItem } from "../../pipe/GroceryBasketPipe";
+import type { Payment } from "../../models/grocery-basket/Payment";
 
 const nameGroceryBasket = "groceryBasketProducts";
+const namePaymentData = "paymentData";
 
 export function getGroceryBasket(): GroceryBasketItem[] {
     let productsJson = localStorage.getItem(nameGroceryBasket);
@@ -23,6 +25,9 @@ export function getItemGroceryBasket(productId: UUIDTypes): GroceryBasketItem | 
 }
 
 export function addGroceryBasket(product: ProductDto): void {
+    if (product.availableQty <= 0)
+        return;
+
     const productsJson = localStorage.getItem(nameGroceryBasket);
     let groceryBasket: GroceryBasketItem[] = [];
 
@@ -86,4 +91,20 @@ export function refreshGroceryBasket(groceryBasketItem: GroceryBasketItem[]): vo
 
 export function resetGroceryBasket(): void {
     localStorage.removeItem(nameGroceryBasket);
+}
+
+export function popPaymentData(): Payment | undefined {
+    let paymentItem = localStorage.getItem(namePaymentData);
+
+    if (!paymentItem)
+        return undefined;
+
+    let paymentData = JSON.parse(paymentItem);
+    localStorage.removeItem(namePaymentData);
+
+    return paymentData;
+}
+
+export function setPaymentData(payment: Payment) {
+    localStorage.setItem(namePaymentData, JSON.stringify(payment));
 }

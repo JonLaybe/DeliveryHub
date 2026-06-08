@@ -39,7 +39,7 @@ const ProductCardComponent: FC<ProductProps> = (props) => {
     }
 
     return (
-        <div className="product_card">
+        <div className={`product_card ${product.availableQty <= 0 ? 'disabled' : ''}`}>
             <Link to={`${LINK_PRODUCTS}/${product.id}`}>
                 <div className="product_card__preview">
                     <img src={imageUrl} alt={product.name} />
@@ -55,7 +55,7 @@ const ProductCardComponent: FC<ProductProps> = (props) => {
                             onClickPlus={() => handelIncreaseQuantity()} />
                     </div>
                 ) : (
-                    <button className="default-button" onClick={() => handelIncreaseQuantity()}>В корзину</button>
+                    <button className="default-button" onClick={() => handelIncreaseQuantity()} disabled={product.availableQty <= 0}>В корзину</button>
                 )
             }
         </div>

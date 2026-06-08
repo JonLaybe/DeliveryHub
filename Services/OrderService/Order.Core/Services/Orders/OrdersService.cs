@@ -48,7 +48,10 @@ namespace OrderService.Core.Services.Orders
             var userId = this.userService.GetCurrentUserId();
             entity.UserId = userId;
 
-            var order = await this.orderRepository.CreateAsync(this.mapper.Map<Order>(entity), cancellationToken);
+            var newOrder = this.mapper.Map<Order>(entity);
+            newOrder.Status = Domain.Enums.Orders.OrderStatus.Relevant;
+
+            var order = await this.orderRepository.CreateAsync(newOrder, cancellationToken);
 
             await this.orderRepository.SaveChangesAsync(cancellationToken);
 
