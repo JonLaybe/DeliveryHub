@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Auth.Api.GrpcServices;
 using Auth.Api.Validation;
 using FluentValidation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,10 @@ app.MapGrpcService<UserProfileGrpcService>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference("/scalar", options =>
+    {
+        options.WithTitle("AuthService API");
+    });
 }
 
 app.UseHttpsRedirection();
