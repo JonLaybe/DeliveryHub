@@ -13,6 +13,7 @@ namespace Chat.Application.Services
         private readonly IMessageService _messageService;
         private readonly IOnlineStatusService _onlineStatusService;
         private readonly ICatalogService _catalogService;
+        private readonly IUserProfileService _userProfileService;
         private readonly ILogger<ConversationService> _logger;
 
         public ConversationService(
@@ -20,6 +21,7 @@ namespace Chat.Application.Services
             IMessageService messageService,
             IOnlineStatusService onlineStatusService,
             ICatalogService catalogService,
+            IUserProfileService userProfileService,
             ILogger<ConversationService> logger)
         {
             _repository = repository;
@@ -27,6 +29,7 @@ namespace Chat.Application.Services
             _messageService = messageService;
             _onlineStatusService = onlineStatusService;
             _catalogService = catalogService;
+            _userProfileService = userProfileService;
         }
 
         public async Task<Guid> CreateConversationAsync(Guid buyerId, Guid productId)
@@ -70,11 +73,12 @@ namespace Chat.Application.Services
 
             var statsTask = _messageService.GetConversationStatsAsync(conversationIds, userId);
             var onlineStatusesTask = _onlineStatusService.IsOnlineAsync(sellerIds);
-            // сделать получение данных о продавце из сервиса Auth
-            await Task.WhenAll(statsTask, onlineStatusesTask);
+            var userProfilesTask = _userProfileService.GetUserInfosByIdsAsync(sellerIds);
+            await Task.WhenAll(statsTask, onlineStatusesTask, userProfilesTask);
 
             var stats = statsTask.Result;
             var onlineStatuses = onlineStatusesTask.Result;
+            var userProfiles = userProfilesTask.Result;
 
             var conversationDtos = conversations.Select(c =>
             {
@@ -84,7 +88,8 @@ namespace Chat.Application.Services
                 {
                     ConversationId = c.Id,
                     SellerId = c.SellerId,
-                    SellerName = $"Магазин {c.SellerId}",
+                    SellerName = userProfiles[c.SellerId].SellerName,
+                    SellerPhoto = userProfiles[c.SellerId].SellerPhoto,
                     UnreadMessagesCount = stat.UnreadCount,
                     LastMessage = stat.LastMessage,
                     LastMessageAt = c.LastMessageAt,

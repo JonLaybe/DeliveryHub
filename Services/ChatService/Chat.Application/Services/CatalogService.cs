@@ -33,7 +33,6 @@ namespace Chat.Application.Services
 
                 response.EnsureSuccessStatusCode();
                 var productDto = await response.Content.ReadFromJsonAsync<ProductDto>();
-                productDto!.SellerId = Guid.NewGuid(); // заглушка
                 return productDto;
             }
             catch (Exception ex)

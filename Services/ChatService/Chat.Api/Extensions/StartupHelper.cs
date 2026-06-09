@@ -1,5 +1,6 @@
 ﻿using Chat.Api.Configs;
 using Chat.Api.Hubs;
+using Chat.Application;
 using Chat.Application.Interfaces;
 using Chat.Application.Services;
 using Chat.Infrastructure.Persistence;
@@ -91,6 +92,12 @@ namespace Chat.Api.Extensions
             {
                 options.Configuration = configuration.GetConnectionString("Redis");
                 options.InstanceName = "ChatServiceCache";
+            });
+
+            services.AddGrpcClient<UserProfileGrpc.UserProfileGrpcClient>(options =>
+            {
+                var path = configuration.GetSection("GrpcClients:AuthService").Value;
+                options.Address = new Uri(path);
             });
 
             services.AddCors(options =>
