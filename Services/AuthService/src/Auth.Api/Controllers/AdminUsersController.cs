@@ -1,11 +1,13 @@
 ﻿using Auth.Api.Contracts.Users;
 using Auth.Application.UseCases.Users;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Auth.Api.Controllers;
 
 [ApiController]
 [Route("admin/users")]
+[Authorize(Roles = "Admin")]
 public sealed class AdminUsersController : ControllerBase
 {
     [HttpPost]
