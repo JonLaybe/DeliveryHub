@@ -6,7 +6,7 @@ import { getMessagesForConversationAsync } from "../../services/chat-service/Cha
 import { useChatSignalR } from "../../services/chat-service/SignalRService";
 import "./ChatWindow.scss";
 
-const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
+const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId, sellerPhoto }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { connection, joinConversation, sendMessage } = useChatSignalR();
   const location = useLocation();
@@ -197,10 +197,14 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversation, currentUserId }) => {
     <div className="chat-window">
       <div className="chat-header">
         <div className="chat-header-avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+          {sellerPhoto ? (
+            <img src={sellerPhoto} alt={conversationName} />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          )}
           {isOnline && <div className="online-indicator-header"></div>}
         </div>
         <div className="chat-header-info">

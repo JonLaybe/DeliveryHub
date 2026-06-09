@@ -142,12 +142,16 @@ const ChatList = () => {
               onClick={() => handleSelect(conv)}
             >
               <div className="chat-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+			    {conv.sellerPhoto ? (
+				  <img src={conv.sellerPhoto} alt={conv.name} />
+                  ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
-                </svg>
-                {conv.isOnline && <div className="online-indicator"></div>}
-              </div>
+                  </svg>
+            )}
+            {conv.isOnline && <div className="online-indicator"></div>}
+            </div>
               <div className="chat-info">
                 <div className="chat-name">
                   <span>{conv.name || `Чат ${index + 1}`}</span>

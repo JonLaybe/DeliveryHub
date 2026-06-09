@@ -4,12 +4,15 @@ import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import type { Conversation } from "../../models/chat-service/Conversation";
 import { getCurrentUser } from "../../services/auth-service/AuthService";
+import { getUserConversationsAsync } from "../../services/chat-service/ChatService";
 import "./ChatComponent.scss";
 
 const ChatComponent = () => {
   const { conversationId } = useParams();
   const location = useLocation();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
 
   useEffect(() => { 
     window.scrollTo(0, 0);
@@ -27,14 +30,34 @@ const ChatComponent = () => {
     loadUser();
   }, []);
   
-  const productName = (location.state as any)?.productName ?? "";
-
-  const selectedConversation = conversationId
-    ? ({ id: conversationId } as Conversation)
-    : null;
-	
-  if (!currentUserId) {
-    return <div className="chat-container">Загрузка пользователя...</div>;
+  useEffect(() => {
+    if (!conversationId || !currentUserId) return;
+    
+    const loadConversation = async () => {
+      setIsLoadingConversation(true);
+      try {
+        const conversations = await getUserConversationsAsync();
+        const found = conversations.find(c => c.id === conversationId);
+        
+        if (found) {
+          setSelectedConversation(found);
+        } else {
+          setSelectedConversation(null);
+          console.warn("Conversation not found:", conversationId);
+        }
+      } catch (error) {
+        console.error("Failed to load conversation:", error);
+        setSelectedConversation(null);
+      } finally {
+        setIsLoadingConversation(false);
+      }
+    };
+    
+    loadConversation();
+  }, [conversationId, currentUserId]);
+  
+  if (!currentUserId || isLoadingConversation) {
+    return <div className="chat-container">Загрузка...</div>;
   }
 
   return (
@@ -47,6 +70,7 @@ const ChatComponent = () => {
             key={selectedConversation.id}
             conversation={selectedConversation}
             currentUserId={currentUserId}
+            sellerPhoto={selectedConversation.sellerPhoto}
           />
         ) : (
           <div className="chat-placeholder">
