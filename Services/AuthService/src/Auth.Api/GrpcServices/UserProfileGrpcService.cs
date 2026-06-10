@@ -2,6 +2,7 @@
 using Auth.Domain.Entities;
 using Grpc.Core;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Threading.Tasks;
 
 namespace Auth.Api.GrpcServices;
@@ -26,6 +27,8 @@ public sealed class UserProfileGrpcService : UserProfileGrpc.UserProfileGrpcBase
                 "UserId is required."));
         }
 
+        context.CancellationToken.ThrowIfCancellationRequested();
+
         var user = await _userManager.FindByIdAsync(request.UserId);
 
         if (user is null)
@@ -35,6 +38,56 @@ public sealed class UserProfileGrpcService : UserProfileGrpc.UserProfileGrpcBase
                 "User was not found."));
         }
 
+        return await CreateUserProfileGrpcResponseAsync(user);
+    }
+
+    public override async Task<GetUserProfilesByIdsResponse> GetUserProfilesByIds(
+        GetUserProfilesByIdsRequest request,
+        ServerCallContext context)
+    {
+        if (request.UserIds.Count == 0)
+        {
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "UserIds collection is required."));
+        }
+
+        var uniqueUserIds = request.UserIds
+            .Where(userId => !string.IsNullOrWhiteSpace(userId))
+            .Select(userId => userId.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (uniqueUserIds.Count == 0)
+        {
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "UserIds collection contains no valid values."));
+        }
+
+        var response = new GetUserProfilesByIdsResponse();
+
+        foreach (var userId in uniqueUserIds)
+        {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+            {
+                response.NotFoundUserIds.Add(userId);
+                continue;
+            }
+
+            var profile = await CreateUserProfileGrpcResponseAsync(user);
+            response.Profiles.Add(profile);
+        }
+
+        return response;
+    }
+
+    private async Task<UserProfileGrpcResponse> CreateUserProfileGrpcResponseAsync(User user)
+    {
         var roles = await _userManager.GetRolesAsync(user);
 
         var response = new UserProfileGrpcResponse

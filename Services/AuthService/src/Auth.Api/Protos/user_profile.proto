@@ -6,10 +6,21 @@ package auth;
 
 service UserProfileGrpc {
   rpc GetUserProfileById (GetUserProfileByIdRequest) returns (UserProfileGrpcResponse);
+
+  rpc GetUserProfilesByIds (GetUserProfilesByIdsRequest) returns (GetUserProfilesByIdsResponse);
 }
 
 message GetUserProfileByIdRequest {
   string user_id = 1;
+}
+
+message GetUserProfilesByIdsRequest {
+  repeated string user_ids = 1;
+}
+
+message GetUserProfilesByIdsResponse {
+  repeated UserProfileGrpcResponse profiles = 1;
+  repeated string not_found_user_ids = 2;
 }
 
 message UserProfileGrpcResponse {
