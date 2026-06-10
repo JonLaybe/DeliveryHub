@@ -7,12 +7,18 @@ import box_grocery_basket from '../../../assets/box_grocery_basket.svg';
 import profile_icon from '../../../assets/profile_icon.svg';
 import AuthModelComponent from "../../../components/auth/dialogs/AuthModelComponent";
 import { isAuthentication, onAuthChanged } from "../../../services/auth-service/AuthService";
+import { getItemGroceryBasketCount } from "../../../services/grocery-basket/GroceryBasketService"; 
 
 const HeaderComponent: FC = () => {
     const [isOpenModelLogin, setIsOpenModelLogin] = useState(false);
     const [isAuthed, setIsAuthed] = useState(isAuthentication());
+    const [basketCount, setBasketCount] = useState(getItemGroceryBasketCount());
 
     useEffect(() => {
+        window.addEventListener('basketStorageChanged', () => {
+            setBasketCount(getItemGroceryBasketCount());
+        });
+
         const sync = () => setIsAuthed(isAuthentication());
         sync();
         const unsubscribe = onAuthChanged(sync);
@@ -38,6 +44,7 @@ const HeaderComponent: FC = () => {
                         <img src={box_grocery_basket} alt="grocery_basket" />
                     </div>
                 </Link>
+                {basketCount > 0 && <span className="basket-count">{basketCount}</span>}
                 {
                     isAuthed ?
                         <Link to="/profile" className="rest_default_link">

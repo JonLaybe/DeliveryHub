@@ -6,11 +6,13 @@ import type { ProductDto } from "../../models/catalog-service/ProductDto";
 import { CATALOG_BASE_URL } from "../../constants/EndpointConstants";
 import { useNavigate } from "react-router-dom";
 import { createConversationAsync, getUserConversationsAsync } from "../../services/chat-service/ChatService";
+import { addGroceryBasket, isProductInGroceryBasket } from "../../services/grocery-basket/GroceryBasketService";
 
 const ProductPageComponent = () => {
     const { id } = useParams();
     const [product, setProduct] = useState<ProductDto | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
+    const [isProductInTheBasket, setIsProductInTheBasket] = useState(isProductInGroceryBasket(id || ''));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,13 +29,25 @@ const ProductPageComponent = () => {
 
     const imgMain = product?.images?.filter(x => x.type === 0)[0].url ?? '';
     const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
+
+    const handleAddToBasket = () => {
+        if (isProductInTheBasket)
+        {
+            navigate('/grocery_basket');
+        }
+        else
+        {
+            setIsProductInTheBasket(true);
+            addGroceryBasket(product!)
+        }
+    }
     
     const handleWriteSeller = async () => {
         if (!product?.id) return;
         
         setIsCreatingChat(true);
         try {
-            const conversationId = await createConversationAsync(product.id);
+            const conversationId = await createConversationAsync(product.id.toString());
             
             const conversations = await getUserConversationsAsync();
             const newConversation = conversations.find(c => c.id === conversationId);
@@ -83,8 +97,9 @@ const ProductPageComponent = () => {
                         <div className="product-remain">Осталось {product?.availableQty} шт.</div>
                     </div>
                     <div className="action-block">
-                        <button className="default-button">Добавить в корзину</button>
-                        <button className="default-button buy-btn">Купить сейчас</button>
+                        <button className="default-button" onClick={handleAddToBasket} disabled={(product?.availableQty ?? 0) <= 0}>
+                            {isProductInTheBasket ? "В корзине" : "Добавить в корзину"}
+                        </button>
                         <button className="default-button" onClick={handleWriteSeller} disabled={isCreatingChat}>
                             {isCreatingChat ? "Создание чата..." : "Написать продавцу"}
                         </button>

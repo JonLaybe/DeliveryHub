@@ -40,5 +40,20 @@
                 cursor: pointer;
             }
         }
+
+        .basket-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ff0000;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            margin-left: -25px;
+            margin-top: 20px;
+            z-index: 1;
+        }
     }
 }

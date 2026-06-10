@@ -4,8 +4,8 @@ import RoutingComponent from './components/routing/RoutingComponent'
 import { BrowserRouter } from 'react-router-dom'
 import { SearchProvider } from './context/SearchContext'
 import ReactModal from 'react-modal'
-import FiltersComponent from './components/filters/FiltersComponent'
 import { SignalRProvider } from "./context/SignalRContext";
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   ReactModal.setAppElement('#root');
@@ -14,6 +14,7 @@ function App() {
 	<SignalRProvider>
       <BrowserRouter>
         <SearchProvider>
+          <Toaster position="bottom-right"/>
           <HeaderComponent />
           <div className='wrapper'>
             <RoutingComponent />

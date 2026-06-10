@@ -4,6 +4,7 @@ import './AuthModelComponent.scss';
 import { useForm } from "react-hook-form";
 import type { LoginRequestDto, Password } from "../../../models/auth-service/LoginRequestDto";
 import { loginAsync, registerAsync } from "../../../services/auth-service/AuthService";                                                   
+import { toast } from "react-hot-toast";
 
 interface AuthModelProps {
     value: boolean;
@@ -51,6 +52,7 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
         await loginAsync(dataLoginRequest).then(() => closeModal())
         .catch((e) => {
             console.log('>Login failed', e);
+            toast.error('Login failed');
             throw 'Login failed';
         });
     };
