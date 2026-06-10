@@ -46,6 +46,9 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
     private static readonly Guid SellerBooksId =
         Guid.Parse("10000000-0000-0000-0000-000000000004");
 
+    private static readonly Guid AdminUserId =
+        Guid.Parse("10000000-0000-0000-0000-000000000000");
+
     public DatabaseInitializer(
         AuthDbContext db,
         IConfiguration cfg,
@@ -101,6 +104,9 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
         _logger.LogInformation("Seeding roles...");
         await SeedRolesAsync(ct);
+
+        _logger.LogInformation("Seeding admin user...");
+        await SeedAdminUserAsync(ct);
 
         _logger.LogInformation("Seeding default sellers...");
         await SeedDefaultSellersAsync(ct);
@@ -237,6 +243,69 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
         );
+    }
+
+    private async Task SeedAdminUserAsync(CancellationToken ct)
+    {
+        const string adminEmail = "admin@deliveryhub.local";
+        const string adminPassword = "Admin123!";
+
+        var now = DateTimeOffset.UtcNow;
+
+        var existingUser = await _userManager.FindByIdAsync(AdminUserId.ToString());
+
+        if (existingUser is null)
+        {
+            existingUser = await _userManager.FindByEmailAsync(adminEmail);
+        }
+
+        if (existingUser is null)
+        {
+            var user = new User
+            {
+                Id = AdminUserId,
+                Email = adminEmail,
+                UserName = adminEmail,
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                Status = UserStatus.Active,
+                CreatedAt = now,
+                UpdatedAt = now,
+                FirstName = "System",
+                LastName = "Administrator"
+            };
+
+            var createResult = await _userManager.CreateAsync(user, adminPassword);
+
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join(
+                    "; ",
+                    createResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+
+                throw new InvalidOperationException(
+                    $"Failed to create admin user '{adminEmail}'. Errors: {errors}");
+            }
+
+            existingUser = user;
+        }
+
+        var isInAdminRole = await _userManager.IsInRoleAsync(existingUser, "Admin");
+
+        if (!isInAdminRole)
+        {
+            var addRoleResult = await _userManager.AddToRoleAsync(existingUser, "Admin");
+
+            if (!addRoleResult.Succeeded)
+            {
+                var errors = string.Join(
+                    "; ",
+                    addRoleResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+
+                throw new InvalidOperationException(
+                    $"Failed to add role Admin to user '{adminEmail}'. Errors: {errors}");
+            }
+        }
     }
 
     private async Task SeedDefaultSellersAsync(CancellationToken ct)

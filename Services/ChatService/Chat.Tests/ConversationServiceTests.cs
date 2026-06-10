@@ -15,6 +15,7 @@ namespace Chat.Tests
         private readonly Mock<IMessageService> _messageServiceMock;
         private readonly Mock<IOnlineStatusService> _onlineStatusServiceMock;
         private readonly Mock<ICatalogService> _catalogServiceMock;
+        private readonly Mock<IUserProfileService> _userProfileService;
         private readonly Mock<ILogger<ConversationService>> _loggerMock;
 
         private readonly IConversationService _service;
@@ -26,12 +27,14 @@ namespace Chat.Tests
             _messageServiceMock = new Mock<IMessageService>();
             _onlineStatusServiceMock = new Mock<IOnlineStatusService>();
             _catalogServiceMock = new Mock<ICatalogService>();
+            _userProfileService = new Mock<IUserProfileService>();
 
             _service = new ConversationService(
                 _repositoryMock.Object,
                 _messageServiceMock.Object,
                 _onlineStatusServiceMock.Object,
                 _catalogServiceMock.Object,
+                _userProfileService.Object,
                 _loggerMock.Object);
         }
 
@@ -136,6 +139,92 @@ namespace Chat.Tests
             Assert.Equal(existingConversation.Id, result);
 
             _repositoryMock.Verify(r => r.AddAsync(It.IsAny<Conversation>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetUserConversationsAsync_ShouldReturnEmptyList_WhenUserHasNoConversations()
+        {
+            var userId = Guid.NewGuid();
+
+            _repositoryMock
+                .Setup(r => r.GetForUserAsync(userId))
+                .ReturnsAsync([]);
+
+            var result = await _service.GetUserConversationsAsync(userId);
+
+            Assert.Empty(result);
+            _messageServiceMock.Verify(m => m.GetConversationStatsAsync(It.IsAny<List<Guid>>(), It.IsAny<Guid>()), Times.Never);
+            _onlineStatusServiceMock.Verify(o => o.IsOnlineAsync(It.IsAny<List<Guid>>()), Times.Never);
+            _userProfileService.Verify(u => u.GetUserInfosByIdsAsync(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetUserConversationsAsync_ShouldReturnConversations_WithCorrectData()
+        {
+            var userId = Guid.NewGuid();
+            var sellerId = Guid.NewGuid();
+            var conversationId = Guid.NewGuid();
+            var lastMessageAt = DateTime.UtcNow;
+
+            var conversations = new List<Conversation>
+            {
+                new() {
+                    Id = conversationId,
+                    BuyerId = userId,
+                    SellerId = sellerId,
+                    Status = ConversationStatus.Open,
+                    CreatedAt = DateTime.UtcNow,
+                    LastMessageAt = lastMessageAt
+                }
+            };
+
+            var stats = new Dictionary<Guid, (int UnreadCount, string LastMessage)>
+            {
+                [conversationId] = (3, "Hello!")
+            };
+
+            var onlineStatuses = new Dictionary<Guid, bool>
+            {
+                [sellerId] = true
+            };
+
+            var userProfiles = new Dictionary<Guid, (string SellerName, string SellerPhoto)>
+            {
+                [sellerId] = ("John Doe", "http://photo.com/john.jpg")
+            };
+
+            _repositoryMock
+                .Setup(r => r.GetForUserAsync(userId))
+                .ReturnsAsync(conversations);
+
+            _messageServiceMock
+                .Setup(m => m.GetConversationStatsAsync(
+                    It.Is<List<Guid>>(ids => ids.Contains(conversationId)),
+                    userId))
+                .ReturnsAsync(stats);
+
+            _onlineStatusServiceMock
+                .Setup(o => o.IsOnlineAsync(It.Is<List<Guid>>(ids => ids.Contains(sellerId))))
+                .ReturnsAsync(onlineStatuses);
+
+            _userProfileService
+                .Setup(u => u.GetUserInfosByIdsAsync(
+                    It.Is<List<Guid>>(ids => ids.Contains(sellerId)),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfiles);
+
+            var result = await _service.GetUserConversationsAsync(userId);
+
+            Assert.Single(result);
+            var conversation = result.First();
+            Assert.Equal(conversationId, conversation.ConversationId);
+            Assert.Equal(sellerId, conversation.SellerId);
+            Assert.Equal("John Doe", conversation.SellerName);
+            Assert.Equal("http://photo.com/john.jpg", conversation.SellerPhoto);
+            Assert.Equal(3, conversation.UnreadMessagesCount);
+            Assert.Equal("Hello!", conversation.LastMessage);
+            Assert.Equal(lastMessageAt, conversation.LastMessageAt);
+            Assert.True(conversation.IsOnline);
         }
     }
 }

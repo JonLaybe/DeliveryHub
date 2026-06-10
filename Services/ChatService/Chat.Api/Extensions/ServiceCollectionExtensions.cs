@@ -14,6 +14,7 @@ namespace Chat.Api.Extensions
             services.AddScoped<IConversationService, ConversationService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IOnlineStatusService, OnlineStatusService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
 
             services.AddSingleton<IJwksManager, JwksManager>();
 

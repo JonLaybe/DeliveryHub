@@ -15,6 +15,7 @@ export async function getUserConversationsAsync(): Promise<Conversation[]> {
   return data.map((c) => ({
     id: c.conversationId,
     name: c.sellerName,
+	sellerPhoto: c.sellerPhoto,
     lastMessage: c.lastMessage,
 	lastMessageAt: c.lastMessageAt,
     isOnline: c.isOnline,
