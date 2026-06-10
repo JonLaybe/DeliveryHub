@@ -3,6 +3,7 @@ using Auth.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace Auth.Api.Controllers;
@@ -13,62 +14,115 @@ namespace Auth.Api.Controllers;
 public sealed class ProfileController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
+    private readonly ILogger<ProfileController> _logger;
 
-    public ProfileController(UserManager<User> userManager)
+    public ProfileController(
+        UserManager<User> userManager,
+        ILogger<ProfileController> logger)
     {
         _userManager = userManager;
+        _logger = logger;
     }
 
     [HttpGet("me")]
     public async Task<ActionResult<UserProfileResponse>> GetMyProfile()
     {
-        var user = await _userManager.GetUserAsync(User);
+        _logger.LogInformation("Profile request received for current user");
 
-        if (user is null)
+        try
         {
-            return Unauthorized();
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is null)
+            {
+                _logger.LogWarning("Profile request failed. Current user was not found");
+
+                return Unauthorized();
+            }
+
+            var response = await CreateUserProfileResponseAsync(user);
+
+            _logger.LogInformation(
+                "Profile successfully returned for user {UserId}",
+                user.Id);
+
+            return Ok(response);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while getting current user profile");
 
-        var response = await CreateUserProfileResponseAsync(user);
-
-        return Ok(response);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpPut("me")]
     public async Task<ActionResult<UserProfileResponse>> UpdateMyProfile(
         [FromBody] UpdateMyProfileRequest request)
     {
-        var user = await _userManager.GetUserAsync(User);
+        _logger.LogInformation("Profile update request received for current user");
 
-        if (user is null)
+        try
         {
-            return Unauthorized();
-        }
+            var user = await _userManager.GetUserAsync(User);
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.PhotoUrl = request.PhotoUrl;
-        user.BirthDate = request.BirthDate;
-        user.PhoneNumber = request.PhoneNumber;
-        user.Country = request.Country;
-        user.City = request.City;
-        user.UpdatedAt = DateTimeOffset.UtcNow;
-
-        var result = await _userManager.UpdateAsync(user);
-
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
+            if (user is null)
             {
-                ModelState.AddModelError(error.Code, error.Description);
+                _logger.LogWarning("Profile update failed. Current user was not found");
+
+                return Unauthorized();
             }
 
-            return ValidationProblem(ModelState);
+            _logger.LogInformation(
+                "Profile update started for user {UserId}",
+                user.Id);
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.PhotoUrl = request.PhotoUrl;
+            user.BirthDate = request.BirthDate;
+            user.PhoneNumber = request.PhoneNumber;
+            user.Country = request.Country;
+            user.City = request.City;
+            user.UpdatedAt = DateTimeOffset.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning(
+                    "Profile update failed for user {UserId}. Errors count: {ErrorsCount}",
+                    user.Id,
+                    result.Errors.Count());
+
+                foreach (var error in result.Errors)
+                {
+                    _logger.LogWarning(
+                        "Profile update validation error for user {UserId}. Code: {Code}, Description: {Description}",
+                        user.Id,
+                        error.Code,
+                        error.Description);
+
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+
+                return ValidationProblem(ModelState);
+            }
+
+            var response = await CreateUserProfileResponseAsync(user);
+
+            _logger.LogInformation(
+                "Profile successfully updated for user {UserId}",
+                user.Id);
+
+            return Ok(response);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating current user profile");
 
-        var response = await CreateUserProfileResponseAsync(user);
-
-        return Ok(response);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     private async Task<UserProfileResponse> CreateUserProfileResponseAsync(User user)

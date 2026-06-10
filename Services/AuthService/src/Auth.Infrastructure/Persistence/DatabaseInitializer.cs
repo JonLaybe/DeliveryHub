@@ -1,14 +1,16 @@
 ﻿using Auth.Domain.Entities;
+using Auth.Infrastructure.Persistence.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Auth.Infrastructure.Persistence.Entities;
 
 namespace Auth.Infrastructure.Persistence;
 
@@ -26,7 +28,7 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
     private readonly RoleManager<Role> _roleManager;
 
     private static readonly Guid AdminRoleId =
-    Guid.Parse("00000000-0000-0000-0000-000000000001");
+        Guid.Parse("00000000-0000-0000-0000-000000000001");
 
     private static readonly Guid CustomerRoleId =
         Guid.Parse("00000000-0000-0000-0000-000000000002");
@@ -65,54 +67,100 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
     public async Task InitializeAsync(IHostEnvironment env, CancellationToken ct = default)
     {
-        var applyMigrationsRaw = _cfg["APPLY_MIGRATIONS"];
-        var applyMigrations = string.IsNullOrWhiteSpace(applyMigrationsRaw)
-            ? false
-            : bool.TryParse(applyMigrationsRaw, out var v) && v;
+        _logger.LogInformation(
+            "Database initialization started. Environment: {EnvironmentName}",
+            env.EnvironmentName);
 
-        if (!applyMigrations && !env.IsDevelopment())
+        try
         {
-            _logger.LogInformation("Skipping migrations (APPLY_MIGRATIONS=false and not Development).");
-            return;
+            var applyMigrationsRaw = _cfg["APPLY_MIGRATIONS"];
+            var applyMigrations = string.IsNullOrWhiteSpace(applyMigrationsRaw)
+                ? false
+                : bool.TryParse(applyMigrationsRaw, out var v) && v;
+
+            _logger.LogInformation(
+                "Database initialization settings loaded. APPLY_MIGRATIONS: {ApplyMigrations}",
+                applyMigrations);
+
+            if (!applyMigrations && !env.IsDevelopment())
+            {
+                _logger.LogInformation(
+                    "Skipping migrations and seed data. APPLY_MIGRATIONS=false and environment is not Development.");
+
+                return;
+            }
+
+            const int maxAttempts = 15;
+            var delay = TimeSpan.FromSeconds(1);
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    _logger.LogInformation(
+                        "Applying migrations. Attempt {Attempt}/{MaxAttempts}",
+                        attempt,
+                        maxAttempts);
+
+                    await _db.Database.MigrateAsync(ct);
+
+                    _logger.LogInformation("Migrations applied successfully or database is already up to date.");
+                    break;
+                }
+                catch (Exception ex) when (IsDbNotReady(ex) && attempt < maxAttempts)
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "Database is not ready yet. Attempt {Attempt}/{MaxAttempts}. Waiting {DelaySeconds} seconds before retry.",
+                        attempt,
+                        maxAttempts,
+                        delay.TotalSeconds);
+
+                    await Task.Delay(delay, ct);
+
+                    var nextSeconds = Math.Min(delay.TotalSeconds * 1.5, 10);
+                    delay = TimeSpan.FromSeconds(nextSeconds);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Failed to apply database migrations. Attempt {Attempt}/{MaxAttempts}",
+                        attempt,
+                        maxAttempts);
+
+                    throw;
+                }
+            }
+
+            _logger.LogInformation("Seeding roles started.");
+            await SeedRolesAsync(ct);
+            _logger.LogInformation("Seeding roles completed.");
+
+            _logger.LogInformation("Seeding admin user started.");
+            await SeedAdminUserAsync(ct);
+            _logger.LogInformation("Seeding admin user completed.");
+
+            _logger.LogInformation("Seeding default sellers started.");
+            await SeedDefaultSellersAsync(ct);
+            _logger.LogInformation("Seeding default sellers completed.");
+
+            _logger.LogInformation("Seeding service clients started.");
+            await SeedServiceClientsAsync(ct);
+            _logger.LogInformation("Seeding service clients completed.");
+
+            _logger.LogInformation("Database initialization completed successfully.");
         }
-
-        const int maxAttempts = 15;
-        var delay = TimeSpan.FromSeconds(1);
-
-        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        catch (OperationCanceledException)
         {
-            try
-            {
-                _logger.LogInformation("Applying migrations... (attempt {Attempt}/{Max})", attempt, maxAttempts);
-                await _db.Database.MigrateAsync(ct);
-
-                _logger.LogInformation("Migrations applied (or already up to date).");
-                break;
-            }
-            catch (Exception ex) when (IsDbNotReady(ex) && attempt < maxAttempts)
-            {
-                _logger.LogWarning(ex,
-                    "Database is not ready yet (attempt {Attempt}/{Max}). Waiting {Delay}...",
-                    attempt, maxAttempts, delay);
-
-                await Task.Delay(delay, ct);
-
-                var nextSeconds = Math.Min(delay.TotalSeconds * 1.5, 10);
-                delay = TimeSpan.FromSeconds(nextSeconds);
-            }
+            _logger.LogWarning("Database initialization was cancelled.");
+            throw;
         }
-
-        _logger.LogInformation("Seeding roles...");
-        await SeedRolesAsync(ct);
-
-        _logger.LogInformation("Seeding admin user...");
-        await SeedAdminUserAsync(ct);
-
-        _logger.LogInformation("Seeding default sellers...");
-        await SeedDefaultSellersAsync(ct);
-
-        _logger.LogInformation("Seeding service clients...");
-        await SeedServiceClientsAsync(ct);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Database initialization failed.");
+            throw;
+        }
     }
 
     private static bool IsDbNotReady(Exception ex)
@@ -175,8 +223,20 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             var exists = await _db.Roles
                 .AnyAsync(x => x.NormalizedName == role.NormalizedName, ct);
 
-            if (!exists)
-                _db.Roles.Add(role);
+            if (exists)
+            {
+                _logger.LogInformation(
+                    "Role already exists. Role: {RoleName}",
+                    role.Name);
+
+                continue;
+            }
+
+            _db.Roles.Add(role);
+
+            _logger.LogInformation(
+                "Role added to seed. Role: {RoleName}",
+                role.Name);
         }
 
         await _db.SaveChangesAsync(ct);
@@ -192,22 +252,50 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             return;
         }
 
+        _logger.LogInformation(
+            "Service clients seed configuration loaded. Count: {Count}",
+            clients.Count);
+
         foreach (var item in clients)
         {
+            if (string.IsNullOrWhiteSpace(item.ClientId))
+            {
+                _logger.LogError("Service client seed failed. ClientId is empty.");
+
+                throw new InvalidOperationException("Service client ClientId is required.");//TODO:убрать, когда перестанет валиться
+            }
+
             var exists = await _db.ServiceClients
                 .AnyAsync(x => x.ClientId == item.ClientId, ct);
 
             if (exists)
-                continue;
+            {
+                _logger.LogInformation(
+                    "Service client already exists. ClientId: {ClientId}",
+                    item.ClientId);
 
-            if (string.IsNullOrWhiteSpace(item.ClientId))
-                throw new InvalidOperationException("Service client ClientId is required.");//TODO:убрать, когда перестанет валиться
+                continue;
+            }
 
             if (string.IsNullOrWhiteSpace(item.ClientSecret))
+            {
+                _logger.LogError(
+                    "Service client seed failed. ClientSecret is empty for ClientId: {ClientId}",
+                    item.ClientId);
+
                 throw new InvalidOperationException($"ClientSecret is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+            }
 
             if (string.IsNullOrWhiteSpace(item.AllowedScopes))
+            {
+                _logger.LogError(
+                    "Service client seed failed. AllowedScopes is empty for ClientId: {ClientId}",
+                    item.ClientId);
+
                 throw new InvalidOperationException($"AllowedScopes is required for service client '{item.ClientId}'.");//TODO:убрать, когда перестанет валиться
+            }
+
+            var normalizedScopes = NormalizeScopes(item.AllowedScopes);
 
             _db.ServiceClients.Add(new ServiceClientEntity
             {
@@ -216,8 +304,13 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                 SecretHash = Sha256Hex(item.ClientSecret),
                 IsActive = true,
                 CreatedAt = DateTimeOffset.UtcNow,
-                AllowedScopes = NormalizeScopes(item.AllowedScopes)
+                AllowedScopes = normalizedScopes
             });
+
+            _logger.LogInformation(
+                "Service client added to seed. ClientId: {ClientId}, AllowedScopes: {AllowedScopes}",
+                item.ClientId,
+                normalizedScopes);
         }
 
         await _db.SaveChangesAsync(ct);
@@ -261,6 +354,10 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
         if (existingUser is null)
         {
+            _logger.LogInformation(
+                "Admin user does not exist. Creating admin user with email {Email}",
+                adminEmail);
+
             var user = new User
             {
                 Id = AdminUserId,
@@ -283,17 +380,38 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                     "; ",
                     createResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
 
+                _logger.LogError(
+                    "Failed to create admin user {Email}. Errors: {Errors}",
+                    adminEmail,
+                    errors);
+
                 throw new InvalidOperationException(
                     $"Failed to create admin user '{adminEmail}'. Errors: {errors}");
             }
 
+            _logger.LogInformation(
+                "Admin user created successfully. UserId: {UserId}, Email: {Email}",
+                user.Id,
+                user.Email);
+
             existingUser = user;
+        }
+        else
+        {
+            _logger.LogInformation(
+                "Admin user already exists. UserId: {UserId}, Email: {Email}",
+                existingUser.Id,
+                existingUser.Email);
         }
 
         var isInAdminRole = await _userManager.IsInRoleAsync(existingUser, "Admin");
 
         if (!isInAdminRole)
         {
+            _logger.LogInformation(
+                "Adding Admin role to user {UserId}",
+                existingUser.Id);
+
             var addRoleResult = await _userManager.AddToRoleAsync(existingUser, "Admin");
 
             if (!addRoleResult.Succeeded)
@@ -302,9 +420,24 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                     "; ",
                     addRoleResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
 
+                _logger.LogError(
+                    "Failed to add Admin role to user {UserId}. Errors: {Errors}",
+                    existingUser.Id,
+                    errors);
+
                 throw new InvalidOperationException(
                     $"Failed to add role Admin to user '{adminEmail}'. Errors: {errors}");
             }
+
+            _logger.LogInformation(
+                "Admin role added successfully to user {UserId}",
+                existingUser.Id);
+        }
+        else
+        {
+            _logger.LogInformation(
+                "Admin user already has Admin role. UserId: {UserId}",
+                existingUser.Id);
         }
     }
 
@@ -381,6 +514,10 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
 
             if (existingUser is null)
             {
+                _logger.LogInformation(
+                    "Default seller does not exist. Creating seller with email {Email}",
+                    seller.Email);
+
                 var user = new User
                 {
                     Id = seller.Id,
@@ -408,11 +545,28 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                         "; ",
                         createResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
 
+                    _logger.LogError(
+                        "Failed to create default seller {Email}. Errors: {Errors}",
+                        seller.Email,
+                        errors);
+
                     throw new InvalidOperationException(
                         $"Failed to create default seller '{seller.Email}'. Errors: {errors}");
                 }
 
+                _logger.LogInformation(
+                    "Default seller created successfully. UserId: {UserId}, Email: {Email}",
+                    user.Id,
+                    user.Email);
+
                 existingUser = user;
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Default seller already exists. UserId: {UserId}, Email: {Email}",
+                    existingUser.Id,
+                    existingUser.Email);
             }
 
             var profileWasChanged = false;
@@ -463,6 +617,11 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
             {
                 existingUser.UpdatedAt = now;
 
+                _logger.LogInformation(
+                    "Updating default seller profile. UserId: {UserId}, Email: {Email}",
+                    existingUser.Id,
+                    existingUser.Email);
+
                 var updateResult = await _userManager.UpdateAsync(existingUser);
 
                 if (!updateResult.Succeeded)
@@ -471,15 +630,29 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                         "; ",
                         updateResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
 
+                    _logger.LogError(
+                        "Failed to update default seller profile {Email}. Errors: {Errors}",
+                        seller.Email,
+                        errors);
+
                     throw new InvalidOperationException(
                         $"Failed to update default seller profile '{seller.Email}'. Errors: {errors}");
                 }
+
+                _logger.LogInformation(
+                    "Default seller profile updated successfully. UserId: {UserId}, Email: {Email}",
+                    existingUser.Id,
+                    existingUser.Email);
             }
 
             var isInSellerRole = await _userManager.IsInRoleAsync(existingUser, "Seller");
 
             if (!isInSellerRole)
             {
+                _logger.LogInformation(
+                    "Adding Seller role to user {UserId}",
+                    existingUser.Id);
+
                 var addRoleResult = await _userManager.AddToRoleAsync(existingUser, "Seller");
 
                 if (!addRoleResult.Succeeded)
@@ -488,9 +661,24 @@ public sealed class DatabaseInitializer : IDatabaseInitializer
                         "; ",
                         addRoleResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
 
+                    _logger.LogError(
+                        "Failed to add Seller role to user {UserId}. Errors: {Errors}",
+                        existingUser.Id,
+                        errors);
+
                     throw new InvalidOperationException(
                         $"Failed to add role Seller to user '{seller.Email}'. Errors: {errors}");
                 }
+
+                _logger.LogInformation(
+                    "Seller role added successfully to user {UserId}",
+                    existingUser.Id);
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Default seller already has Seller role. UserId: {UserId}",
+                    existingUser.Id);
             }
         }
     }

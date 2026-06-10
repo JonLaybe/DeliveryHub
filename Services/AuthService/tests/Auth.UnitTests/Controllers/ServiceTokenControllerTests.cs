@@ -7,6 +7,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -253,7 +254,11 @@ public sealed class ServiceTokenControllerTests
             AccessTokenMinutes = 15
         };
 
-        return new ServiceTokenController(db, tokenService, jwtOptions);
+        return new ServiceTokenController(
+            db,
+            tokenService,
+            jwtOptions,
+            NullLogger<ServiceTokenController>.Instance);
     }
 
     private static string Sha256Hex(string value)
