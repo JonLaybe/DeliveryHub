@@ -22,11 +22,12 @@ namespace Catalog.Infrastructure.Messaging.Consumers
                 .Where(x => order.Products.Select(prd => prd.Id).Contains(x.ProductId))
                 .ToListAsync();
 
-            foreach (var item in productsOnStock)
+            foreach (var stock in productsOnStock)
             {
-                item.ReservedQty++;
+                var orderedProd = order.Products.First(x => x.Id == stock.ProductId);
+                stock.TotalQty -= orderedProd.Quantity;
 
-                await _stockRepository.UpdateAsync(item, default);
+                await _stockRepository.UpdateAsync(stock, default);
             }
         }
     }
