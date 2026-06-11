@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, updateProfileAsync } from "../../../services/auth-service/AuthService";
 import type { UserDto, UpdateUserDto } from "../../../models/auth-service/UserDto";
@@ -7,7 +7,6 @@ import "./ProfileEditComponent.scss";
 
 const ProfileEditComponent: FC = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState<UserDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -28,7 +27,6 @@ const ProfileEditComponent: FC = () => {
             try {
                 setLoading(true);
                 const userData = await getCurrentUser(true);
-                setUser(userData);
                 setFormData({
                     firstName: userData.firstName || "",
                     lastName: userData.lastName || "",
@@ -38,17 +36,21 @@ const ProfileEditComponent: FC = () => {
                     city: userData.city || "",
                     photoUrl: userData.photoUrl || ""
                 });
+                setError(null);
             } catch (err) {
                 console.error(err);
-                setError("Не удалось загрузить данные");
+                setError("Не удалось загрузить данные профиля");
+                setTimeout(() => {
+                    navigate("/profile");
+                }, 2000);
             } finally {
                 setLoading(false);
             }
         };
         fetchUser();
-    }, []);
+    }, [navigate]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setSuccess(false);
@@ -90,13 +92,11 @@ const ProfileEditComponent: FC = () => {
         );
     }
 
-    if (error && !user) {
+    if (error) {
         return (
             <div className="profile-edit-container">
                 <div className="error">{error}</div>
-                <button className="btn btn-secondary" onClick={() => navigate("/profile")}>
-                    Назад
-                </button>
+                <div className="loading">Перенаправление...</div>
             </div>
         );
     }
@@ -116,7 +116,7 @@ const ProfileEditComponent: FC = () => {
 
                 {success && (
                     <div className="alert alert-success">
-                        ✅ Данные успешно обновлены! Перенаправление...
+                        ✅ Данные успешно обновлены! Обновляю страницу...
                     </div>
                 )}
 
