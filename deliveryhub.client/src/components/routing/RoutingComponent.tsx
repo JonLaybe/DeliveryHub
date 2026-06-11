@@ -7,6 +7,7 @@ import ProfileComponent from "../auth/profile/ProfileComponent";
 import PrivateRoute from "./PrivateRoute";
 import ChatComponent from "../chat/ChatComponent";
 import PaymentComponent from "../payments/PaymentComponent";
+import ProfileEditComponent from "../auth/profile/ProfileEditComponent";
 
 export default function RoutingComponent() {
     const location = useLocation();
@@ -28,6 +29,11 @@ export default function RoutingComponent() {
             <Route path="/profile" element={
                 <PrivateRoute>
                     <ProfileComponent />
+                </PrivateRoute>
+            } />
+			<Route path="/profile/edit" element={
+                <PrivateRoute>
+                    <ProfileEditComponent  />
                 </PrivateRoute>
             } />
 			<Route path="/chat/:conversationId" element={

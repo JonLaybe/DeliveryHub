@@ -10,3 +10,13 @@ export interface UserDto {
     city: string;
     roles: string[];
 }
+
+export interface UpdateUserDto {
+    firstName?: string | null;
+    lastName?: string | null;
+    photoUrl?: string | null;
+    birthDate?: string | null;
+    phoneNumber?: string | null;
+    country?: string | null;
+    city?: string | null;
+}

@@ -6,6 +6,7 @@ import type { LoginResponseDto } from "../../models/auth-service/LoginResponseDt
 import type { RegisterRequestDto } from "../../models/auth-service/RegisterRequestDto";
 import type { RefreshTokenRequestDto } from "../../models/auth-service/RefreshTokenRequestDto";
 import type { UserDto } from "../../models/auth-service/UserDto";
+import type { UpdateUserDto } from "../../models/auth-service/UserDto";
 
 const TOKEN_STORAGE_KEY = "token";
 const AUTH_CHANGED_EVENT = "auth:changed";
@@ -121,6 +122,13 @@ export function clearTokens() {
 export function onAuthChanged(handler: () => void) {
     window.addEventListener(AUTH_CHANGED_EVENT, handler);
     return () => window.removeEventListener(AUTH_CHANGED_EVENT, handler);
+}
+
+export async function updateProfileAsync(profileData: UpdateUserDto): Promise<UserDto> {
+    const response = await auth_api_authorized.put<UserDto>(AUTH_PROFILE_URL, profileData);
+    _cachedUser = null;
+    _cacheTimestamp = 0;
+    return response.data;
 }
 
 function setResultTokens(loginResponse: LoginResponseDto) {
