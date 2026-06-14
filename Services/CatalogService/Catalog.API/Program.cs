@@ -79,7 +79,8 @@ services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/");
+        var host = builder.Configuration["RabbitMq:Host"];
+        cfg.Host(host, "/");
 
         // Auto-configure endpoints for registered consumers
         //cfg.ConfigureEndpoints(context);
