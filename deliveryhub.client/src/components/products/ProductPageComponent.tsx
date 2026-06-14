@@ -73,7 +73,7 @@ const ProductPageComponent = () => {
             </div>
             <div className="product-content">
                 <div className="media">
-                    <img className="product-image" src={imageUrl} alt={product?.name} />
+                    { imgMain ? <img className="product-image" src={imageUrl} alt={product?.name} /> : ""}
                 </div>
                 <div className="product-details">
                     <div className="product-description">{product?.description}</div>

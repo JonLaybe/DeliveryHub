@@ -57,6 +57,7 @@ services:
       - ../../Services/CatalogService/Catalog.API/Assets/product-images:/app/wwwroot/images
     networks:
       - backend
+      - rabbitmq
 
   mongo:
     image: mongo:7.0
