@@ -13,6 +13,18 @@ namespace OrderService.WebAPI
 
             // Add services to the container.
 
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var basePath = AppContext.BaseDirectory;
+                var xmlFiles = Directory.GetFiles(basePath, "*.xml");
+
+                foreach (var xmlPath in xmlFiles)
+                {
+                    options.IncludeXmlComments(xmlPath);
+                }
+            });
+
+
             builder.Services.AddControllers();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddHttpClient();
@@ -36,6 +48,9 @@ namespace OrderService.WebAPI
 
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
                 using (var scope = app.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;

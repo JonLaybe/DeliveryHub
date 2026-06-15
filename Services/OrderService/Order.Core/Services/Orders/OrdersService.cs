@@ -85,5 +85,14 @@ namespace OrderService.Core.Services.Orders
 
             await this.orderRepository.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task UpdateStateByDateAsync(CancellationToken cancellationToken = default)
+        {
+            var moscowNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+
+            var orders = await this.orderRepository.GetOrdersByStateRelevantAsync(moscowNow, cancellationToken);
+            foreach (var orderId in orders)
+                await this.orderRepository.ChangeOrderStateAsync(orderId, Domain.Enums.Orders.OrderStatus.Completed, cancellationToken);
+        }
     }
 }
