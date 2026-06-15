@@ -18,3 +18,6 @@ export const CATALOGSERVICE_PRODUCT_IMAGE_URL = '/api/catalog/product/image';
 export const CHAT_URL = 'http://localhost:7190';
 export const CONVERSATION_URL = '/api/chat/conversation';
 export const CHAT_HUB_URL = '/hubs/chat';
+
+//Discount
+export const DISCOUNT_URL = 'api/Discounts';

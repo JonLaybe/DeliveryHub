@@ -1,8 +1,9 @@
 .order_details_container {
+    min-height: 250px;
     .order_details__info {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 5px;        
 
         .total_price {
             display: flex;

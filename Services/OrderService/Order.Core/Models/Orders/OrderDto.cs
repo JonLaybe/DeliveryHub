@@ -32,6 +32,11 @@ namespace OrderService.Core.Models.Orders
         public decimal? Discount { get; set; }
 
         /// <summary>
+        /// Product discount
+        /// </summary>
+        public decimal? Discount { get; set; }
+
+        /// <summary>
         /// List products in order.
         /// </summary>
         public IList<ProductDto> Products { get; set; }

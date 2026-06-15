@@ -59,6 +59,7 @@ namespace OrderService.Core.Services.Orders
             {
                 Id = order.Id,
                 CreatedDate = order.CreatedDate,
+                DiscountUsageId = order.DiscountUsageId,
                 Products = order.Products.Select(prd => new Shared.Domain.Entities.RabbitMq.OrderProduct()
                 {
                     Id = prd.ArticleNumber,

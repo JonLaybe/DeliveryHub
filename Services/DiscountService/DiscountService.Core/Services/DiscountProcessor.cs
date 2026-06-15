@@ -143,11 +143,8 @@ namespace DiscountService.Core.Services
             return discountAmount;
         }
 
-        public async Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid productId)
+        public async Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid userId)
         {
-            var discountUsage = await _discountRepository.GetUsageAsync(code, orderAmount, productId);
-            if (discountUsage)
-                throw new KeyNotFoundException($"Discount code '{code}' has already been applied to this product");
             var discount = await _discountRepository.GetByCodeAsync(code);
             if (discount == null)
                 throw new KeyNotFoundException($"Discount code '{code}' not found");
@@ -163,7 +160,7 @@ namespace DiscountService.Core.Services
                 AppliedAmount = discountAmount,
                 OrderTotal = orderAmount,
                 UsedAt = DateTime.UtcNow,
-                ProductId = productId
+                UserId = userId
             };
 
             return await _discountRepository.AddUsageAsync(usage);

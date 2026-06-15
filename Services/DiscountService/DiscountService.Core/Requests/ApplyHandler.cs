@@ -17,13 +17,13 @@ namespace DiscountService.Core.Requests
         {
             try
             {
-                var result = await _discountService.ApplyDiscountAsync(request.Code, request.OrderAmount, request.ProductId);
+                var result = await _discountService.ApplyDiscountAsync(request.Code, request.OrderAmount, request.UserId);
                 var discount = await _discountService.GetDiscountByCodeAsync(request.Code);
                 if (discount == null)
                 {
                     throw new KeyNotFoundException($"Discount code '{request.Code}' not found");
                 }
-                return new ApplyResponseModel() { Success = true, AppliedAmount = result.AppliedAmount, DiscountType = discount.DiscountType, Code = request.Code };
+                return new ApplyResponseModel() { Success = true, AppliedAmount = result.AppliedAmount, DiscountType = discount.DiscountType, Code = request.Code, DiscountUsageId = result.Id };
             }
             catch (Exception ex)
             {

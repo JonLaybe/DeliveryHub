@@ -5,6 +5,7 @@
         public bool Success {  get; set; }
         public string Code { get; set; }
         public decimal AppliedAmount { get; set; }
+        public decimal DiscountUsageId { get; set; }
         public DiscountType DiscountType { get; set; }
         public string Message { get; set; }
     }

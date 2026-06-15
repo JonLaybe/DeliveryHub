@@ -30,6 +30,16 @@ namespace OrderService.Domain.Entities.Oriders
         public decimal? Discount { get; set; }
 
         /// <summary>
+        /// Product discount
+        /// </summary>
+        public decimal? Discount { get; set; }
+
+        /// <summary>
+        /// Discount Usage Id
+        /// </summary>
+        public int? DiscountUsageId { get; set; }
+
+        /// <summary>
         /// List products in order.
         /// </summary>
         public IList<Product> Products { get; set; }

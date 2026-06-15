@@ -15,6 +15,6 @@ namespace DiscountService.Core.Repositories
         Task<DiscountUsage> AddUsageAsync(DiscountUsage usage);
         Task<IEnumerable<DiscountUsage>> GetUsagesByDiscountIdAsync(int discountId);
         Task<int> GetUsageCountAsync(int discountId);
-        Task<bool> GetUsageAsync(string code, decimal orderAmount, Guid productId);
+        Task UpdateUsagesByIdAsync(int? discountUsageId);
     }
 }

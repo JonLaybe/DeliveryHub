@@ -11,6 +11,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthentication } from '../../services/auth-service/AuthService';
 import CounterComponent from '../../common/counter/CounterComponent';
 import { Controller, useForm } from 'react-hook-form';
+import PromoCodePanel, { type PromoApplyResult, type PromoApplyRequest } from '../discounts/PromoCodePanel';
+import type { ApplyModel } from "../../models/discount-service/ApplyModel";
+import type { ApplyResponseModel } from "../../models/discount-service/ApplyResponseModel";
+import { api_authorized } from "../../http";
+import { DISCOUNT_URL } from "../../constants/EndpointConstants";
+import { ApplyAsync } from '../../services/discount-service/DiscountService';
 
 const GroceryBasketComponent: FC = () => {
     const [groceryBasket, setGroceryBasket] = useState(getGroceryBasket());
@@ -18,6 +24,9 @@ const GroceryBasketComponent: FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isProcessed = useRef(false);
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [openPromoId, setOpenPromoId] = useState(false);
+    const [discountUsagesId, setDiscountUsagesId] = useState(0);
 
     const {
         control,
@@ -43,6 +52,42 @@ const GroceryBasketComponent: FC = () => {
         setTotalPrice(result);
     }, []);
 
+const applyPromo = async (code: string): Promise<PromoApplyResult> => {
+    try {
+        const applyModel: ApplyModel = {
+            code: code,
+            orderAmount: totalPrice,
+        };
+
+        const response: ApplyResponseModel = await ApplyAsync(applyModel);
+
+        if (response.success) {
+            setDiscountAmount(response.appliedAmount ?? 0);
+            setDiscountUsagesId(response.discountUsageId ?? 0);
+            setOpenPromoId(false);
+        } else {
+            setDiscountAmount(0);
+        }
+
+        return {
+            success: response.success,
+            message: response.message,
+            code: response.code,
+            appliedAmount: response.appliedAmount,
+            discountType: response.discountType,
+            discountUsageId: response.discountUsageId
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: 'Ошибка связи с сервером',
+            code: undefined,
+            appliedAmount: 0,
+            discountType: undefined,
+            discountUsageId: undefined,
+        };
+    }
+    };
     useEffect(() => {
         if (location.state?.paymentSuccess && !isProcessed.current) {
             isProcessed.current = true;
@@ -52,6 +97,7 @@ const GroceryBasketComponent: FC = () => {
     }, [location.state, navigate, groceryBasket]);
 
     const decreaseQuantity = (productId: UUIDTypes) => {
+        setDiscountAmount(0);
         let product = groceryBasket.find(item => item.product.id === productId);
 
         if (!product) return;
@@ -79,6 +125,7 @@ const GroceryBasketComponent: FC = () => {
     };
 
     const increaseQuantity = (productId: UUIDTypes) => {
+        setDiscountAmount(0);
         let refGroceryBasket = groceryBasket.map(item => {
             if (item.product.id === productId) {
                 setTotalPrice(totalPrice + item.product.price);
@@ -94,7 +141,8 @@ const GroceryBasketComponent: FC = () => {
     const sentPayment = (data: any) => {
         if (!checkSentGroceryBasket())
             return;
-        
+        data.discount = discountAmount;
+        data.discountUsageId = discountUsagesId;
         setPaymentData(data);
         navigate('/payment', { state: { fromBasket: true } });
     };
@@ -111,6 +159,8 @@ const GroceryBasketComponent: FC = () => {
         let order: OrderCreateDto = {
             address: paymentData.deliveryAddress,
             deliveryDate: new Date(paymentData.deliveryDate),
+            discount: paymentData.discount,
+            discountUsageId: paymentData.discountUsageId,
             products: mapGroceryBasketItemsToProduct(groceryBasket),
         }
 
@@ -192,10 +242,28 @@ const GroceryBasketComponent: FC = () => {
                 </div>
                 <div className='default_container result_grocery_basket_container'>
                     <div className="form_registration_new_order">
+                        <div className="form_registration_new_order">
                         <div className="total_price">
-                            <h1 className='default_name_chapter name_chapter'>Итого:</h1>
-                            <span className='default_text amount_price'>{formattedPrice(totalPrice)}</span>
+                            <h1 className='default_name_chapter name_chapter'>Цена:</h1>
+                            <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>
                         </div>
+                        {discountAmount>0 && (<>
+                            <div className="total_price">
+                            <h1 className='default_name_chapter name_chapter'>Скидка:</h1>
+                            <span className='default_text total_price'>-{formattedPrice(discountAmount)}</span>
+                            </div>
+                            <div className="total_price">
+                            <h1 className='default_name_chapter name_chapter'>Итого:</h1>
+                            <span className='default_text total_price'>{formattedPrice(totalPrice-discountAmount)}</span>
+                            </div>
+                            </>
+                        )}
+                        {discountAmount==0 &&
+                        <div className="registration_new_order">                            
+                            <PromoCodePanel value={openPromoId} onApply={(code) => applyPromo(code)}/>
+                        </div>
+                        }                      
+                    </div>
                         <div className="registration_new_order">
                             <form onSubmit={handleSubmit(sentPayment)}>
                                 <div className="new_order_controllers">
@@ -206,7 +274,7 @@ const GroceryBasketComponent: FC = () => {
                                             rules={{ required: true }} 
                                             render={({ field }) => (
                                                 <input {...field} type="text"
-                                                    placeholder='г. Москава, ул. Тверская'
+                                                    placeholder='г. Москва, ул. Тверская'
                                                     maxLength={50}
                                                     className="default_input_filed_fill" />
                                             )}
