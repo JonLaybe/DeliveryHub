@@ -1,7 +1,16 @@
 name: delivery-hub-cluster
 
 services:
-
+# ---------------- FRONTEND ----------------
+  frontend:
+    build:
+      context: ../../deliveryhub.client
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:5173"
+    restart: unless-stopped
+    networks:
+      - backend
   # ---------------- ORDER SERVICE ----------------
   order-service-webapi:
     build:
