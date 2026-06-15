@@ -2,17 +2,47 @@
     display: flex;
     align-items: flex-start;
     gap: 60px;
-    padding: 20px; 
+    padding: 20px;
 
     .media {
+        display: flex;
+        gap: 10px;
         caret-color: transparent;
+        height: 500px;
+
+        &__hidden-preview {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+
+            .hidden-preview__product-image {
+                img {
+                    width: 84px;
+                    height: 112px;
+                    margin: 3px;
+                    background-color: #292b5308;
+                    object-fit: cover;
+                }
+            }
+
+            .hidden-preview__product-image img:hover {
+                opacity: 0.5;
+            }
+
+            .preview_selected {
+                border: 2px solid #005BFF;
+                border-radius: 3px;
+            }
+
+            .preview_no_selected {
+                border: none;
+            }
+        }
     }
 
     .product-image {
         background-color: #292b5308;
-        max-width: 400px;
-        max-height: 500px;
-        border-radius: 15px;
+        width: 400px;
+        height: 500px;
         object-fit: cover;
         border-radius: 10px;
     }
@@ -35,32 +65,32 @@
         align-items: center;
     }
 
-        .product-buy {
-            background-color: #fff;
-            border-radius: 16px;
-            padding: 24px 20px 20px;
-            position: relative;
-            box-shadow: 0 2px 16px #00000014;
-            
-            .action-block {
-                display: inline-grid;
-                row-gap: 10px;
-                margin-top: 10px;
+    .product-buy {
+        background-color: #fff;
+        border-radius: 16px;
+        padding: 24px 20px 20px;
+        position: relative;
+        box-shadow: 0 2px 16px #00000014;
 
-                .buy-btn {
-                    background-color: #f8e7ff;
-                }
-            }
+        .action-block {
+            display: inline-grid;
+            row-gap: 10px;
+            margin-top: 10px;
 
-            .price-block {
-                display: flex;
-
-                .img-price {
-                    height: 24px;
-                    width: 24px;
-                }
+            .buy-btn {
+                background-color: #f8e7ff;
             }
         }
+
+        .price-block {
+            display: flex;
+
+            .img-price {
+                height: 24px;
+                width: 24px;
+            }
+        }
+    }
 
     .product-details {
         display: flex;
@@ -78,7 +108,7 @@
             font-size: 24px;
             font-weight: bold;
         }
-        
+
         .product-description {
             margin-bottom: 10px;
             font-size: 22px;

@@ -27,6 +27,8 @@ namespace OrderService.Domain.Entities.Oriders
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
 
+        public decimal? Discount { get; set; }
+
         /// <summary>
         /// List products in order.
         /// </summary>

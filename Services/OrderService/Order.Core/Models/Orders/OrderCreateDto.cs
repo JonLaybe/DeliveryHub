@@ -17,6 +17,8 @@ namespace OrderService.Core.Models.Orders
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
 
+        public decimal? Discount { get; set; }
+
         /// <summary>
         /// List products in order.
         /// </summary>

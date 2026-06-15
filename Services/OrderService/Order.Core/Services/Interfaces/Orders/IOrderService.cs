@@ -6,5 +6,7 @@ namespace OrderService.Core.Services.Interfaces.Orders
     public interface IOrderService : ICRUD<OrderDto, OrderCreateDto, OrderUpdateDto>
     {
         Task<IList<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken = default);
+
+        Task UpdateStateByDateAsync(CancellationToken cancellationToken = default);
     }
 }

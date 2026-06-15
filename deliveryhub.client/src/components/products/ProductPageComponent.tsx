@@ -13,45 +13,50 @@ const ProductPageComponent = () => {
     const [product, setProduct] = useState<ProductDto | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [isProductInTheBasket, setIsProductInTheBasket] = useState(isProductInGroceryBasket(id || ''));
+    const [selectedTypeId, setSelectedTypeId] = useState(0);
+    const [mainPreview, setMainPreview] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!id) return;
 
         getProductByIdAsync(id)
-        .then(data => {
-            setProduct(data);
-        })
-        .catch(error => {
-            console.error('Error fetching product details:', error);
-        });
+            .then(data => {
+                if (!data)
+                    return;
+
+                setProduct(data);
+
+                if (data?.images) {
+                    const imgMain = data.images.filter(x => x.type === 0)[0].url;
+                    setMainPreview(imgMain);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+            });
     }, [id]);
 
-    const imgMain = product?.images?.filter(x => x.type === 0)[0].url ?? '';
-    const imageUrl = `${CATALOG_BASE_URL}${imgMain}`;
-
     const handleAddToBasket = () => {
-        if (isProductInTheBasket)
-        {
+        if (isProductInTheBasket) {
             navigate('/grocery_basket');
         }
-        else
-        {
+        else {
             setIsProductInTheBasket(true);
             addGroceryBasket(product!)
         }
     }
-    
+
     const handleWriteSeller = async () => {
         if (!product?.id) return;
-        
+
         setIsCreatingChat(true);
         try {
             const conversationId = await createConversationAsync(product.id.toString());
-            
+
             const conversations = await getUserConversationsAsync();
             const newConversation = conversations.find(c => c.id === conversationId);
-            
+
             navigate(`/chat/${conversationId}`, {
                 state: {
                     productName: product?.name,
@@ -66,6 +71,11 @@ const ProductPageComponent = () => {
         }
     };
 
+    const handelSelectedPreview = (data: any) => {
+        setSelectedTypeId(data.type);
+        setMainPreview(data.url);
+    }
+
     return (
         <div className="product-page">
             <div className="product-nav">
@@ -73,11 +83,25 @@ const ProductPageComponent = () => {
             </div>
             <div className="product-content">
                 <div className="media">
-                    { imgMain ? <img className="product-image" src={imageUrl} alt={product?.name} /> : ""}
+                    <div className="media__hidden-preview">
+                        {
+                            product?.images?.map((data, index) => (
+                                <div className={`hidden-preview__product-image ${selectedTypeId === data.type ? 'preview_selected' : 'preview_no_selected'}`} key={index}>
+                                    <img
+                                        src={`${CATALOG_BASE_URL}${data.url}`}
+                                        onClick={() => handelSelectedPreview(data)}
+                                        alt={product?.name} />
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <div className="media__preview">
+                        <img className="product-image" src={`${CATALOG_BASE_URL}${mainPreview}`} alt={product?.name} />
+                    </div>
                 </div>
                 <div className="product-details">
                     <div className="product-description">{product?.description}</div>
-                    { 
+                    {
                         Object.entries(product?.attributes || {}).map(([key, value]) => {
                             return (
                                 <div className="product-attribute" key={key}>

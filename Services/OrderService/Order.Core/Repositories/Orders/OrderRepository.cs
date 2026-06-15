@@ -3,6 +3,7 @@ using OrderService.Core.Common.Exceptions;
 using OrderService.Core.Common.Interfaces;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Domain.Entities.Oriders;
+using OrderService.Domain.Enums.Orders;
 
 namespace OrderService.Core.Repositories.Orders
 {
@@ -23,11 +24,6 @@ namespace OrderService.Core.Repositories.Orders
                 throw new NotFoundEntityException(nameof(Order));
 
             return order;
-        }
-
-        public Task<Order> GetByIdWithUserIdAsync(int id, Guid userId, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<IList<Order>> GetOrdersWithUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -75,5 +71,23 @@ namespace OrderService.Core.Repositories.Orders
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
             await this.applicationDbContext.SaveChangesAsync(cancellationToken);
+
+        public async Task<IList<long>> GetOrdersByStateRelevantAsync(DateTime dateTimeNow, CancellationToken cancellationToken = default) =>
+            await this.applicationDbContext.Orders.Where(x => dateTimeNow >= x.DeliveryDate
+            && x.Status == OrderStatus.Relevant)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        public async Task ChangeOrderStateAsync(long orderId, OrderStatus state, CancellationToken cancellationToken = default)
+        {
+            var order = await this.applicationDbContext.Orders.Where(ord => ord.Id == orderId).FirstOrDefaultAsync(cancellationToken);
+
+            if (order == null)
+                throw new NotFoundEntityException(nameof(Order));
+
+            order.Status = state;
+
+            await this.SaveChangesAsync(cancellationToken);
+        }
     }
 }
