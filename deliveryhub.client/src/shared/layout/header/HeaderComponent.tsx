@@ -68,11 +68,15 @@ const HeaderComponent: FC = () => {
             </div>
 
             <div className="header__action_icons">
-                <Link to="/orders" className="rest_default_link">
-                    <div className="header__icon">
-                        <img src={icon_order} alt="order" />
-                    </div>
-                </Link>
+                {
+                    isAuthed ? (
+                        <Link to="/orders" className="rest_default_link">
+                            <div className="header__icon">
+                                <img src={icon_order} alt="order" />
+                            </div>
+                        </Link>
+                    ) : ""
+                }
 
                 <Link to="/grocery_basket" className="rest_default_link">
                     <div className="header__icon">

@@ -51,7 +51,7 @@ const OrderDetailsComponent = ({ order }: { order: OrderDto | undefined }) => {
                             <>
                             <div className="total_price">
                                 <h1 className='default_name_chapter name_chapter'>Скидка:</h1>
-                                <span className='default_text amount_price'>-{formattedPrice(order.discount)}</span>
+                                <span className='default_text amount_price discount_price'>-{formattedPrice(order.discount)}</span>
                             </div>
                             <div className="total_price">
                                 <h1 className='default_name_chapter name_chapter'>Итого:</h1>

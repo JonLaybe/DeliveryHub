@@ -11,11 +11,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthentication } from '../../services/auth-service/AuthService';
 import CounterComponent from '../../common/counter/CounterComponent';
 import { Controller, useForm } from 'react-hook-form';
-import PromoCodePanel, { type PromoApplyResult, type PromoApplyRequest } from '../discounts/PromoCodePanel';
+import PromoCodePanel, { type PromoApplyResult } from '../discounts/PromoCodePanel';
 import type { ApplyModel } from "../../models/discount-service/ApplyModel";
 import type { ApplyResponseModel } from "../../models/discount-service/ApplyResponseModel";
-import { api_authorized } from "../../http";
-import { DISCOUNT_URL } from "../../constants/EndpointConstants";
 import { ApplyAsync } from '../../services/discount-service/DiscountService';
 
 const GroceryBasketComponent: FC = () => {
@@ -52,42 +50,6 @@ const GroceryBasketComponent: FC = () => {
         setTotalPrice(result);
     }, []);
 
-const applyPromo = async (code: string): Promise<PromoApplyResult> => {
-    try {
-        const applyModel: ApplyModel = {
-            code: code,
-            orderAmount: totalPrice,
-        };
-
-        const response: ApplyResponseModel = await ApplyAsync(applyModel);
-
-        if (response.success) {
-            setDiscountAmount(response.appliedAmount ?? 0);
-            setDiscountUsagesId(response.discountUsageId ?? 0);
-            setOpenPromoId(false);
-        } else {
-            setDiscountAmount(0);
-        }
-
-        return {
-            success: response.success,
-            message: response.message,
-            code: response.code,
-            appliedAmount: response.appliedAmount,
-            discountType: response.discountType,
-            discountUsageId: response.discountUsageId
-        };
-    } catch (error) {
-        return {
-            success: false,
-            message: 'Ошибка связи с сервером',
-            code: undefined,
-            appliedAmount: 0,
-            discountType: undefined,
-            discountUsageId: undefined,
-        };
-    }
-    };
     useEffect(() => {
         if (location.state?.paymentSuccess && !isProcessed.current) {
             isProcessed.current = true;
@@ -95,6 +57,43 @@ const applyPromo = async (code: string): Promise<PromoApplyResult> => {
             sentGroceryBasket();
         }
     }, [location.state, navigate, groceryBasket]);
+
+    const applyPromo = async (code: string): Promise<PromoApplyResult> => {
+        try {
+            const applyModel: ApplyModel = {
+                code: code,
+                orderAmount: totalPrice,
+            };
+
+            const response: ApplyResponseModel = await ApplyAsync(applyModel);
+
+            if (response.success) {
+                setDiscountAmount(response.appliedAmount ?? 0);
+                setDiscountUsagesId(response.discountUsageId ?? 0);
+                setOpenPromoId(false);
+            } else {
+                setDiscountAmount(0);
+            }
+
+            return {
+                success: response.success,
+                message: response.message,
+                code: response.code,
+                appliedAmount: response.appliedAmount,
+                discountType: response.discountType,
+                discountUsageId: response.discountUsageId
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Ошибка связи с сервером',
+                code: undefined,
+                appliedAmount: 0,
+                discountType: undefined,
+                discountUsageId: undefined,
+            };
+        }
+    };
 
     const decreaseQuantity = (productId: UUIDTypes) => {
         setDiscountAmount(0);
@@ -243,27 +242,27 @@ const applyPromo = async (code: string): Promise<PromoApplyResult> => {
                 <div className='default_container result_grocery_basket_container'>
                     <div className="form_registration_new_order">
                         <div className="form_registration_new_order">
-                        <div className="total_price">
-                            <h1 className='default_name_chapter name_chapter'>Цена:</h1>
-                            <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>
-                        </div>
-                        {discountAmount>0 && (<>
                             <div className="total_price">
-                            <h1 className='default_name_chapter name_chapter'>Скидка:</h1>
-                            <span className='default_text total_price'>-{formattedPrice(discountAmount)}</span>
+                                <h1 className='default_name_chapter name_chapter'>Цена:</h1>
+                                <span className='default_text total_price'>{formattedPrice(totalPrice)}</span>
                             </div>
-                            <div className="total_price">
-                            <h1 className='default_name_chapter name_chapter'>Итого:</h1>
-                            <span className='default_text total_price'>{formattedPrice(totalPrice-discountAmount)}</span>
-                            </div>
+                            {discountAmount > 0 && (<>
+                                <div className="total_price">
+                                    <h1 className='default_name_chapter name_chapter'>Скидка:</h1>
+                                    <span className='default_text total_price'>-{formattedPrice(discountAmount)}</span>
+                                </div>
+                                <div className="total_price">
+                                    <h1 className='default_name_chapter name_chapter'>Итого:</h1>
+                                    <span className='default_text total_price'>{formattedPrice(totalPrice - discountAmount)}</span>
+                                </div>
                             </>
-                        )}
-                        {discountAmount==0 &&
-                        <div className="registration_new_order">                            
-                            <PromoCodePanel value={openPromoId} onApply={(code) => applyPromo(code)}/>
+                            )}
+                            {discountAmount == 0 &&
+                                <div className="registration_new_order">
+                                    <PromoCodePanel value={openPromoId} onApply={(code) => applyPromo(code)} />
+                                </div>
+                            }
                         </div>
-                        }                      
-                    </div>
                         <div className="registration_new_order">
                             <form onSubmit={handleSubmit(sentPayment)}>
                                 <div className="new_order_controllers">
@@ -271,7 +270,7 @@ const applyPromo = async (code: string): Promise<PromoApplyResult> => {
                                         <label className='clue_message'>Адрес доставки:</label>
                                         <Controller name='deliveryAddress'
                                             control={control}
-                                            rules={{ required: true }} 
+                                            rules={{ required: true }}
                                             render={({ field }) => (
                                                 <input {...field} type="text"
                                                     placeholder='г. Москва, ул. Тверская'
@@ -284,7 +283,7 @@ const applyPromo = async (code: string): Promise<PromoApplyResult> => {
                                         <label className='clue_message'>Время доставки:</label>
                                         <Controller name='deliveryDate'
                                             control={control}
-                                            rules={{ required: true }} 
+                                            rules={{ required: true }}
                                             render={({ field }) => (
                                                 <input {...field} type='date'
                                                     min={getFormattedDateYMD(minDeliveryDate())}

@@ -13,11 +13,16 @@
 
             .name_chapter,
             .total_price {
-                font-weight: bold;
+                font-weight: 500;
+                font-size: 27px;
             }
 
             .amount_price {
                 font-size: 24px;
+            }
+
+            .discount_price {
+                color: #00C451;
             }
         }
     }
