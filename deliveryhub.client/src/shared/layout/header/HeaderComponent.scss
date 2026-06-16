@@ -7,7 +7,7 @@
     align-items: center;
     gap: 10px;
     padding: 10px 10px;
-    min-height: 50px;
+    min-height: 70px;
     background: linear-gradient(97.26deg, #ed3cca .49%, #df34d2 14.88%, #d02bd9 29.27%, #bf22e1 43.14%, #ae1ae8 57.02%, #9a10f0 70.89%, #8306f7 84.76%, #7c1af8 99.15%), linear-gradient(#0000000d, #0000000d);
 
     &__search_bar {
@@ -23,14 +23,19 @@
         color: white;
     }
 
-    &__action_icons {}
+    &__action_icons {
+    }
 
     .header__action_icons {
         display: flex;
+        align-items: center;
         gap: 10px;
 
         .header__icon {
             width: 35px;
+            border: none;
+            background: transparent;
+            padding: 0;
 
             img {
                 width: 35px;
@@ -39,6 +44,33 @@
             :hover {
                 cursor: pointer;
             }
+        }
+
+        .header__profile_link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header__user {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+        }
+
+        .header__user_name {
+            margin-top: 2px;
+            max-width: 70px;
+            color: #ffffff;
+            font-size: 11px;
+            line-height: 12px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .basket-count {

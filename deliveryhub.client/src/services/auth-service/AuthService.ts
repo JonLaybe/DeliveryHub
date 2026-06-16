@@ -126,8 +126,9 @@ export function onAuthChanged(handler: () => void) {
 
 export async function updateProfileAsync(profileData: UpdateUserDto): Promise<UserDto> {
     const response = await auth_api_authorized.put<UserDto>(AUTH_PROFILE_URL, profileData);
-    _cachedUser = null;
-    _cacheTimestamp = 0;
+    _cachedUser = response.data;
+    _cacheTimestamp = Date.now();
+    notifyAuthChanged();
     return response.data;
 }
 
