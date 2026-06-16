@@ -9,6 +9,10 @@ services:
     ports:
       - "3000:5173"
     restart: unless-stopped
+    volumes:
+      - ../../deliveryhub.client:/app
+      - /app/node_modules
+      - /app/.vite
     networks:
       - backend
   # ---------------- ORDER SERVICE ----------------
@@ -26,9 +30,11 @@ services:
       # ConnectionStrings__OrderDatabase: "Host=order-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
       ConnectionStrings__OrderDatabase: "Host=general-postgres;Port=5432;Database=OrderDb;Username=postgres;Password=postgres"
     depends_on:
-      - rabbitmq
+      general-postgres:
+          condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       # - order-postgres
-      - general-postgres
     networks:
       - backend
       - rabbitmq
@@ -101,7 +107,8 @@ services:
       ConnectionStrings__DiscountDb: "Host=general-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
     depends_on:
       # - discount-postgres
-      - general-postgres
+      general-postgres:
+          condition: service_healthy
     networks:
       - backend
       - rabbitmq
@@ -254,6 +261,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - rabbitmq
 
@@ -265,11 +277,18 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - auth-service
-      - order-service-webapi
-      - catalog-api
-      - discount-service
-      - chat-api
+      auth-service:
+        condition: service_started
+      order-service-webapi:
+        condition: service_started
+      catalog-api:
+        condition: service_started
+      discount-service:
+        condition: service_started
+      chat-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - backend
   
