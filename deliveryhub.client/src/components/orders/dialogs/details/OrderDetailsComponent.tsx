@@ -44,9 +44,20 @@ const OrderDetailsComponent = ({ order }: { order: OrderDto | undefined }) => {
                                 <span className="clue_message">Статус: </span>
                                 {deliveryState.find(x => order.status === x.code)?.value}</span>
                             <div className="total_price">
-                                <h1 className='default_name_chapter name_chapter'>Итого:</h1>
+                                <h1 className='default_name_chapter name_chapter'>Цена:</h1>
                                 <span className='default_text amount_price'>{formattedPrice(totalPrice)}</span>
                             </div>
+                            {order.discount!=null &&
+                            <>
+                            <div className="total_price">
+                                <h1 className='default_name_chapter name_chapter'>Скидка:</h1>
+                                <span className='default_text amount_price'>-{formattedPrice(order.discount)}</span>
+                            </div>
+                            <div className="total_price">
+                                <h1 className='default_name_chapter name_chapter'>Итого:</h1>
+                                <span className='default_text amount_price'>{formattedPrice(totalPrice-order.discount)}</span>
+                            </div>
+                            </>}
                         </div>
                     </div>
                 ) : ""

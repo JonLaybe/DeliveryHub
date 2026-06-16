@@ -17,7 +17,15 @@ namespace OrderService.Core.Models.Orders
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
 
+        /// <summary>
+        /// Product discount
+        /// </summary>
         public decimal? Discount { get; set; }
+
+        /// <summary>
+        /// Discount Usage Id
+        /// </summary>
+        public int? DiscountUsageId { get; set; }
 
         /// <summary>
         /// List products in order.

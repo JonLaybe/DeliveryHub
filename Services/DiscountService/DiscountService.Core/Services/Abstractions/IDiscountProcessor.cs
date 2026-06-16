@@ -13,7 +13,7 @@ namespace DiscountService.Core.Services.Abstractions
         Task DeleteDiscountAsync(int id);
         Task<bool> ValidateDiscountAsync(string code, decimal orderAmount);
         Task<decimal> CalculateDiscountAsync(string code, decimal orderAmount);
-        Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid productId);
+        Task<DiscountUsage> ApplyDiscountAsync(string code, decimal orderAmount, Guid UserId);
         Task<IEnumerable<DiscountUsage>> GetDiscountUsagesAsync(int discountId);
     }
 }

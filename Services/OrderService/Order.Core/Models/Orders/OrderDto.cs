@@ -29,6 +29,9 @@ namespace OrderService.Core.Models.Orders
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
 
+        /// <summary>
+        /// Product discount
+        /// </summary>
         public decimal? Discount { get; set; }
 
         /// <summary>

@@ -1,36 +1,29 @@
 import { useEffect, useState, type FC } from "react";
 import Modal from "react-modal";
-import './PromoCodePanel.scss';
 import { useForm } from "react-hook-form";
-import type { UUIDTypes } from "uuid";
+import './PromoCodePanel.scss';
+import type { ApplyResponseModel } from "../../models/discount-service/ApplyResponseModel";
 
-/**
- * Тип выдачи результата применения промокода.
- * Можно использовать в API-слое вашего проекта.
- */
 export type PromoApplyResult = {
   success: boolean;
   code?: string;
   appliedAmount?: number;
   discountType?: number;
+  discountUsageId?: number;
   message?: string;
 };
 
 export type PromoApplyRequest = {
   Code: string;
   OrderAmount: number;
-  ProductId: UUIDTypes;
 }
 
 interface PromoCodePanelProps {
-  // Управление модальным окном: показывать/скрывать
   value: boolean;
-  onChange: (newValue: boolean) => void;
-  // Функция применения промокода
   onApply: (code: string) => Promise<PromoApplyResult>;
 }
 
-const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply}) => {
+const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onApply}) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(value);
   const {
     register,
@@ -52,33 +45,26 @@ const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply}) =>
 
   const openModal = () => {
     setModalIsOpen(true);
-    onChange(true);
   };
 
   const closeModal = () => {
     setModalIsOpen(false);
-    onChange(false);
   };
 
-  // Обработчик отправки формы
   const onSubmitPromo = async (data: { code: string }) => {
     const res = await onApply(data.code);
     if (res?.success) {
       setApplied({ code: res.code ?? data.code, appliedAmount: res.appliedAmount, discountType: res.discountType });
       setError(null);
-      // Можно закрывать автоматически после успеха
       closeModal();
     } else {
       setError(res?.message ?? 'Промокод недействителен');
     }
   };
 
-  // Вызовем закрытие модалки по клику вне ее области
-  // (обработчик provided by react-modal через onRequestClose)
-
   return (
     <div className="container_model_promo">
-      <button className="promo_trigger" onClick={openModal} aria-label="Открыть панель промокода">
+      <button className="default-button" onClick={openModal} aria-label="Открыть панель промокода">
         Применить промокод
       </button>
 
@@ -116,9 +102,8 @@ const PromoCodePanel: FC<PromoCodePanelProps> = ({ value, onChange, onApply}) =>
                 </button>
               </div>
             </form>
-
             {error && <div className="error">{error}</div>}
-            {applied && (<div className="success">Применено: {applied.code} {typeof applied.appliedAmount === 'number' && (<span> • Скидка: {applied.discountType === 0 ? `${applied.appliedAmount}%` : `${applied.appliedAmount}`}</span>)}</div>)}
+            {applied && !error && (<div className="success">Применено: {applied.code} {typeof applied.appliedAmount === 'number' && (<span> • Скидка: {applied.discountType === 0 ? `${applied.appliedAmount}%` : `${applied.appliedAmount}`}</span>)}</div>)}
           </div>
         </div>
       </Modal>

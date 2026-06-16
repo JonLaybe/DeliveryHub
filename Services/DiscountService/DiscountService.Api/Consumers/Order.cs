@@ -1,4 +1,4 @@
-﻿namespace Shared.Domain.Entities.RabbitMq
+﻿namespace DiscountService.Api.Consumers
 {
     public class Order
     {
