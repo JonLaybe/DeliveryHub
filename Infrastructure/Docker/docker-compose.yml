@@ -104,6 +104,7 @@ services:
       - general-postgres
     networks:
       - backend
+      - rabbitmq
 
   # discount-postgres:
   #   image: postgres:15-alpine

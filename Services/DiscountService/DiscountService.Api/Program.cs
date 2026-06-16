@@ -5,6 +5,9 @@ using DiscountService.Data;
 using DiscountService.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DiscountService.Core;
+using DiscountService.Api.Infrastructure;
+using MassTransit;
+using DiscountService.Api.Consumers;
 
 namespace DiscountService.Api
 {
@@ -18,6 +21,8 @@ namespace DiscountService.Api
             builder.Services.AddControllers();
             // Core
             builder.Services.AddCoreServices();
+            builder.Services.AddHttpClient();
+            builder.Services.AddAuth(builder.Configuration);
 
             // Регистрация DbContext (раскомментируйте и настройте)
             var connection = builder.Configuration.GetConnectionString("DiscountDb");
@@ -28,7 +33,31 @@ namespace DiscountService.Api
             builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
             builder.Services.AddScoped<IDiscountProcessor, DiscountProcessor>();
 
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumer<OrderCreatedMessageConsumer>();
 
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/");
+
+                    // Auto-configure endpoints for registered consumers
+                    //cfg.ConfigureEndpoints(context);
+
+                    cfg.ReceiveEndpoint("Product", e =>
+                    {
+                        e.UseRawJsonDeserializer(isDefault: true);
+
+                        e.SetQueueArgument("x-dead-letter-exchange", "");
+                        e.SetQueueArgument("x-dead-letter-routing-key", "ProductDeadLetter");
+                        e.SetQueueArgument("x-dead-letter-strategy", "at-least-once");
+                        e.SetQueueArgument("x-overflow", "reject-publish");
+                        e.SetQueueArgument("x-queue-type", "quorum");
+
+                        e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
+                    });
+                });
+            });
             // Swagger configuration
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>

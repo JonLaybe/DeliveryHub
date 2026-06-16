@@ -7,5 +7,6 @@ export interface OrderDto extends BaseEntity {
     address: string;
     createdDate: Date;
     deliveryDate: Date;
+    discount?: number | null;
     products: ProductDto[];
 }

@@ -1,5 +1,6 @@
 ﻿using DiscountService.Core.Entities;
 using DiscountService.Core.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -113,13 +114,16 @@ namespace DiscountService.Data.Repositories
                 .CountAsync(u => u.DiscountId == discountId);
         }
 
-        public async Task<bool> GetUsageAsync(string code, decimal orderAmount, Guid productId)
+        public async Task UpdateUsagesByIdAsync(int? discountUsageId)
         {
-            var discount = await _context.Discounts
-                .Include(d => d.Usages)
-                .FirstOrDefaultAsync(u => u.Code == code &&
-                    u.Usages.Any(x => x.OrderTotal == orderAmount && x.ProductId == productId));
-            return discount != null;
+            var result = await _context.DiscountUsages.FirstOrDefaultAsync(u => u.Id == discountUsageId);
+            var discount = await _context.Discounts.FindAsync(result?.DiscountId);
+            if (discount != null)
+            {
+                discount.UsageCount++;
+                discount.UpdatedAt = DateTime.UtcNow;
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

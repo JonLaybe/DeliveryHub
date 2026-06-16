@@ -4,6 +4,6 @@
     {
         public string Code { get; set; } = string.Empty;
         public decimal OrderAmount { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

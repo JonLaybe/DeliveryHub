@@ -10,6 +10,7 @@ export interface OrderForList {
     address: string;
     createdDate: Date;
     deliveryDate: Date;
+    discount?: number | null;
     products: ProductForOrderList[];
 }
 
@@ -31,6 +32,7 @@ export function flatMapOrderAndProduct(orders: OrderDto[], products: ProductDto[
             address: ord.address,
             createdDate: ord.createdDate,
             deliveryDate: ord.deliveryDate,
+            discount: ord.discount,
             products: [],
         } as OrderForList;
 
