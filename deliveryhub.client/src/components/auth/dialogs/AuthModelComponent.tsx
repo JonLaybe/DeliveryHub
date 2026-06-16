@@ -56,6 +56,11 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
         reset();
     };
 
+    const switchMode = (newMode: "login" | "register") => {
+        setMode(newMode);
+        reset();
+    };
+
     const onLogin = async (dataLoginRequest: LoginRequestDto) => {
         try {
             await loginAsync(dataLoginRequest);
@@ -109,7 +114,25 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
                             <span className="default_name_chapter contect__name_chapter prefix"> ID</span>
                         </h1>
 
-                        <div className="default_text" style={{ marginTop: 8 }}>
+                        <div className="auth_mode_switcher">
+                            <button
+                                type="button"
+                                className={`auth_mode_button ${mode === "login" ? "active" : ""}`}
+                                onClick={() => switchMode("login")}
+                            >
+                                Войти
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`auth_mode_button ${mode === "register" ? "active" : ""}`}
+                                onClick={() => switchMode("register")}
+                            >
+                                Регистрация
+                            </button>
+                        </div>
+
+                        <div className="auth_modal_title">
                             {mode === "login" ? "Вход" : "Регистрация"}
                         </div>
                     </div>
@@ -118,7 +141,7 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <label className="default_text">Электронная почта</label>
                             <input
-                                {...register('email')}
+                                {...register('email', { required: true })}
                                 className="default_text"
                                 type="email"
                                 maxLength={250}
@@ -126,7 +149,7 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
 
                             <label className="default_text">Пароль</label>
                             <input
-                                {...register('password')}
+                                {...register('password', { required: true })}
                                 className="default_text"
                                 type="password"
                             />
@@ -135,34 +158,15 @@ const AuthModelComponent: FC<AuthModelProps> = ({ value, onChange }) => {
                                 <>
                                     <label className="default_text">Повторите пароль</label>
                                     <input
-                                        {...register('confirmPassword')}
+                                        {...register('confirmPassword', { required: true })}
                                         className="default_text"
                                         type="password"
                                     />
                                 </>
                             )}
 
-                            <div style={{ marginTop: 10 }}>
-                                {mode === "login" ? (
-                                    <button
-                                        type="button"
-                                        className="default_text"
-                                        onClick={() => setMode("register")}
-                                    >
-                                        Нет аккаунта? Регистрация
-                                    </button>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        className="default_text"
-                                        onClick={() => setMode("login")}
-                                    >
-                                        Уже есть аккаунт? Войти
-                                    </button>
-                                )}
-                            </div>
-
                             <input
+                                className="auth_submit_button"
                                 type="submit"
                                 disabled={isSubmitting}
                                 value={mode === "login" ? "Войти" : "Зарегистрироваться"}
