@@ -35,11 +35,12 @@ namespace DiscountService.Api
 
             builder.Services.AddMassTransit(x =>
             {
-                x.AddConsumer<OrderCreatedMessageConsumer>();
+                x.AddConsumer<OrderConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", "/");
+                    var host = builder.Configuration["RabbitMq:Host"];
+                    cfg.Host(host, "/");
 
                     // Auto-configure endpoints for registered consumers
                     //cfg.ConfigureEndpoints(context);
@@ -54,7 +55,7 @@ namespace DiscountService.Api
                         e.SetQueueArgument("x-overflow", "reject-publish");
                         e.SetQueueArgument("x-queue-type", "quorum");
 
-                        e.ConfigureConsumer<OrderCreatedMessageConsumer>(context);
+                        e.ConfigureConsumer<OrderConsumer>(context);
                     });
                 });
             });

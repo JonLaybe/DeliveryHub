@@ -85,7 +85,7 @@ services.AddMassTransit(x =>
         // Auto-configure endpoints for registered consumers
         //cfg.ConfigureEndpoints(context);
 
-        cfg.ReceiveEndpoint("Product", e =>
+        cfg.ReceiveEndpoint("Discount", e =>
         {
             e.UseRawJsonDeserializer(isDefault: true);
 
