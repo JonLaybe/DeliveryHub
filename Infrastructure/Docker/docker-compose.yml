@@ -109,8 +109,7 @@ services:
       # ConnectionStrings__DiscountDb: "Host=discount-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
       ConnectionStrings__DiscountDb: "Host=general-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      # - discount-postgres
       general-postgres:
         condition: service_healthy
       rabbitmq:
