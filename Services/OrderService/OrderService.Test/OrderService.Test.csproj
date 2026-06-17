@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Services\OrderService\Order.Core\OrderService.Core.csproj" />
-    <ProjectReference Include="..\Services\OrderService\Order.WebAPI\OrderService.WebAPI.csproj" />
+    <ProjectReference Include="..\Order.Core\OrderService.Core.csproj" />
+    <ProjectReference Include="..\Order.WebAPI\OrderService.WebAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

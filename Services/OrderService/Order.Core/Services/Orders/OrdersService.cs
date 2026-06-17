@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OrderService.Core.Models.Orders;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Core.Services.Interfaces.Orders;
@@ -14,16 +15,19 @@ namespace OrderService.Core.Services.Orders
         private readonly IClientRabbitMq clientRabbitMq;
         private readonly IUserService userService;
         private readonly IMapper mapper;
+        private readonly ILogger<OrdersService> _logger;
 
         public OrdersService(
             IOrderRepository repository,
             IClientRabbitMq clientRabbitMq,
             IUserService userService,
+            ILogger<OrdersService> logger,
             IMapper mapper)
         {
             this.orderRepository = repository;
             this.clientRabbitMq = clientRabbitMq;
             this.userService = userService;
+            this._logger = logger;
             this.mapper = mapper;
         }
 
@@ -76,6 +80,8 @@ namespace OrderService.Core.Services.Orders
             _ = await this.orderRepository.DeleteAsync(id, cancellationToken);
 
             await this.orderRepository.SaveChangesAsync(cancellationToken);
+
+            this._logger.LogInformation("Order {id} Delete", id);
 
             return id;
         }

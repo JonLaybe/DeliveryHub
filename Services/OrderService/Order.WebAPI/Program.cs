@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.WebAPI.Extensions;
+using Serilog;
 using Shared.RabbitMq.Interfaces;
 
 namespace OrderService.WebAPI
@@ -24,6 +25,9 @@ namespace OrderService.WebAPI
                 }
             });
 
+            builder.Host.UseSerilog((context, services, configuration) => configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .Enrich.FromLogContext());
 
             builder.Services.AddControllers();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -42,6 +46,8 @@ namespace OrderService.WebAPI
             });
 
             var app = builder.Build();
+
+            app.UseSerilogRequestLogging();
 
             var rabbitClient = app.Services.GetRequiredService<IClientRabbitMq>();
             await rabbitClient.Connection();
