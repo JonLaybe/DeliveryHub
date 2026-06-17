@@ -5,16 +5,21 @@ ARG MOD
 ENV MOD=${MOD}
 
 # Copy csproj and restore as distinct layers
-COPY DiscountService.sln .
-COPY DiscountService.Abstractions/*.csproj ./DiscountService.Abstractions/
-COPY DiscountService.Core/*.csproj ./DiscountService.Core/
-COPY DiscountService.Api/*.csproj ./DiscountService.Api/
+COPY Services/DiscountService/DiscountService.sln Services/DiscountService/
+COPY Services/DiscountService/DiscountService.Abstractions/DiscountService.Abstractions.csproj Services/DiscountService/DiscountService.Abstractions/
+COPY Services/DiscountService/DiscountService.Core/DiscountService.Core.csproj Services/DiscountService/DiscountService.Core/
+COPY Services/DiscountService/DiscountService.Api/DiscountService.Api.csproj Services/DiscountService/DiscountService.Api/
+COPY Shared/Shared.Domain/Shared.Domain.csproj Shared/Shared.Domain/
 
-RUN dotnet restore DiscountService.Api/DiscountService.Api.csproj
+# Копируем остальной код
+COPY . ./
+
+
+RUN dotnet restore Services/DiscountService/DiscountService.Api/DiscountService.Api.csproj
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish DiscountService.Api/DiscountService.Api.csproj -c $MOD -o out
+RUN dotnet publish Services/DiscountService/DiscountService.Api/DiscountService.Api.csproj -c $MOD -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

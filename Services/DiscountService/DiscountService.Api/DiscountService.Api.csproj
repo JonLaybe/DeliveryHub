@@ -32,6 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Shared\Shared.Domain\Shared.Domain.csproj" />
 		<ProjectReference Include="..\DiscountService.Core\DiscountService.Core.csproj" />
 		<ProjectReference Include="..\DiscountService.Data\DiscountService.Data.csproj" />
 	</ItemGroup>

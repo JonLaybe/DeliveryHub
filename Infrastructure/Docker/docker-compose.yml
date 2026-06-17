@@ -94,8 +94,8 @@ services:
   # ---------------- DISCOUNT SERVICE ----------------
   discount-service:
     build:
-      context: ../../Services/DiscountService
-      dockerfile: DiscountService.Api/Dockerfile
+      context: ../../
+      dockerfile: Services/DiscountService/DiscountService.Api/Dockerfile
       args:
         MOD: Debug
     container_name: discount-service
@@ -106,7 +106,8 @@ services:
       # ConnectionStrings__DiscountDb: "Host=discount-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
       ConnectionStrings__DiscountDb: "Host=general-postgres;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres"
     depends_on:
-      # - discount-postgres
+      rabbitmq:
+        condition: service_healthy
       general-postgres:
           condition: service_healthy
     networks:
