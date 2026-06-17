@@ -95,7 +95,8 @@ namespace OrderService.Core.Services.Orders
 
         public async Task UpdateStateByDateAsync(CancellationToken cancellationToken = default)
         {
-            var moscowNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var moscowTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var moscowNow = DateTime.SpecifyKind(moscowTime.AddDays(30), DateTimeKind.Utc);
 
             var orders = await this.orderRepository.GetOrdersByStateRelevantAsync(moscowNow, cancellationToken);
             foreach (var orderId in orders)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.WebAPI.Extensions;
+using OrderService.WebAPI.Hosted;
 using Serilog;
 using Shared.RabbitMq.Interfaces;
 
@@ -34,6 +35,7 @@ namespace OrderService.WebAPI
             builder.Services.AddHttpClient();
             builder.Services.AddAuth(builder.Configuration);
             builder.Services.RegisterDependencies(builder.Configuration);
+            builder.Services.AddHostedService<OrderHostedService>();
 
             builder.Services.AddCors(options =>
             {
