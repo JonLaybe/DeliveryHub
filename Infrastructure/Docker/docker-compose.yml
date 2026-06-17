@@ -67,7 +67,10 @@ services:
       - Mongo__Database=${MONGO_INITDB_DATABASE}
       - Mongo__ConnectionString=${MONGO_ConnectionString}
     depends_on:
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
     volumes:
       - ../../Services/CatalogService/Catalog.API/Assets/product-images:/app/wwwroot/images
     networks:
@@ -109,7 +112,9 @@ services:
       rabbitmq:
         condition: service_healthy
       general-postgres:
-          condition: service_healthy
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - backend
       - rabbitmq

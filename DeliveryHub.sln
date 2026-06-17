@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11819.183 stable
+VisualStudioVersion = 18.6.11819.183
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
@@ -133,7 +133,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Infrastructure", "Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.RabbitMq", "Shared\Shared.RabbitMq\Shared.RabbitMq.csproj", "{A32FE732-C421-43FF-4FF8-2C9D90D40921}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Test", "OrderService.Test\OrderService.Test.csproj", "{9D4E9641-14A4-4E7A-95C6-D98CB19588F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Test", "Services\OrderService\OrderService.Test\OrderService.Test.csproj", "{6AD2BF16-738B-D604-0645-685E3D4447B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -253,10 +253,10 @@ Global
 		{A32FE732-C421-43FF-4FF8-2C9D90D40921}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A32FE732-C421-43FF-4FF8-2C9D90D40921}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A32FE732-C421-43FF-4FF8-2C9D90D40921}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D4E9641-14A4-4E7A-95C6-D98CB19588F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D4E9641-14A4-4E7A-95C6-D98CB19588F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D4E9641-14A4-4E7A-95C6-D98CB19588F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D4E9641-14A4-4E7A-95C6-D98CB19588F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AD2BF16-738B-D604-0645-685E3D4447B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AD2BF16-738B-D604-0645-685E3D4447B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AD2BF16-738B-D604-0645-685E3D4447B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AD2BF16-738B-D604-0645-685E3D4447B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -302,7 +302,7 @@ Global
 		{02EAA36B-A6D0-E9BD-4DEF-568C636ED145} = {2346CB30-2419-4E28-B2A9-65B213153616}
 		{7158B9B2-86BF-595D-56E8-9F2F30B47673} = {2346CB30-2419-4E28-B2A9-65B213153616}
 		{A32FE732-C421-43FF-4FF8-2C9D90D40921} = {0944D3A2-FB1E-4A6B-AA66-F1AF96C4DB67}
-		{9D4E9641-14A4-4E7A-95C6-D98CB19588F9} = {261A764B-2670-4352-BE72-844E7302C98F}
+		{6AD2BF16-738B-D604-0645-685E3D4447B0} = {261A764B-2670-4352-BE72-844E7302C98F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB6E6240-A329-4FC8-A278-6D3B8E13DD06}

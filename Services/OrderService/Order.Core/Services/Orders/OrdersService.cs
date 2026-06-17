@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OrderService.Core.Models.Orders;
 using OrderService.Core.Repositories.Interfaces.Orders;
 using OrderService.Core.Services.Interfaces.Orders;
@@ -14,16 +15,19 @@ namespace OrderService.Core.Services.Orders
         private readonly IClientRabbitMq clientRabbitMq;
         private readonly IUserService userService;
         private readonly IMapper mapper;
+        private readonly ILogger<OrdersService> _logger;
 
         public OrdersService(
             IOrderRepository repository,
             IClientRabbitMq clientRabbitMq,
             IUserService userService,
+            ILogger<OrdersService> logger,
             IMapper mapper)
         {
             this.orderRepository = repository;
             this.clientRabbitMq = clientRabbitMq;
             this.userService = userService;
+            this._logger = logger;
             this.mapper = mapper;
         }
 
@@ -77,6 +81,8 @@ namespace OrderService.Core.Services.Orders
 
             await this.orderRepository.SaveChangesAsync(cancellationToken);
 
+            this._logger.LogInformation("Order {id} Delete", id);
+
             return id;
         }
 
@@ -89,7 +95,8 @@ namespace OrderService.Core.Services.Orders
 
         public async Task UpdateStateByDateAsync(CancellationToken cancellationToken = default)
         {
-            var moscowNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var moscowTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var moscowNow = DateTime.SpecifyKind(moscowTime.AddDays(30), DateTimeKind.Utc);
 
             var orders = await this.orderRepository.GetOrdersByStateRelevantAsync(moscowNow, cancellationToken);
             foreach (var orderId in orders)

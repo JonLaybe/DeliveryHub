@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OrderService.Core.Common.Exceptions;
 using OrderService.Core.Common.Interfaces;
 using OrderService.Core.Repositories.Interfaces.Orders;
@@ -9,11 +10,15 @@ namespace OrderService.Core.Repositories.Orders
 {
     public class OrderRepository : IOrderRepository
     {
-        private IApplicationDbContext applicationDbContext;
+        private readonly IApplicationDbContext applicationDbContext;
+        private readonly ILogger<OrderRepository> logger;
 
-        public OrderRepository(IApplicationDbContext applicationDbContext)
+        public OrderRepository(
+            IApplicationDbContext applicationDbContext,
+            ILogger<OrderRepository> logger)
         {
             this.applicationDbContext = applicationDbContext;
+            this.logger = logger;
         }
 
         public async Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -21,7 +26,10 @@ namespace OrderService.Core.Repositories.Orders
             var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (order == default)
+            {
+                this.logger.LogError("[GetByIdAsync] Error: Order not found.");
                 throw new NotFoundEntityException(nameof(Order));
+            }
 
             return order;
         }
@@ -37,7 +45,10 @@ namespace OrderService.Core.Repositories.Orders
         public async Task<Order> CreateAsync(Order entity, CancellationToken cancellationToken = default)
         {
             if (entity == null)
+            {
+                this.logger.LogError("[CreateAsync] Error: Order not found.");
                 throw new ArgumentNullException(nameof(entity));
+            }
 
             _ = await this.applicationDbContext.Orders.AddAsync(entity);
 
@@ -49,7 +60,10 @@ namespace OrderService.Core.Repositories.Orders
             var order = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (order == default)
+            {
+                this.logger.LogError("[DeleteAsync] Error: Order not found.");
                 throw new NotFoundEntityException(nameof(Order));
+            }
 
             this.applicationDbContext.Orders.Remove(order);
 
@@ -61,7 +75,10 @@ namespace OrderService.Core.Repositories.Orders
             var orderUpdate = await this.applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken);
 
             if (orderUpdate == default)
+            {
+                this.logger.LogError("[UpdateAsync] Error: Order not found.");
                 throw new NotFoundEntityException(nameof(Order));
+            }
 
             orderUpdate.Status = entity.Status;
             orderUpdate.Address = entity.Address;
@@ -83,7 +100,10 @@ namespace OrderService.Core.Repositories.Orders
             var order = await this.applicationDbContext.Orders.Where(ord => ord.Id == orderId).FirstOrDefaultAsync(cancellationToken);
 
             if (order == null)
+            {
+                this.logger.LogError("[UpdateAsync] Error: Order not found.");
                 throw new NotFoundEntityException(nameof(Order));
+            }
 
             order.Status = state;
 
