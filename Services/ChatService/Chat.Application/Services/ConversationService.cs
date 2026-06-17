@@ -69,11 +69,22 @@ namespace Chat.Application.Services
                 return [];
 
             var conversationIds = conversations.Select(c => c.Id).ToList();
-            var sellerIds = conversations.Select(c => c.SellerId).Distinct().ToList();
+
+            List<Guid> userIds = [];
+
+            var isBuyer = conversations.Where(x => x.BuyerId == userId).Any();
+            if (isBuyer)
+            {
+                userIds = [.. conversations.Select(c => c.SellerId).Distinct()];
+            }
+            else
+            {
+                userIds = [.. conversations.Select(c => c.BuyerId).Distinct()];
+            }
 
             var statsTask = _messageService.GetConversationStatsAsync(conversationIds, userId);
-            var onlineStatusesTask = _onlineStatusService.IsOnlineAsync(sellerIds);
-            var userProfilesTask = _userProfileService.GetUserInfosByIdsAsync(sellerIds);
+            var onlineStatusesTask = _onlineStatusService.IsOnlineAsync(userIds);
+            var userProfilesTask = _userProfileService.GetUserInfosByIdsAsync(userIds);
             await Task.WhenAll(statsTask, onlineStatusesTask, userProfilesTask);
 
             var stats = statsTask.Result;
@@ -84,17 +95,28 @@ namespace Chat.Application.Services
             {
                 stats.TryGetValue(c.Id, out var stat);
 
-                return new ConversationResponse
+                var response = new ConversationResponse();
+                if (isBuyer)
                 {
-                    ConversationId = c.Id,
-                    SellerId = c.SellerId,
-                    SellerName = userProfiles[c.SellerId].SellerName,
-                    SellerPhoto = userProfiles[c.SellerId].SellerPhoto,
-                    UnreadMessagesCount = stat.UnreadCount,
-                    LastMessage = stat.LastMessage,
-                    LastMessageAt = c.LastMessageAt,
-                    IsOnline = onlineStatuses.ContainsKey(c.SellerId) && onlineStatuses[c.SellerId]
-                };
+                    response.SellerId = c.SellerId;
+                    response.SellerName = userProfiles[c.SellerId].SellerName;
+                    response.SellerPhoto = userProfiles[c.SellerId].SellerPhoto;
+                    response.IsOnline = onlineStatuses.ContainsKey(c.SellerId) && onlineStatuses[c.SellerId];
+                }
+                else
+                {
+                    response.SellerId = c.BuyerId;
+                    response.SellerName = userProfiles[c.BuyerId].SellerName;
+                    response.SellerPhoto = userProfiles[c.BuyerId].SellerPhoto;
+                    response.IsOnline = onlineStatuses.ContainsKey(c.BuyerId) && onlineStatuses[c.BuyerId];
+                }
+
+                response.ConversationId = c.Id;
+                response.UnreadMessagesCount = stat.UnreadCount;
+                response.LastMessage = stat.LastMessage;
+                response.LastMessageAt = c.LastMessageAt;
+                return response;
+
             }).ToList();
 
             return conversationDtos;
